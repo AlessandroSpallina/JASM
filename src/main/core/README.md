@@ -6,9 +6,9 @@
   astrazione di codice sorgente.
 
 ## TODO
-* Accetta comandi contenuti in plugin (pastebin, export info to, remote
-  controller, etc): legge coda di messaggi che contiene comandi.
+* Accetta comandi base + altri contenuti in plugin (pastebin, export info to, 
+  remote controller, etc): legge coda di messaggi che contiene comandi.
 
 
 ## File:
-### * fifo: gestione coda di stringhe [coda di comandi per il core]
+* fifo: gestione coda di stringhe [coda di comandi per il core]
