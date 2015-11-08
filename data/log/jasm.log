@@ -45,3 +45,39 @@
 [Sun Nov  8 19:10:30 2015] server started
 [Sun Nov  8 19:10:39 2015] removing client on fd 1
 [Sun Nov  8 19:10:39 2015] server started
+[Sun Nov  8 21:15:23 2015] boot
+[Sun Nov  8 21:15:23 2015] fork success
+[Sun Nov  8 21:15:23 2015] setsid success
+[Sun Nov  8 21:15:23 2015] jasm started with pid 8747 and ppid 1
+[Sun Nov  8 21:15:23 2015] server started
+[Sun Nov  8 21:15:36 2015] adding client on fd 1
+[Sun Nov  8 21:15:44 2015] removing client on fd 1
+[Sun Nov  8 21:15:59 2015] adding client on fd 1
+[Sun Nov  8 21:16:03 2015] received from fd 1 command <ciao>
+[Sun Nov  8 21:16:03 2015] ERROR: command received not found!
+[Sun Nov  8 21:16:06 2015] removing client on fd 1
+[Sun Nov  8 21:20:12 2015] adding client on fd 1
+[Sun Nov  8 21:20:31 2015] received from fd 1 command <version>
+[Sun Nov  8 21:20:31 2015] ERROR: command received not found!
+[Sun Nov  8 21:20:56 2015] removing client on fd 1
+[Sun Nov  8 21:22:35 2015] boot
+[Sun Nov  8 21:22:35 2015] fork success
+[Sun Nov  8 21:22:35 2015] setsid success
+[Sun Nov  8 21:22:35 2015] jasm started with pid 8976 and ppid 1
+[Sun Nov  8 21:22:35 2015] server started
+[Sun Nov  8 21:22:59 2015] adding client on fd 1
+[Sun Nov  8 21:23:05 2015] received from fd 1 command <a>
+[Sun Nov  8 21:23:05 2015] ERROR: command received not found!
+[Sun Nov  8 21:23:14 2015] received from fd 1 command <o>
+[Sun Nov  8 21:23:14 2015] ERROR: command received not found!
+[Sun Nov  8 21:23:18 2015] removing client on fd 1
+[Sun Nov  8 21:24:13 2015] adding client on fd 1
+[Sun Nov  8 21:24:21 2015] removing client on fd 1
+[Sun Nov  8 21:28:44 2015] adding client on fd 1
+[Sun Nov  8 21:28:49 2015] removing client on fd 1
+[Sun Nov  8 21:29:12 2015] adding client on fd 1
+[Sun Nov  8 21:29:17 2015] removing client on fd 1
+[Sun Nov  8 21:29:37 2015] adding client on fd 1
+[Sun Nov  8 21:29:46 2015] received from fd 1 command <getVersion>
+[Sun Nov  8 21:29:46 2015] server reply <version> with success
+[Sun Nov  8 21:29:52 2015] removing client on fd 1
