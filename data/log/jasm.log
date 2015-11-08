@@ -1,0 +1,47 @@
+[Sun Nov  8 16:03:13 2015] boot
+[Sun Nov  8 16:03:13 2015] fork success
+[Sun Nov  8 16:03:13 2015] setsid success
+[Sun Nov  8 16:03:13 2015] buf
+[Sun Nov  8 16:04:01 2015] boot
+[Sun Nov  8 16:04:01 2015] fork success
+[Sun Nov  8 16:04:01 2015] setsid success
+[Sun Nov  8 16:04:01 2015] jasm started with pid 5272 and ppid 1
+[Sun Nov  8 16:23:11 2015] boot
+[Sun Nov  8 16:23:11 2015] fork success
+[Sun Nov  8 16:23:11 2015] setsid success
+[Sun Nov  8 16:23:11 2015] jasm started with pid 5384 and ppid 1
+[Sun Nov  8 16:26:21 2015] boot
+[Sun Nov  8 16:26:21 2015] fork success
+[Sun Nov  8 16:26:21 2015] setsid success
+[Sun Nov  8 16:26:21 2015] jasm started with pid 5511 and ppid 1
+[Sun Nov  8 17:38:44 2015] boot
+[Sun Nov  8 17:38:44 2015] fork success
+[Sun Nov  8 17:38:44 2015] setsid success
+[Sun Nov  8 17:38:44 2015] jasm started with pid 6120 and ppid 1
+[Sun Nov  8 18:01:37 2015] boot
+[Sun Nov  8 18:01:37 2015] fork success
+[Sun Nov  8 18:01:37 2015] setsid success
+[Sun Nov  8 18:01:37 2015] jasm started with pid 6446 and ppid 1
+[Sun Nov  8 18:01:37 2015] server started
+[Sun Nov  8 18:06:20 2015] adding client on fd 1
+[Sun Nov  8 18:06:20 2015] server started
+[Sun Nov  8 18:06:20 2015] received from fd 1 command <a>
+[Sun Nov  8 18:06:20 2015] ERROR: command received not found!
+[Sun Nov  8 18:06:20 2015] server started
+[Sun Nov  8 18:06:20 2015] removing client on fd 1
+[Sun Nov  8 18:06:20 2015] server started
+[Sun Nov  8 19:08:46 2015] adding client on fd 1
+[Sun Nov  8 19:08:46 2015] server started
+[Sun Nov  8 19:08:49 2015] removing client on fd 1
+[Sun Nov  8 19:08:49 2015] server started
+[Sun Nov  8 19:09:51 2015] adding client on fd 1
+[Sun Nov  8 19:09:51 2015] server started
+[Sun Nov  8 19:09:53 2015] removing client on fd 1
+[Sun Nov  8 19:09:53 2015] server started
+[Sun Nov  8 19:10:02 2015] adding client on fd 1
+[Sun Nov  8 19:10:02 2015] server started
+[Sun Nov  8 19:10:30 2015] received from fd 1 command <getVersion>
+[Sun Nov  8 19:10:30 2015] server reply <version> with success
+[Sun Nov  8 19:10:30 2015] server started
+[Sun Nov  8 19:10:39 2015] removing client on fd 1
+[Sun Nov  8 19:10:39 2015] server started
