@@ -27,29 +27,72 @@
 #include "ipc.h"
 #include "miscellaneous.h"
 
-void print_menu()
+void print_welcome()
 {
-  printf("a) send command\n0) exit\n");
+  printf("Welcome!\nThis is a commandline interface of JASM\nType your command, 0 to exit..\n");
+}
+
+void parseCommand_sendJasm(const char *buffer, int fd)
+{
+
+	if(strcmp("0", buffer)==0) {
+		close(fd);
+		print("bye!\n");
+		exit(0);
+	} else {
+	
+		if(strncmp("start", buffer, 5)==0) {
+			//sto startando un modulo-thread -> apro un nuovo socket dedicato
+   			//in modo tale da avere diversi fd per diversi output da jasm
+   			
+   			/*
+   			 *	new socket
+   			 *	write()
+   			 *	read()
+   			 */
+   			return;
+	
+		} else {
+    		write(fd, (void *)buffer, sizeof(buffer));
+    		memset(buf, 0, BUFSIZ);
+    		read(fd, (void *)buffer, sizeof(buffer));
+    		return;
+		}
+	
+	}
+
 }
 
 int main(int argc, char *argv[])
 {
   int fd;
-  char buf;
-  char bufstr[BUFSIZ];
+  char buf[BUFSIZ];
 
   fd=start_client();
 
+  print_welcome();
+
   while(1) {
+    printf("> ");
+    scanf("%s", buf);
+
+    printf("%s\n", buf);
+    printf("\n");
+  }
+
+
+  /*while(1) {
     print_menu();
     scanf("%c", &buf);
 
     switch(buf) {
 
+      fflush(stdin);
+
       case 'a':
         printf("type the command: ");
         scanf("%s", bufstr);
-        
+
         if(strncmp("start", bufstr, 5)==0) {
         	write(fd, (void *)bufstr, sizeof(bufstr));
         	read(fd, (void *)bufstr, sizeof(bufstr));
@@ -59,9 +102,10 @@ int main(int argc, char *argv[])
         	} else {
         		fprintf(stderr, "start new module fail\n");
         	}
-        
-        
+
+
         } else {
+          printf("stringa: %s\n", bufstr);
         	write(fd, (void *)bufstr, sizeof(bufstr));
         	read(fd, (void *)bufstr, sizeof(bufstr));
         	printf("@ received: %s\n", bufstr);
@@ -73,12 +117,12 @@ int main(int argc, char *argv[])
         printf("bye!\n");
         exit(0);
         break;
-        
+
       default:
       	fprintf(stderr, "wrong option\n");
       	break;
     }
-  }
+  }*/
 
 
 }
