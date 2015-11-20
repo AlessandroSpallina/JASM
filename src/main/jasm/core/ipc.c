@@ -28,18 +28,64 @@
 #include <errno.h>
 #include "ipc.h"
 #include "miscellaneous.h"
+#include "getter.h"
 
 
-static void excecute_command(int fd, const char *command)
+static void excecute_command(int fd, char *command)
 {
-  if(strcmp("getVersion", command)==0) {
+  /*
+   *  if get* -> modulo get
+   *  if start* -> modulo dei moduli
+   */
+
+   // ************************** getter ***************************************
+   if(strncmp("get", command, 3)==0) {  //ricevuto comando getter
+     int i;
+     //char buf[BUFSIZ];
+
+     strcpy(command, &command[3]);
+
+     for(i=0; i<NGETTER; i++) {
+       if(strcmp(getterName[i], command)==0) { //se esiste getter
+         log_string("getter found :)");
+         getterFunction[i](fd);
+         return;
+       }
+     }
+
+     log_error("getter NOT found :(");
+     write(fd, "null\0", 4);
+     return;
+   }
+
+   // ************************** starter **************************************
+   if(strncmp("start", command, 5)==0) {  //ricevuto start modulo
+
+
+
+	 log_error("starter NOT found :(");
+	 write(fd, "null\0", 4);
+     return;
+   }
+
+
+   // ************************** miscellaneous ********************************
+   if(strcmp("halt", command)==0) { //spegne jasm
+		log_string("# halt and catch fire, done");
+		write(fd, "halt\0", 4);
+		exit(0);
+   }
+
+
+
+  /*if(strcmp("getVersion", command)==0) {
     write(fd, (void *)VERSION, sizeof(VERSION));
     log_string("server reply <version> with success");
     return;
-  }
+  }*/
+    log_error("request not found");
+    write(fd, "null\0", 4);
 
-  log_error("command received not found");
-  write(fd, (void *)"null\0", 4);
 }
 
 void start_server()
@@ -64,7 +110,7 @@ fd_set readfds, testfds;
 
   FD_ZERO(&readfds);
   FD_SET(server_sockfd, &readfds);
-  
+
   log_string("server started");
 
   while(1) {

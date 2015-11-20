@@ -21,7 +21,9 @@
 
 #define LOGPATH "../../../../data/log/jasm.log"
 #define LOGFILENAME "jasm.log"
-#define VERSION "0.2"
+
+#define VERSION "JustAnotherSystemMonitor v0.2"
+#define COPYRIGHT "GNU Public License v3"
 
 extern char *getTime(void);
 extern void log_string(const char *message);
