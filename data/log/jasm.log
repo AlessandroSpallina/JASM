@@ -165,3 +165,37 @@
 [Fri Nov 20 01:06:39 2015] received from fd 1 command <exit>
 [Fri Nov 20 01:06:39 2015] ERROR: request not found!
 [Fri Nov 20 01:06:43 2015] removing client on fd 1
+[Fri Nov 20 18:48:13 2015] boot
+[Fri Nov 20 18:48:13 2015] fork success
+[Fri Nov 20 18:48:13 2015] setsid success
+[Fri Nov 20 18:48:13 2015] jasm started with pid 2266 and ppid 1
+[Fri Nov 20 18:48:13 2015] server started
+[Fri Nov 20 18:48:26 2015] adding client on fd 1
+[Fri Nov 20 18:48:30 2015] received from fd 1 command <ciao>
+[Fri Nov 20 18:48:30 2015] ERROR: request not found!
+[Fri Nov 20 18:48:44 2015] received from fd 1 command <getVersion>
+[Fri Nov 20 18:48:44 2015] getter found :)
+[Fri Nov 20 18:49:07 2015] received from fd 1 command <getCopyright>
+[Fri Nov 20 18:49:07 2015] getter found :)
+[Fri Nov 20 18:49:15 2015] received from fd 1 command <GNU Public License v3>
+[Fri Nov 20 18:49:15 2015] ERROR: request not found!
+[Fri Nov 20 18:49:16 2015] received from fd 1 command <null>
+[Fri Nov 20 18:49:16 2015] ERROR: request not found!
+[Fri Nov 20 18:49:18 2015] received from fd 1 command <null>
+[Fri Nov 20 18:49:18 2015] ERROR: request not found!
+[Fri Nov 20 18:49:33 2015] received from fd 1 command <halt>
+[Fri Nov 20 18:49:33 2015] # halt and catch fire, done
+[Fri Nov 20 19:48:49 2015] boot
+[Fri Nov 20 19:48:49 2015] fork success
+[Fri Nov 20 19:48:49 2015] setsid success
+[Fri Nov 20 19:48:49 2015] jasm started with pid 2934 and ppid 1
+[Fri Nov 20 19:48:49 2015] server started
+[Fri Nov 20 19:49:32 2015] adding client on fd 1
+[Fri Nov 20 19:49:42 2015] received from fd 1 command <asdfdsasdf>
+[Fri Nov 20 19:49:42 2015] ERROR: request not found!
+[Fri Nov 20 19:50:10 2015] received from fd 1 command <getVersion>
+[Fri Nov 20 19:50:10 2015] getter found :)
+[Fri Nov 20 19:50:26 2015] received from fd 1 command <getCopyright>
+[Fri Nov 20 19:50:26 2015] getter found :)
+[Fri Nov 20 19:50:36 2015] received from fd 1 command <halt>
+[Fri Nov 20 19:50:36 2015] # halt and catch fire, done
