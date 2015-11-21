@@ -260,3 +260,32 @@
 [Sat Nov 21 14:05:33 2015] setsid success
 [Sat Nov 21 14:05:33 2015] jasm started with pid 15499 and ppid 15498
 [Sat Nov 21 14:05:33 2015] server started
+[Sat Nov 21 22:09:39 2015] boot
+[Sat Nov 21 22:09:39 2015] fork success
+[Sat Nov 21 22:09:39 2015] setsid success
+[Sat Nov 21 22:09:39 2015] jasm started with pid 5901 and ppid 1
+[Sat Nov 21 22:09:39 2015] server started
+[Sat Nov 21 22:09:44 2015] adding client on fd 1
+[Sat Nov 21 22:09:47 2015] received from fd 1 command <getVersion>
+[Sat Nov 21 22:09:47 2015] getter found :)
+[Sat Nov 21 22:09:51 2015] removing client on fd 1
+[Sat Nov 21 22:12:09 2015] boot
+[Sat Nov 21 22:12:09 2015] fork success
+[Sat Nov 21 22:12:09 2015] setsid success
+[Sat Nov 21 22:12:09 2015] jasm started with pid 6033 and ppid 1
+[Sat Nov 21 22:12:09 2015] server started
+[Sat Nov 21 22:12:15 2015] adding client on fd 1
+[Sat Nov 21 22:12:17 2015] received from fd 1 command <ciao>
+[Sat Nov 21 22:12:17 2015] ERROR: request not found!
+[Sat Nov 21 22:13:31 2015] received from fd 1 command <getVersion>
+[Sat Nov 21 22:13:31 2015] getter found :)
+[Sat Nov 21 22:13:41 2015] removing client on fd 1
+[Sat Nov 21 22:17:48 2015] boot
+[Sat Nov 21 22:17:48 2015] fork success
+[Sat Nov 21 22:17:48 2015] setsid success
+[Sat Nov 21 22:17:48 2015] jasm started with pid 6213 and ppid 1
+[Sat Nov 21 22:17:48 2015] server started
+[Sat Nov 21 22:17:52 2015] adding client on fd 1
+[Sat Nov 21 22:17:56 2015] received from fd 1 command <getCopyright>
+[Sat Nov 21 22:17:56 2015] getter found :)
+[Sat Nov 21 22:17:59 2015] removing client on fd 1

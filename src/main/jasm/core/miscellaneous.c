@@ -42,34 +42,28 @@ void log_string(const char *message)
 {
   FILE *fp;
 
-#ifdef LOGPATH
-  if((fp=fopen(LOGPATH, "w+")) == NULL)
-		fprintf(stderr,"* Error while opening: %s\n",LOGPATH);
-	else
-	{
+  if((fp=fopen(LOGPATH, "a+")) == NULL) {
+    fp=fopen("jasm.log", "a+");
+    fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
+    fclose(fp);
+  } else {
 		fprintf(fp, "[%s] %s\n", getTime(), message);
 		fclose(fp);
 	}
-#else
-	printf("LOGPATH not defined.\n");
-#endif
 }
 
 void log_error(const char *message)
 {
   FILE *fp;
 
-#ifdef LOGPATH
-  if((fp=fopen(LOGPATH, "w+")) == NULL)
-		fprintf(stderr,"* Error while opening: %s\n",LOGPATH);
-	else
-	{
-					fprintf(fp, "[%s] ERROR: %s!\n", getTime(), message);
-					fclose(fp);
+  if((fp=fopen(LOGPATH, "a+")) == NULL) {
+    fp=fopen("jasm.log", "a+");
+    fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
+    fclose(fp);
+  } else {
+		fprintf(fp, "[%s] ERROR: %s!\n", getTime(), message);
+    fclose(fp);
 	}
-#else
-	printf("LOGPATH not defined.\n");
-#endif
 }
 
 void start_daemon()
@@ -78,7 +72,6 @@ void start_daemon()
   char buf[BUFSIZ];
 
   log_string("boot");
-
   pid=fork();
   switch(pid) {
     case -1:
@@ -94,20 +87,16 @@ void start_daemon()
       exit(0);
       break;
   }
-
   if(setsid()<0) {
     log_error("setsid fail");
     exit(1);
   } else {
     log_string("setsid success");
   }
-
   //chiude i file descriptor di stdin, stdout, stderr
   close(0);
   close(1);
   close(2);
-
   sprintf(buf, "jasm started with pid %d and ppid %d", getpid(), getppid());
-
   log_string(buf);
 }
