@@ -208,3 +208,23 @@
 [Sat Nov 21 11:41:15 2015] received from fd 1 command <help>
 [Sat Nov 21 11:41:15 2015] ERROR: request not found!
 [Sat Nov 21 11:41:29 2015] removing client on fd 1
+[Sat Nov 21 13:33:35 2015] boot
+[Sat Nov 21 13:33:35 2015] fork success
+[Sat Nov 21 13:33:35 2015] setsid success
+[Sat Nov 21 13:33:35 2015] jasm started with pid 11451 and ppid 11450
+[Sat Nov 21 13:33:35 2015] server started
+[Sat Nov 21 13:33:40 2015] boot
+[Sat Nov 21 13:33:40 2015] fork success
+[Sat Nov 21 13:33:40 2015] setsid success
+[Sat Nov 21 13:33:40 2015] jasm started with pid 11488 and ppid 11487
+[Sat Nov 21 13:33:40 2015] server started
+[Sat Nov 21 13:35:53 2015] boot
+[Sat Nov 21 13:35:53 2015] fork success
+[Sat Nov 21 13:35:53 2015] setsid success
+[Sat Nov 21 13:35:53 2015] jasm started with pid 11602 and ppid 11601
+[Sat Nov 21 13:35:53 2015] server started
+[Sat Nov 21 13:39:53 2015] boot
+[Sat Nov 21 13:39:53 2015] fork success
+[Sat Nov 21 13:39:53 2015] setsid success
+[Sat Nov 21 13:39:53 2015] jasm started with pid 11953 and ppid 11952
+[Sat Nov 21 13:39:53 2015] server started
