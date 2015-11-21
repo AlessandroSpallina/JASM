@@ -42,18 +42,34 @@ void log_string(const char *message)
 {
   FILE *fp;
 
-  fp=fopen(LOGPATH, "a+");
-  fprintf(fp, "[%s] %s\n", getTime(), message);
-  fclose(fp);
+#ifdef LOGPATH
+  if((fp=fopen(LOGPATH, "w+")) == NULL)
+		fprintf(stderr,"* Error while opening: %s\n",LOGPATH);
+	else
+	{
+		fprintf(fp, "[%s] %s\n", getTime(), message);
+		fclose(fp);
+	}
+#else
+	printf("LOGPATH not defined.\n");
+#endif
 }
 
 void log_error(const char *message)
 {
   FILE *fp;
 
-  fp=fopen(LOGPATH, "a+");
-  fprintf(fp, "[%s] ERROR: %s!\n", getTime(), message);
-  fclose(fp);
+#ifdef LOGPATH
+  if((fp=fopen(LOGPATH, "w+")) == NULL)
+		fprintf(stderr,"* Error while opening: %s\n",LOGPATH);
+	else
+	{
+					fprintf(fp, "[%s] ERROR: %s!\n", getTime(), message);
+					fclose(fp);
+	}
+#else
+	printf("LOGPATH not defined.\n");
+#endif
 }
 
 void start_daemon()

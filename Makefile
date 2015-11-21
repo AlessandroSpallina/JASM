@@ -23,7 +23,7 @@ clean:
 	cd $(JASM_CLI_DIR) && make clean $(MAKE_FLAGS) || exit 3
 
 cleanbin:
-	cd $(JASM_BINOUT_DIR) && rm -fv * || exit 1
+	cd $(JASM_BINOUT_DIR) && rm -fv jasm* || exit 1
 
 .PHONY: install,clean,cleanbin
 
