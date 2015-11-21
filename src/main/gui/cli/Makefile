@@ -8,16 +8,17 @@ CC=gcc
 DEBUG=-g
 CFLAGS=-O2 -pipe -Wall -std=c11 $(DEBUG)
 LIBS=
-BINOUT=jasm
+BINOUT=jasmcli
 
 ####    SOURCES & RULES    ####
 
 OBJS:=$(patsubst %.c,%.o,$(wildcard *.c))
 
-install:$(OBJS)
-	$(CC) $(CFLAGS) $(LIBS) -o $(BINOUT) $(OBJS) 
+install: $(OBJS)
+	$(CC) $(CFLAGS) $(LIBS) -o $(BINOUT) $(OBJS)
 
 clean:
-	rm -fv *.o
+	rm -fv *.o 
 
+#make * (opt) means all
 .PHONY: install,clean
