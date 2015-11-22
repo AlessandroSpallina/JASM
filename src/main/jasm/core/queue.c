@@ -26,7 +26,7 @@
 void print_queue(struct queue *head)
 {
   if(head==NULL) {
-    perror("head is NULL");
+    perror("[DEV] head is NULL!");
     return;
   }
 
@@ -47,7 +47,7 @@ int add_queue(struct queue **head, char temp[BUFSIZ])
 
     (*head)=(struct queue *)malloc(sizeof(struct queue));
     if(*head==NULL) {
-      perror("malloc fail");
+      perror("[DEV] memory-allocation failed! {malloc()}");
       return 1;
     }
     strcpy((*head)->string, temp);
@@ -81,7 +81,7 @@ char *del_queue(struct queue **head)
   static char temp[BUFSIZ]="null";
 
   if((*head)==NULL) {
-    perror("head is NULL");
+    perror("[DEV] head is NULL!");
     return temp;
   }
 

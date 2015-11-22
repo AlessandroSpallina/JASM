@@ -20,5 +20,5 @@
 
 void log_string(const char *message)
 {
-  printf("# sys: %s\n", message);
+  printf("# Sys: %s\n", message);
 }

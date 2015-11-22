@@ -24,7 +24,7 @@
 #include <unistd.h>
 #include "miscellaneous.h"
 
-char * getTime()
+char *getTime()
 {
   time_t curtime;
   struct tm *loctime;
@@ -47,7 +47,7 @@ void log_string(const char *message)
     fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
     fclose(fp);
   } else {
-		fprintf(fp, "[%s] %s\n", getTime(), message);
+		fprintf(fp, "[%s][INFO] %s\n", getTime(), message);
 		fclose(fp);
 	}
 }
@@ -61,7 +61,7 @@ void log_error(const char *message)
     fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
     fclose(fp);
   } else {
-		fprintf(fp, "[%s] ERROR: %s!\n", getTime(), message);
+		fprintf(fp, "[%s][ERROR] %s!\n", getTime(), message);
     fclose(fp);
 	}
 }
@@ -71,16 +71,16 @@ void start_daemon()
   pid_t pid;
   char buf[BUFSIZ];
 
-  log_string("boot");
+  log_string("[JASM-DAEMON] success!");
   pid=fork();
   switch(pid) {
     case -1:
-      log_error("fork fail");
+      log_error("[THREAD-SPAWN][fork()] failed");
       exit(1);
       break;
 
     case 0:
-      log_string("fork success");
+      log_string("[THREAD-SPAWN][fork()] success");
       break;
 
     default:
@@ -88,15 +88,15 @@ void start_daemon()
       break;
   }
   if(setsid()<0) {
-    log_error("setsid fail");
+    log_error("[THREAD-BACKGROUND][setsid()] failed");
     exit(1);
   } else {
-    log_string("setsid success");
+    log_string("[THREAD-BACKGROUND][setsid()] success");
   }
   //closes fd: stdin, stdout, stderr
   close(0);
   close(1);
   close(2);
-  sprintf(buf, "jasm started with pid %d and ppid %d", getpid(), getppid());
+  sprintf(buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid());
   log_string(buf);
 }

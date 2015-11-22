@@ -44,7 +44,7 @@ static void excecute_command(int fd, char *command)
      //getModules
      //getOther
 
-     log_string("helper found");
+     log_string("[CMD] help exec");
      return;
    }
 
@@ -56,13 +56,13 @@ static void excecute_command(int fd, char *command)
 
      for(i=0; i<NGETTER; i++) {
        if(strcmp(getterName[i], command)==0) { //if getter exists
-         log_string("getter found :)");
+         log_string("Getter found :)");
          getterFunction[i](fd);
          return;
        }
      }
 
-     log_error("getter NOT found :(");
+     log_error("Getter NOT found :(");
      write(fd, "null\0", 4);
      return;
    }
@@ -72,7 +72,7 @@ static void excecute_command(int fd, char *command)
 
 
 
-	 log_error("starter NOT found :(");
+	 log_error("Start NOT found :(");
 	 write(fd, "null\0", 4);
      return;
    }
@@ -80,7 +80,7 @@ static void excecute_command(int fd, char *command)
 
    // ************************** miscellaneous ********************************
    if(strcmp("halt", command)==0) { //turn off jasm
-		log_string("# halt and catch fire, done");
+		log_string("[CMD] halt exec");
 		write(fd, "halt\0", 4);
 		exit(0);
    }
@@ -92,7 +92,9 @@ static void excecute_command(int fd, char *command)
     log_string("server reply <version> with success");
     return;
   }*/
-    log_error("request not found");
+		char *buff[50];
+		sprintf(buff,"[CMD] command not found\n"); //need to implement output
+    log_error(buff);
     write(fd, "null\0", 4);
 
 }
@@ -120,7 +122,7 @@ fd_set readfds, testfds;
   FD_ZERO(&readfds);
   FD_SET(server_sockfd, &readfds);
 
-  log_string("server started");
+  log_string("[JASM-DAEMON]Server started");
 
   while(1) {
     char buf[BUFSIZ];
@@ -133,7 +135,7 @@ fd_set readfds, testfds;
     result=select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, (struct timeval *)0);
 
     if(result<1) {
-      log_error("server fail");
+      log_error("[JASM-DAEMON]Server failed");
       exit(1);
     }
 
@@ -143,7 +145,7 @@ fd_set readfds, testfds;
           client_len=sizeof(client_address);
           client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
           FD_SET(client_sockfd, &readfds);
-          sprintf(buf, "adding client on fd %d", client_sockfd);
+          sprintf(buf, "[CLIENT-CONNECT] %d", client_sockfd); //add IP
           log_string(buf);
         } else {
           ioctl(fd, FIONREAD, &nread);
@@ -151,11 +153,11 @@ fd_set readfds, testfds;
           if(nread==0) {
             close(fd);
             FD_CLR(fd, &readfds);
-            sprintf(buf, "removing client on fd %d", fd);
+            sprintf(buf, "[CLIENT-DISCONNECT] %d", fd); //add IP
             log_string(buf);
           } else {
             read(fd, &received, BUFSIZ);
-            sprintf(buf, "received from fd %d command <%s>", fd, received);
+            sprintf(buf, "[CMD-GET] Got command from %d: <%s>", fd, received);
             log_string(buf);
             excecute_command(fd, received);
           }

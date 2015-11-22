@@ -23,9 +23,6 @@
 #include "miscellaneous.h"
 #include "ipc.h"
 
-
-
-
 int main(int argc, char *argv[])
 {
   start_daemon(); //starts background daemon
