@@ -37,13 +37,13 @@ void print_queue(struct queue *head)
 }
 
 /*
- *  Aggiunge elemento alla coda.
- *  Return 0 in caso di inserimento corretto
+ *  Adds an element to the queue
+ *  returns 0 if done successfully
  */
 int add_queue(struct queue **head, char temp[BUFSIZ])
 {
 
-  if((*head)==NULL) { //coda vuota
+  if((*head)==NULL) { //empty queue
 
     (*head)=(struct queue *)malloc(sizeof(struct queue));
     if(*head==NULL) {
@@ -53,7 +53,7 @@ int add_queue(struct queue **head, char temp[BUFSIZ])
     strcpy((*head)->string, temp);
     (*head)->next=NULL;
 
-  } else {  //coda non vuota
+  } else {  //not empty queue
 
     struct queue *aus=(*head);
     while(aus->next!=NULL)
@@ -73,8 +73,8 @@ int add_queue(struct queue **head, char temp[BUFSIZ])
 }
 
 /*
- *  Rimuove un elemento dalla coda.
- *  Return messaggio dell'elemento eliminato
+ *  deletes queue element
+ *  Returns msg from deleted element
  */
 char *del_queue(struct queue **head)
 {

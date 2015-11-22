@@ -42,8 +42,8 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 	} else {
 	
 		if(strncmp("start", buffer, 5)==0) {
-			//sto startando un modulo-thread -> apro un nuovo socket dedicato
-   			//in modo tale da avere diversi fd per diversi output da jasm
+			//starting thread-module -> opening new dedicated socket
+   		//so we can get different output from jasm thanks to fd.
    			
    			/*
    			 *	new socket

@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include "getter.h"
 #include "miscellaneous.h"
-//tutti i getter mettono in coda in heap ciò che devono e sarà poi la funzione
-//send_getter() ad inviare la risposta al client
+//all getters bring in queue in the heap mem. what they are going to do 
+//send_getter() to send the answer to the client
 
 void getVersion(int fd);
 void getCopyright(int fd);

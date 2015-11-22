@@ -25,10 +25,8 @@
 #include <stdlib.h>
 #include "ipc.h"
 
-/*
- *  Connette al server e ritorna il fd del socket relativo
- *  ricordati di chiudere il fd prima di chiudere il programma
- */
+
+//Connects to the server and returns *** socket
 int start_client()
 {
   int sockfd;
