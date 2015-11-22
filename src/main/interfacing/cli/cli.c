@@ -41,8 +41,27 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 		exit(0);
 	} else {
 	
+		if(strcmp("help", buffer)==0) {
+			int ngetter=0;
+		
+			printf("sending [%s]\n\n", buffer);
+			write(fd, (void *)buffer, BUFSIZ);
+			
+			//riceve i getter
+			read(fd, &ngetter, sizeof(ngetter));
+			printf("* Getters *\n");
+			for(int i=0; i<ngetter; i++) {
+				memset(buffer, 0, BUFSIZ);
+				read(fd, (void *)buffer, BUFSIZ);
+				printf("%d) %s\n", i, buffer);
+			}
+			//riceve gli starter dei moduli
+			//riceve altro
+			return;
+		}
+	
 		if(strncmp("start", buffer, 5)==0) {
-			//starting thread-module -> opening new dedicated socket
+		//starting thread-module -> opening new dedicated socket
    		//so we can get different output from jasm thanks to fd.
    			
    			/*
@@ -53,10 +72,11 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
    			return;
 	
 		} else {
-		printf("sending [%s]\n", buffer);
+			printf("sending [%s]\n", buffer);
     		write(fd, (void *)buffer, BUFSIZ);
     		memset(buffer, 0, BUFSIZ);
     		read(fd, (void *)buffer, BUFSIZ);
+    		printf("%s\n", buffer);
     		return;
 		}
 	
@@ -77,7 +97,7 @@ int main(int argc, char *argv[])
     printf("> ");
     scanf("%s", buf);
 	secureJasmCommunication(buf, fd);
-    printf("%s\n", buf);
+    //printf("%s\n", buf);
     printf("\n");
   }
 }

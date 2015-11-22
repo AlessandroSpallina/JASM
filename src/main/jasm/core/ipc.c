@@ -38,10 +38,19 @@ static void excecute_command(int fd, char *command)
    *  if start* -> module of  modules
    */
 
+   // write on fd a list of commands
+   if(strcmp("help", command)==0) {
+     getGetter(fd);
+     //getModules
+     //getOther
+
+     log_string("helper found");
+     return;
+   }
+
    // ************************** getter ***************************************
    if(strncmp("get", command, 3)==0) {  //if recv get command
      int i;
-     //char buf[BUFSIZ];
 
      strcpy(command, &command[3]);
 
