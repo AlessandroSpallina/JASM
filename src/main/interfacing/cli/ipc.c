@@ -44,7 +44,7 @@ int start_client()
   result=connect(sockfd, (struct sockaddr *)&address, len);
 
   if(result==-1) {
-    fprintf(stderr, "unable to connect with server\n");
+    fprintf(stderr, "Unable to connect with server\n");
     exit(1);
   }
 

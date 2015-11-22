@@ -6,6 +6,7 @@
 #include <sys/utsname.h>
 #include "getter.h"
 #include "miscellaneous.h"
+
 //all getters bring in queue in the heap mem. what they are going to do
 //send_getter() to send the answer to the client
 
@@ -49,7 +50,7 @@ void getHostname(int fd)
   char buf[BUFSIZ];
 
   if(gethostname(buf, sizeof(char)*BUFSIZ)==-1) {
-    log_error("gethostname fail");
+    log_error("getHostname() [gethostname] failed");
     return;
   } else {
     write(fd, buf, BUFSIZ);
@@ -62,7 +63,7 @@ void getSysname(int fd)
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("uname fail");
+    log_error("getSysname() [uname] failed");
     return;
   } else {
     strcpy(buf, info.sysname);
@@ -76,7 +77,7 @@ void getSysrelease(int fd)
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("uname fail");
+    log_error("getSysrelease() [uname] failed");
     return;
   } else {
     strcpy(buf, info.release);
@@ -90,7 +91,7 @@ void getSysversion(int fd)
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("uname fail");
+    log_error("getSysversion() [uname] failed");
     return;
   } else {
     strcpy(buf, info.version);
@@ -104,7 +105,7 @@ void getMachine(int fd)
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("uname fail");
+    log_error("getMachine() [uname]  failed");
     return;
   } else {
     strcpy(buf, info.machine);

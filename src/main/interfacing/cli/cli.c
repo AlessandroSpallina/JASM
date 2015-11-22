@@ -29,22 +29,22 @@
 
 void print_welcome()
 {
-  printf("Welcome!\nThis is a commandline interface of JASM\nType your command, 0 to exit..\n");
+  printf("Hi, %s\nJASM Command Line Interface\nList:\nhelp : get help\nquit : exits\n",getenv("USER"));
 }
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
 
-	if(strcmp("0", buffer)==0) {
+	if(strcmp("quit", buffer)==0) {
 		close(fd);
-		printf("bye!\n");
+		printf("Bye!\n");
 		exit(0);
 	} else {
 	
 		if(strcmp("help", buffer)==0) {
 			int ngetter=0;
 		
-			printf("sending [%s]\n\n", buffer);
+			printf("Sending [%s]\n\n", buffer);
 			write(fd, (void *)buffer, BUFSIZ);
 			
 			//riceve i getter
@@ -72,7 +72,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
    			return;
 	
 		} else {
-		printf("sending [%s]\n", buffer);
+		    printf("sending [%s]\n", buffer);
     		write(fd, (void *)buffer, BUFSIZ);
     		memset(buffer, 0, BUFSIZ);
     		read(fd, (void *)buffer, BUFSIZ);
@@ -86,6 +86,19 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 int main(int argc, char *argv[])
 {
+	if(argc > 1 && argc <= 3)
+	{
+		if(strcmp(argv[1],"--connect-server") == 0)
+		{
+			printf("* This features is not implemented yet {%s} \n",argv[2]);
+			exit(2);
+		}
+		else
+		{}
+	}
+	else
+	{}
+
   int fd;
   char buf[BUFSIZ]="none";
 
@@ -94,9 +107,9 @@ int main(int argc, char *argv[])
   print_welcome();
 
   while(1) {
-    printf("> ");
+    printf("-[%s]-> ",getenv("USER"));
     scanf("%s", buf);
-	secureJasmCommunication(buf, fd);
+	  secureJasmCommunication(buf, fd);
     //printf("%s\n", buf);
     printf("\n");
   }
