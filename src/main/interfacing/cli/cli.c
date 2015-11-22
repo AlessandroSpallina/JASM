@@ -72,7 +72,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
    			return;
 	
 		} else {
-			printf("sending [%s]\n", buffer);
+		printf("sending [%s]\n", buffer);
     		write(fd, (void *)buffer, BUFSIZ);
     		memset(buffer, 0, BUFSIZ);
     		read(fd, (void *)buffer, BUFSIZ);

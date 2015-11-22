@@ -1,0 +1,24 @@
+[Sun Nov 22 18:20:12 2015] boot
+[Sun Nov 22 18:20:12 2015] fork success
+[Sun Nov 22 18:20:12 2015] setsid success
+[Sun Nov 22 18:20:12 2015] jasm started with pid 10555 and ppid 1
+[Sun Nov 22 18:20:12 2015] server started
+[Sun Nov 22 18:20:15 2015] adding client on fd 1
+[Sun Nov 22 18:20:16 2015] received from fd 1 command <help>
+[Sun Nov 22 18:20:16 2015] helper found
+[Sun Nov 22 18:20:20 2015] received from fd 1 command <getVersion>
+[Sun Nov 22 18:20:20 2015] getter found :)
+[Sun Nov 22 18:20:24 2015] received from fd 1 command <getHostname>
+[Sun Nov 22 18:20:24 2015] getter found :)
+[Sun Nov 22 18:20:28 2015] received from fd 1 command <getSysname>
+[Sun Nov 22 18:20:28 2015] getter found :)
+[Sun Nov 22 18:20:33 2015] received from fd 1 command <getSysrelease>
+[Sun Nov 22 18:20:33 2015] getter found :)
+[Sun Nov 22 18:20:41 2015] received from fd 1 command <getSysversion>
+[Sun Nov 22 18:20:41 2015] getter found :)
+[Sun Nov 22 18:20:46 2015] received from fd 1 command <getMachine>
+[Sun Nov 22 18:20:46 2015] getter found :)
+[Sun Nov 22 18:22:03 2015] received from fd 1 command <ciao>
+[Sun Nov 22 18:22:03 2015] ERROR: request not found!
+[Sun Nov 22 18:22:06 2015] received from fd 1 command <halt>
+[Sun Nov 22 18:22:06 2015] # halt and catch fire, done
