@@ -23,32 +23,61 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ipc.h"
+#include "miscellaneous.h"
 
-/*
- *  Connette al server e ritorna il fd del socket relativo
- *  ricordati di chiudere il fd prima di chiudere il programma
- */
-int start_client()
+void print_welcome()
 {
-  int sockfd;
-  int len;
-  struct sockaddr_in address;
-  int result;
+  printf("Welcome!\nThis is a commandline interface of JASM\nType your command, 0 to exit..\n");
+}
 
-  sockfd=socket(AF_INET, SOCK_STREAM, 0);
+void secureJasmCommunication(char buffer[BUFSIZ], int fd)
+{
 
-  address.sin_family=AF_INET;
-  address.sin_addr.s_addr=inet_addr(SERVER_IP);
-  address.sin_port=htons(SERVER_PORT);
-  len=sizeof(address);
+	if(strcmp("0", buffer)==0) {
+		close(fd);
+		printf("bye!\n");
+		exit(0);
+	} else {
+	
+		if(strncmp("start", buffer, 5)==0) {
+			//starting thread-module -> opening new dedicated socket
+   		//so we can get different output from jasm thanks to fd.
+   			
+   			/*
+   			 *	new socket
+   			 *	write()
+   			 *	read()
+   			 */
+   			return;
+	
+		} else {
+		printf("sending [%s]\n", buffer);
+    		write(fd, (void *)buffer, BUFSIZ);
+    		memset(buffer, 0, BUFSIZ);
+    		read(fd, (void *)buffer, BUFSIZ);
+    		return;
+		}
+	
+	}
 
-  result=connect(sockfd, (struct sockaddr *)&address, len);
+}
 
-  if(result==-1) {
-    fprintf(stderr, "unable to connect with server\n");
-    exit(1);
+int main(int argc, char *argv[])
+{
+  int fd;
+  char buf[BUFSIZ]="none";
+
+  fd=start_client();
+
+  print_welcome();
+
+  while(1) {
+    printf("> ");
+    scanf("%s", buf);
+	secureJasmCommunication(buf, fd);
+    printf("%s\n", buf);
+    printf("\n");
   }
-
-  return sockfd;
 }

@@ -34,19 +34,19 @@
 static void excecute_command(int fd, char *command)
 {
   /*
-   *  if get* -> modulo get
-   *  if start* -> modulo dei moduli
+   *  if get* -> module get
+   *  if start* -> module of  modules
    */
 
    // ************************** getter ***************************************
-   if(strncmp("get", command, 3)==0) {  //ricevuto comando getter
+   if(strncmp("get", command, 3)==0) {  //if recv get command
      int i;
      //char buf[BUFSIZ];
 
      strcpy(command, &command[3]);
 
      for(i=0; i<NGETTER; i++) {
-       if(strcmp(getterName[i], command)==0) { //se esiste getter
+       if(strcmp(getterName[i], command)==0) { //if getter exists
          log_string("getter found :)");
          getterFunction[i](fd);
          return;
@@ -59,7 +59,7 @@ static void excecute_command(int fd, char *command)
    }
 
    // ************************** starter **************************************
-   if(strncmp("start", command, 5)==0) {  //ricevuto start modulo
+   if(strncmp("start", command, 5)==0) {  //recieved start mod
 
 
 
@@ -70,7 +70,7 @@ static void excecute_command(int fd, char *command)
 
 
    // ************************** miscellaneous ********************************
-   if(strcmp("halt", command)==0) { //spegne jasm
+   if(strcmp("halt", command)==0) { //turn off jasm
 		log_string("# halt and catch fire, done");
 		write(fd, "halt\0", 4);
 		exit(0);

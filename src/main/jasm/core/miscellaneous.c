@@ -93,7 +93,7 @@ void start_daemon()
   } else {
     log_string("setsid success");
   }
-  //chiude i file descriptor di stdin, stdout, stderr
+  //closes fd: stdin, stdout, stderr
   close(0);
   close(1);
   close(2);

@@ -28,9 +28,6 @@
 
 int main(int argc, char *argv[])
 {
-  start_daemon();
-  start_server();
-
-
-
+  start_daemon(); //starts background daemon
+  start_server(); //starts server after the daemon (ready to get commands)
 }
