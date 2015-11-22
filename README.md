@@ -33,18 +33,6 @@ Just type make, the output directory is bin/ :)
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more! 
 Thanks to Free Software! Avoiding proprietary software! See LICENSE to get more infos about this license
 
-### Source tree
- 
- - src/
-   -> main/ 
-	  -> jasm/
-		 -> core/
-		 -> modules/
-		-> interfacing/
-		 -> cli/
-		 -> gui/
-	 -> test/
-
 ### Developers
 
  - Alessandro Spallina: Main founder of this project [github.com/AlessandroSpallina]
