@@ -18,6 +18,12 @@ Just type make, the output directory is bin/ :)
  - clean (cleans object files and other things)
  - cleanbin (cleans bin/ directory except placeholder to avoid bin directory gets deleted from git when staging)
 
+*Compiler*
+We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makefiles in cli/ and core/ changing CFLAGS 
+
+*Nerdy*
+We use C11
+
 ### Project Structure
 
  - bin/: where binaries are placed after compilation
