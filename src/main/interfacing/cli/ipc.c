@@ -27,7 +27,7 @@
 
 
 //Connects to the server and returns *** socket
-int start_client()
+int start_client(const char* srv_ip)
 {
         int sockfd;
         int len;
@@ -37,13 +37,14 @@ int start_client()
         sockfd=socket(AF_INET, SOCK_STREAM, 0);
 
         address.sin_family=AF_INET;
-        address.sin_addr.s_addr=inet_addr(SERVER_IP);
+        address.sin_addr.s_addr=inet_addr(srv_ip);
         address.sin_port=htons(SERVER_PORT);
         len=sizeof(address);
 
         result=connect(sockfd, (struct sockaddr *)&address, len);
 
-        if(result==-1) {
+        if(result < 0)
+        {
                 fprintf(stderr, "Unable to connect with server\n");
                 exit(1);
         }
