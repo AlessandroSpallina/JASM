@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <bits/sigaction.h>
 #include "miscellaneous.h"
 #include "signals.h"
 
