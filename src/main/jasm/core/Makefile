@@ -6,7 +6,7 @@ SHELL=/bin/sh
 
 CC=gcc
 DEBUG=-g
-CFLAGS=-O2 -pipe -Wall -std=c11 $(DEBUG)
+CFLAGS=-O2 -pipe -Wall -std=c11 -D_XOPEN_SOURCE=700 $(DEBUG)
 LIBS=
 BINOUT=jasm
 

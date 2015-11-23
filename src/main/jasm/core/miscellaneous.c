@@ -47,9 +47,9 @@ void log_string(const char *message)
     fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
     fclose(fp);
   } else {
-		fprintf(fp, "[%s][INFO] %s\n", getTime(), message);
-		fclose(fp);
-	}
+    fprintf(fp, "[%s][INFO] %s\n", getTime(), message);
+    fclose(fp);
+    }
 }
 
 void log_error(const char *message)
@@ -61,9 +61,9 @@ void log_error(const char *message)
     fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
     fclose(fp);
   } else {
-		fprintf(fp, "[%s][ERROR] %s!\n", getTime(), message);
+    fprintf(fp, "[%s][ERROR] %s!\n", getTime(), message);
     fclose(fp);
-	}
+    }
 }
 
 void start_daemon()

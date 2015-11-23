@@ -16,17 +16,33 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "queue.h"
+#include <sys/types.h>
+#include <unistd.h>
+#include <bits/sigaction.h>
 #include "miscellaneous.h"
-#include "ipc.h"
 #include "signals.h"
 
-int main(int argc, char *argv[])
+static void generic_signal_log(int sig)
 {
-  start_daemon(); //starts background daemon
-  start_server(); //starts server after the daemon (ready to get commands)
-  set_signals_feel();
+	char buf[BUFSIZ];
+	
+	sprintf(buf, "Received signal number %d", sig);
+	log_string(buf);
+}
+
+void set_signals_feel()
+{
+	struct sigaction act;
+	
+	act.sa_handler=generic_signal_log;	
+	act.sa_flags=0;
+	sigaction(SIGINT, &act, 0);
+	sigaction(SIGQUIT, &act, 0);
+	sigaction(SIGKILL, &act, 0);
+	sigaction(SIGTERM, &act, 0);
+	sigaction(SIGCONT, &act, 0);
+	sigaction(SIGSTOP, &act, 0);
 }

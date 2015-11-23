@@ -1,3 +1,21 @@
+/****************************************************************************
+* Copyright © 2015 Alessandro Spallina
+* email: alessandrospallina1@gmail.com
+* github: https://github.com/AlessandroSpallina
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+****************************************************************************/
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -15,11 +33,11 @@ void getCopyright(int fd);
 void getHostname(int fd);
 void getGetter(int fd);
 
-char getterName[NGETTER][BUFSIZ]={"Version", "Copyright", "Hostname", "Sysname",
-  "Sysrelease", "Sysversion", "Machine"};
+char getterName[NGETTER][BUFSIZ]={"Version", "Copyright", "Hostname", "KernelName",
+  "KernelRelease", "KernelVersion", "Machine"};
 
 void (*getterFunction[NGETTER])(int)={getVersion, getCopyright, getHostname,
-  getSysname, getSysrelease, getSysversion, getMachine};
+  getKernelName, getKernelVersion, getKernelVersion, getMachine};
 
 /*
  *  scrive su fd int numero getter e N stringhe nomiGetter
@@ -47,23 +65,25 @@ void getCopyright(int fd)
 
 void getHostname(int fd)
 {
+  struct utsname info;
   char buf[BUFSIZ];
 
-  if(gethostname(buf, sizeof(char)*BUFSIZ)==-1) {
-    log_error("getHostname() [gethostname] failed");
+  if(uname(&info)==-1) {
+    log_error("getHostname() [uname] failed");
     return;
   } else {
+    strcpy(buf, info.nodename);
     write(fd, buf, BUFSIZ);
   }
 }
 
-void getSysname(int fd)
+void getKernelName(int fd)
 {
   struct utsname info;
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("getSysname() [uname] failed");
+    log_error("getKernelName() [uname] failed");
     return;
   } else {
     strcpy(buf, info.sysname);
@@ -71,13 +91,13 @@ void getSysname(int fd)
   }
 }
 
-void getSysrelease(int fd)
+void getKernelRelease(int fd)
 {
   struct utsname info;
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("getSysrelease() [uname] failed");
+    log_error("getKernelRelease() [uname] failed");
     return;
   } else {
     strcpy(buf, info.release);
@@ -85,13 +105,13 @@ void getSysrelease(int fd)
   }
 }
 
-void getSysversion(int fd)
+void getKernelVersion(int fd)
 {
   struct utsname info;
   char buf[BUFSIZ];
 
   if(uname(&info)==-1) {
-    log_error("getSysversion() [uname] failed");
+    log_error("getKernelVersion() [uname] failed");
     return;
   } else {
     strcpy(buf, info.version);

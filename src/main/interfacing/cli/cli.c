@@ -29,7 +29,7 @@
 
 void print_welcome()
 {
-  printf("Hi, %s\nJASM Command Line Interface\nList:\nhelp : get help\nquit : exits\n",getenv("USER"));
+  printf("JASM Command Line Interface\nBasic Commands:\nhelp : get help\nquit : exits cli\nhalt : halt jasm\n\n");
 }
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
@@ -84,7 +84,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 }
 
-int main(int argc, char *argv[])
+void parse_options(int argc, char *argv[])
 {
 	if(argc > 1 && argc <= 3)
 	{
@@ -99,18 +99,25 @@ int main(int argc, char *argv[])
 	else
 	{}
 
+}
+
+int main(int argc, char *argv[])
+{
+	
   int fd;
   char buf[BUFSIZ]="none";
+  char *username=getenv("USER");
+
+  parse_options(argc, argv);
 
   fd=start_client();
 
-  print_welcome();
+  print_welcome(username);
 
   while(1) {
-    printf("-[%s]-> ",getenv("USER"));
+    printf("-[%s]-> ", username);
     scanf("%s", buf);
-	  secureJasmCommunication(buf, fd);
-    //printf("%s\n", buf);
+	secureJasmCommunication(buf, fd);
     printf("\n");
   }
 }
