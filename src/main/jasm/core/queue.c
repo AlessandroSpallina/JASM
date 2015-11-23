@@ -25,15 +25,15 @@
 
 void print_queue(struct queue *head)
 {
-  if(head==NULL) {
-    perror("[DEV] head is NULL!");
-    return;
-  }
+        if(head==NULL) {
+                perror("[DEV] head is NULL!");
+                return;
+        }
 
-  while(head!=NULL) {
-    printf("# %s\n", head->string);
-    head=head->next;
-  }
+        while(head!=NULL) {
+                printf("# %s\n", head->string);
+                head=head->next;
+        }
 }
 
 /*
@@ -43,33 +43,33 @@ void print_queue(struct queue *head)
 int add_queue(struct queue **head, char temp[BUFSIZ])
 {
 
-  if((*head)==NULL) { //empty queue
+        if((*head)==NULL) { //empty queue
 
-    (*head)=(struct queue *)malloc(sizeof(struct queue));
-    if(*head==NULL) {
-      perror("[DEV] memory-allocation failed! {malloc()}");
-      return 1;
-    }
-    strcpy((*head)->string, temp);
-    (*head)->next=NULL;
+                (*head)=(struct queue *)malloc(sizeof(struct queue));
+                if(*head==NULL) {
+                        perror("[DEV] memory-allocation failed! {malloc()}");
+                        return 1;
+                }
+                strcpy((*head)->string, temp);
+                (*head)->next=NULL;
 
-  } else {  //not empty queue
+        } else { //not empty queue
 
-    struct queue *aus=(*head);
-    while(aus->next!=NULL)
-      aus=aus->next;
+                struct queue *aus=(*head);
+                while(aus->next!=NULL)
+                        aus=aus->next;
 
-    aus->next=(struct queue *)malloc(sizeof(struct queue));
-    aus=aus->next;
+                aus->next=(struct queue *)malloc(sizeof(struct queue));
+                aus=aus->next;
 
-    if(aus==NULL) {
-      perror("malloc fail");
-      return 1;
-    }
-    strcpy(aus->string, temp);
-    aus->next=NULL;
-  }
-  return 0;
+                if(aus==NULL) {
+                        perror("malloc fail");
+                        return 1;
+                }
+                strcpy(aus->string, temp);
+                aus->next=NULL;
+        }
+        return 0;
 }
 
 /*
@@ -78,17 +78,17 @@ int add_queue(struct queue **head, char temp[BUFSIZ])
  */
 char *del_queue(struct queue **head)
 {
-  static char temp[BUFSIZ]="null";
+        static char temp[BUFSIZ]="null";
 
-  if((*head)==NULL) {
-    perror("[DEV] head is NULL!");
-    return temp;
-  }
+        if((*head)==NULL) {
+                perror("[DEV] head is NULL!");
+                return temp;
+        }
 
-  struct queue *aus=(*head);
-  (*head)=(*head)->next;
-  strcpy(temp, aus->string);
+        struct queue *aus=(*head);
+        (*head)=(*head)->next;
+        strcpy(temp, aus->string);
 
-  free(aus);
-  return temp;
+        free(aus);
+        return temp;
 }

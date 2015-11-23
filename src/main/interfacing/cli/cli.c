@@ -27,97 +27,98 @@
 #include "ipc.h"
 #include "miscellaneous.h"
 
-void print_welcome()
+void print_welcome(const char* usern)
 {
-  printf("JASM Command Line Interface\nBasic Commands:\nhelp : get help\nquit : exits cli\nhalt : halt jasm\n\n");
+        printf("JASM Command Line Interface\nUser: %s\nBasic Commands:\nhelp : get help\
+  \nquit : exits cli\nhalt : halt jasm\n\n",usern);
 }
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
 
-	if(strcmp("quit", buffer)==0) {
-		close(fd);
-		printf("Bye!\n");
-		exit(0);
-	} else {
-	
-		if(strcmp("help", buffer)==0) {
-			int ngetter=0;
-		
-			printf("Sending [%s]\n\n", buffer);
-			write(fd, (void *)buffer, BUFSIZ);
-			
-			//riceve i getter
-			read(fd, &ngetter, sizeof(ngetter));
-			printf("* Getters *\n");
-			for(int i=0; i<ngetter; i++) {
-				memset(buffer, 0, BUFSIZ);
-				read(fd, (void *)buffer, BUFSIZ);
-				printf("%d) %s\n", i, buffer);
-			}
-			//riceve gli starter dei moduli
-			//riceve altro
-			return;
-		}
-	
-		if(strncmp("start", buffer, 5)==0) {
-		//starting thread-module -> opening new dedicated socket
-   		//so we can get different output from jasm thanks to fd.
-   			
-   			/*
-   			 *	new socket
-   			 *	write()
-   			 *	read()
-   			 */
-   			return;
-	
-		} else {
-		    printf("sending [%s]\n", buffer);
-    		write(fd, (void *)buffer, BUFSIZ);
-    		memset(buffer, 0, BUFSIZ);
-    		read(fd, (void *)buffer, BUFSIZ);
-    		printf("%s\n", buffer);
-    		return;
-		}
-	
-	}
+        if(strcmp("quit", buffer)==0) {
+                close(fd);
+                printf("Bye!\n");
+                exit(0);
+        } else {
+
+                if(strcmp("help", buffer)==0) {
+                        int ngetter=0;
+
+                        printf("Sending [%s]\n\n", buffer);
+                        write(fd, (void *)buffer, BUFSIZ);
+
+                        //riceve i getter
+                        read(fd, &ngetter, sizeof(ngetter));
+                        printf("* Getters *\n");
+                        for(int i=0; i<ngetter; i++) {
+                                memset(buffer, 0, BUFSIZ);
+                                read(fd, (void *)buffer, BUFSIZ);
+                                printf("%d) %s\n", i, buffer);
+                        }
+                        //riceve gli starter dei moduli
+                        //riceve altro
+                        return;
+                }
+
+                if(strncmp("start", buffer, 5)==0) {
+                        //starting thread-module -> opening new dedicated socket
+                        //so we can get different output from jasm thanks to fd.
+
+                        /*
+                         *	new socket
+                         *	write()
+                         *	read()
+                         */
+                        return;
+
+                } else {
+                        printf("sending [%s]\n", buffer);
+                        write(fd, (void *)buffer, BUFSIZ);
+                        memset(buffer, 0, BUFSIZ);
+                        read(fd, (void *)buffer, BUFSIZ);
+                        printf("%s\n", buffer);
+                        return;
+                }
+
+        }
 
 }
 
 void parse_options(int argc, char *argv[])
 {
-	if(argc > 1 && argc <= 3)
-	{
-		if(strcmp(argv[1],"--connect-server") == 0)
-		{
-			printf("* This features is not implemented yet {%s} \n",argv[2]);
-			exit(2);
-		}
-		else
-		{}
-	}
-	else
-	{}
+        if(argc > 1 && argc <= 3)
+        {
+                if(strcmp(argv[1],"--connect-server") == 0)
+                {
+                        printf("* This features is not implemented yet {%s} \n",argv[2]);
+                        exit(2);
+                }
+                else
+                {}
+        }
+        else
+        {}
 
 }
 
 int main(int argc, char *argv[])
 {
-	
-  int fd;
-  char buf[BUFSIZ]="none";
-  char *username=getenv("USER");
 
-  parse_options(argc, argv);
+        int fd;
+        char buf[BUFSIZ]="none";
+        char *username=getenv("USER");
 
-  fd=start_client();
+        parse_options(argc, argv);
 
-  print_welcome(username);
+        fd=start_client();
 
-  while(1) {
-    printf("-[%s]-> ", username);
-    scanf("%s", buf);
-	secureJasmCommunication(buf, fd);
-    printf("\n");
-  }
+        print_welcome(username);
+
+        while(1) {
+                printf("-[%s]-> ", username);
+                scanf("%s", buf);
+                secureJasmCommunication(buf, fd);
+                printf("\n");
+        }
 }
