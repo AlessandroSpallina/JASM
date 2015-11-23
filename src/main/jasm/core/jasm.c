@@ -27,6 +27,6 @@
 int main(int argc, char *argv[])
 {
   start_daemon(); //starts background daemon
+  set_signals_feel(); //logs a set of signals
   start_server(); //starts server after the daemon (ready to get commands)
-  set_signals_feel();
 }
