@@ -27,6 +27,8 @@
 #include "ipc.h"
 #include "miscellaneous.h"
 
+char* server_ip;
+
 void print_welcome(const char* usern)
 {
         printf("JASM Command Line Interface\nUser: %s\nBasic Commands:\nhelp : get help\
@@ -50,6 +52,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
                         //riceve i getter
                         read(fd, &ngetter, sizeof(ngetter));
+                        printf("**JASM Help page**\n");
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
@@ -89,17 +92,21 @@ void parse_options(int argc, char *argv[])
 {
         if(argc > 1 && argc <= 3)
         {
-                if(strcmp(argv[1],"--connect-server") == 0)
+                if(strcmp(argv[1],"--connect-server") == 0 )
                 {
-                        printf("* This features is not implemented yet {%s} \n",argv[2]);
-                        exit(2);
+                  if(argc == 3)
+                  {
+                    server_ip = argv[2];
+                    printf("* Connecting to: %s ...\n",server_ip);
+                  }
+                  else if(argc < 3)
+                  {
+                    printf("* You must specify an IP address!\n");
+                    exit(3);
+                  }
                 }
-                else
-                {}
         }
-        else
-        {}
-
+        //else if ...
 }
 
 int main(int argc, char *argv[])
@@ -109,9 +116,11 @@ int main(int argc, char *argv[])
         char buf[BUFSIZ]="none";
         char *username=getenv("USER");
 
+        server_ip = "127.0.0.1";
+
         parse_options(argc, argv);
 
-        fd=start_client();
+        fd=start_client(server_ip);
 
         print_welcome(username);
 
