@@ -16,17 +16,9 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "queue.h"
-#include "miscellaneous.h"
-#include "ipc.h"
-#include "signals.h"
+#ifndef _SIGNALS_H
+#define _SIGNALS_H
 
-int main(int argc, char *argv[])
-{
-  start_daemon(); //starts background daemon
-  start_server(); //starts server after the daemon (ready to get commands)
-  set_signals_feel();
-}
+extern void set_signals_feel(void);
+
+#endif

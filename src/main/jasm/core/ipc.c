@@ -70,13 +70,10 @@ static void excecute_command(int fd, char *command)
    // ************************** starter **************************************
    if(strncmp("start", command, 5)==0) {  //recieved start mod
 
-
-
 	 log_error("Start NOT found :(");
 	 write(fd, "null\0", 4);
      return;
    }
-
 
    // ************************** miscellaneous ********************************
    if(strcmp("halt", command)==0) { //turn off jasm
@@ -85,18 +82,8 @@ static void excecute_command(int fd, char *command)
 		exit(0);
    }
 
-
-
-  /*if(strcmp("getVersion", command)==0) {
-    write(fd, (void *)VERSION, sizeof(VERSION));
-    log_string("server reply <version> with success");
-    return;
-  }*/
-		char *buff[50];
-		sprintf(buff,"[CMD] command not found\n"); //need to implement output
-    log_error(buff);
+   log_error("[CMD] command not found");
     write(fd, "null\0", 4);
-
 }
 
 void start_server()
