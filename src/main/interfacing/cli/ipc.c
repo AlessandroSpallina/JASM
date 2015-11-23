@@ -29,24 +29,24 @@
 //Connects to the server and returns *** socket
 int start_client()
 {
-  int sockfd;
-  int len;
-  struct sockaddr_in address;
-  int result;
+        int sockfd;
+        int len;
+        struct sockaddr_in address;
+        int result;
 
-  sockfd=socket(AF_INET, SOCK_STREAM, 0);
+        sockfd=socket(AF_INET, SOCK_STREAM, 0);
 
-  address.sin_family=AF_INET;
-  address.sin_addr.s_addr=inet_addr(SERVER_IP);
-  address.sin_port=htons(SERVER_PORT);
-  len=sizeof(address);
+        address.sin_family=AF_INET;
+        address.sin_addr.s_addr=inet_addr(SERVER_IP);
+        address.sin_port=htons(SERVER_PORT);
+        len=sizeof(address);
 
-  result=connect(sockfd, (struct sockaddr *)&address, len);
+        result=connect(sockfd, (struct sockaddr *)&address, len);
 
-  if(result==-1) {
-    fprintf(stderr, "Unable to connect with server\n");
-    exit(1);
-  }
+        if(result==-1) {
+                fprintf(stderr, "Unable to connect with server\n");
+                exit(1);
+        }
 
-  return sockfd;
+        return sockfd;
 }

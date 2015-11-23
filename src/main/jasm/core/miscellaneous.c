@@ -26,77 +26,77 @@
 
 char *getTime()
 {
-  time_t curtime;
-  struct tm *loctime;
-  static char *ret;
+        time_t curtime;
+        struct tm *loctime;
+        static char *ret;
 
-  curtime=time(NULL);
-  loctime=localtime(&curtime);
-  ret=asctime(loctime);
-  ret[24]='\0';
+        curtime=time(NULL);
+        loctime=localtime(&curtime);
+        ret=asctime(loctime);
+        ret[24]='\0';
 
-  return ret;
+        return ret;
 }
 
 void log_string(const char *message)
 {
-  FILE *fp;
+        FILE *fp;
 
-  if((fp=fopen(LOGPATH, "a+")) == NULL) {
-    fp=fopen("jasm.log", "a+");
-    fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
-    fclose(fp);
-  } else {
-    fprintf(fp, "[%s][INFO] %s\n", getTime(), message);
-    fclose(fp);
-    }
+        if((fp=fopen(LOGPATH, "a+")) == NULL) {
+                fp=fopen("jasm.log", "a+");
+                fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
+                fclose(fp);
+        } else {
+                fprintf(fp, "[%s][INFO] %s\n", getTime(), message);
+                fclose(fp);
+        }
 }
 
 void log_error(const char *message)
 {
-  FILE *fp;
+        FILE *fp;
 
-  if((fp=fopen(LOGPATH, "a+")) == NULL) {
-    fp=fopen("jasm.log", "a+");
-    fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
-    fclose(fp);
-  } else {
-    fprintf(fp, "[%s][ERROR] %s!\n", getTime(), message);
-    fclose(fp);
-    }
+        if((fp=fopen(LOGPATH, "a+")) == NULL) {
+                fp=fopen("jasm.log", "a+");
+                fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
+                fclose(fp);
+        } else {
+                fprintf(fp, "[%s][ERROR] %s!\n", getTime(), message);
+                fclose(fp);
+        }
 }
 
 void start_daemon()
 {
-  pid_t pid;
-  char buf[BUFSIZ];
+        pid_t pid;
+        char buf[BUFSIZ];
 
-  log_string("[JASM-DAEMON] success!");
-  pid=fork();
-  switch(pid) {
-    case -1:
-      log_error("[THREAD-SPAWN][fork()] failed");
-      exit(1);
-      break;
+        log_string("[JASM-DAEMON] success!");
+        pid=fork();
+        switch(pid) {
+        case -1:
+                log_error("[THREAD-SPAWN][fork()] failed");
+                exit(1);
+                break;
 
-    case 0:
-      log_string("[THREAD-SPAWN][fork()] success");
-      break;
+        case 0:
+                log_string("[THREAD-SPAWN][fork()] success");
+                break;
 
-    default:
-      exit(0);
-      break;
-  }
-  if(setsid()<0) {
-    log_error("[THREAD-BACKGROUND][setsid()] failed");
-    exit(1);
-  } else {
-    log_string("[THREAD-BACKGROUND][setsid()] success");
-  }
-  //closes fd: stdin, stdout, stderr
-  close(0);
-  close(1);
-  close(2);
-  sprintf(buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid());
-  log_string(buf);
+        default:
+                exit(0);
+                break;
+        }
+        if(setsid()<0) {
+                log_error("[THREAD-BACKGROUND][setsid()] failed");
+                exit(1);
+        } else {
+                log_string("[THREAD-BACKGROUND][setsid()] success");
+        }
+        //closes fd: stdin, stdout, stderr
+        close(0);
+        close(1);
+        close(2);
+        sprintf(buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid());
+        log_string(buf);
 }
