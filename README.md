@@ -33,29 +33,33 @@ We use C11
 
 ### Project Structure
 
- - bin/: where binaries are placed after compilation
- - data/: for now, we use data for logging (logging works only from bin/ [development stage :) ])
- - doc/: where documentation is placed, an italian one is availible (Markdown!).
- - src/: where sources are placed
- - Makefile: we are using make to handle project, easily hackable!
- - LICENSE: Licensed under GNU GPL v3 [Contains the LICENSE]
- - README.md: hey :)
+ * bin/: where binaries are placed after compilation
+ * data/: for now, we use data for logging (logging works only from bin/ [development stage :) ])
+ * doc/: where documentation is placed, an italian one is availible (Markdown!).
+ * src/: where sources are placed
+ * Makefile: we are using make to handle project, easily hackable!
+ * LICENSE: Licensed under GNU GPL v3 [Contains the LICENSE]
+ * README.md: hey :)
 
 ### Modules / Getters
 
 As I said before, JASM wants to be easily hackable, so we are providing tools to create new modules for this System Monitor:
 
- - Modules: time-functional stats/feature (such as CPU Usage) [src/main/jasm/modules]
- - Getters: non-time-functional stats/features (such as Machine nodename)
+ * Modules: time-functional stats/feature (such as CPU Usage) [src/main/jasm/modules]
+ * Getters: non-time-functional stats/features (such as Machine nodename)
 
 Few days and we will release first module :)
+
+### Dipendencies
+
+ * gtk3+
 
 ### Licensing
 
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more!
 Thanks to Free Software! Avoiding proprietary software! See LICENSE to get more infos about this license
-
+ 
 ### Developers
 
- - Alessandro Spallina: Main founder of this project [github.com/AlessandroSpallina]
- - Stefano Belli: Makefiles, fixes, READMEs (including this :) ) [github.com/StefanoBelli]
+ * Alessandro Spallina: Main founder of this project [github.com/AlessandroSpallina]
+ * Stefano Belli: Makefiles, fixes, READMEs (including this :) ) [github.com/StefanoBelli]
