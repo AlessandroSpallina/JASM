@@ -78,12 +78,12 @@ static void excecute_command(int fd, char *command)
         // ************************** miscellaneous ********************************
         if(strcmp("halt", command)==0) { //turn off jasm
                 log_string("[CMD] halt exec");
-                write(fd, "halt\0", 4);
+                write(fd, "Killing JASM...\0", 18);
                 exit(0);
         }
 
-        log_error("[CMD] command not found");
-        write(fd, "null\0", 4);
+        log_error("[CMD] Command not found!");
+        write(fd, "NotFound\0", 8);
 }
 
 void start_server()

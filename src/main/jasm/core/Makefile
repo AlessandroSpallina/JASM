@@ -6,7 +6,7 @@ SHELL=/bin/sh
 
 CC=gcc
 DEBUG=-g
-CFLAGS=-O2 -pipe -Wall -std=c11 -D_XOPEN_SOURCE=700 $(DEBUG)
+CFLAGS=-O2 -pipe -Wall -std=c11 -D_XOPEN_SOURCE=700 -DLOGPATH=\"$(HOME)/.jasm.log\" $(DEBUG)
 LIBS=
 BINOUT=jasm
 
@@ -15,7 +15,7 @@ BINOUT=jasm
 OBJS:=$(patsubst %.c,%.o,$(wildcard *.c))
 
 install:$(OBJS)
-	$(CC) $(CFLAGS) $(LIBS) -o $(BINOUT) $(OBJS) 
+	$(CC) $(CFLAGS) $(LIBS) -o $(BINOUT) $(OBJS)
 
 clean:
 	rm -fv *.o

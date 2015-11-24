@@ -19,7 +19,7 @@
 #ifndef _MISCELLANEOUS_H
 #define _MISCELLANEOUS_H
 
-#define LOGPATH "../data/log/jasm.log"
+//#define LOGPATH
 #define LOGFILENAME "jasm.log"
 
 #define VERSION "JustAnotherSystemMonitor v0.2"

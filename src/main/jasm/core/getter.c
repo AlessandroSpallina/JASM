@@ -46,7 +46,7 @@ void getGetter(int fd)
 {
         int i;
         int ngetter = NGETTER;
-
+        
         write(fd, &ngetter, sizeof(ngetter));
         for(i=0; i<NGETTER; i++) {
                 write(fd, getterName[i], BUFSIZ);

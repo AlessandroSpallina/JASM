@@ -31,11 +31,6 @@ extern void getKernelName(int fd);
 extern void getKernelRelease(int fd);
 extern void getKernelVersion(int fd);
 extern void getMachine(int fd);
-
 extern void getGetter(int fd);
-
-
-
-
 
 #endif

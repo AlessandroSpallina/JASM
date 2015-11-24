@@ -40,6 +40,12 @@ char *getTime()
 
 void log_string(const char *message)
 {
+        #ifdef LOGPATH
+        //log in LOGPATH
+        #else
+        #define LOGPATH ".jasm.log"
+        #endif
+        
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {
@@ -54,6 +60,12 @@ void log_string(const char *message)
 
 void log_error(const char *message)
 {
+        #ifdef LOGPATH
+        //log in LOGPATH
+        #else
+        #define LOGPATH ".jasm.log"
+        #endif
+
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {
@@ -68,6 +80,7 @@ void log_error(const char *message)
 
 void start_daemon()
 {
+
         pid_t pid;
         char buf[BUFSIZ];
 

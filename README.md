@@ -41,6 +41,15 @@ We use C11
  - LICENSE: Licensed under GNU GPL v3 [Contains the LICENSE]
  - README.md: hey :)
 
+### Modules / Getters
+
+As I said before, JASM wants to be easily hackable, so we are providing tools to create new modules for this System Monitor:
+
+ - Modules: time-functional stats/feature (such as CPU Usage) [src/main/jasm/modules]
+ - Getters: non-time-functional stats/features (such as Machine nodename)
+
+Few days and we will release first module :)
+
 ### Licensing
 
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more!

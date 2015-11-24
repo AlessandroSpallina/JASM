@@ -24,20 +24,22 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "ipc.h"
 #include "miscellaneous.h"
+#include "signals.h"
 
 char* server_ip;
 
-void print_welcome(const char* usern)
+void print_welcome(const char* usern, int sockfd)
 {
-        printf("JASM Command Line Interface\nUser: %s\nBasic Commands:\nhelp : get help\
-  \nquit : exits cli\nhalt : halt jasm\n\n",usern);
+        printf("JASM Command Line Interface\nSession started: %s\nSocket fd: %d\nUser: %s\nBasic Commands:\nhelp : get help\
+  \nquit : exits cli\nhalt : halt jasm\n\n",getTime(),sockfd,usern);
 }
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
-
+        signal_catcher();
         if(strcmp("quit", buffer)==0) {
                 close(fd);
                 printf("Bye!\n");
@@ -111,7 +113,6 @@ void parse_options(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-
         int fd;
         char buf[BUFSIZ]="none";
         char *username=getenv("USER");
@@ -122,7 +123,7 @@ int main(int argc, char *argv[])
 
         fd=start_client(server_ip);
 
-        print_welcome(username);
+        print_welcome(username, fd);
 
         while(1) {
                 printf("-[%s]-> ", username);
