@@ -17,8 +17,23 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
 #include <stdio.h>
+#include <time.h>
 
 void log_string(const char *message)
 {
   printf("# Sys: %s\n", message);
+}
+
+char *getTime()
+{
+        time_t curtime;
+        struct tm *loctime;
+        static char *ret;
+
+        curtime=time(NULL);
+        loctime=localtime(&curtime);
+        ret=asctime(loctime);
+        ret[24]='\0';
+
+        return ret;
 }

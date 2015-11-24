@@ -20,5 +20,6 @@
 #define _MISCELLANEOUS_H
 
 extern void log_string(const char *message);
+extern char* getTime(void);
 
 #endif

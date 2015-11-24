@@ -6,7 +6,7 @@ SHELL=/bin/sh
 
 CC=gcc
 DEBUG=-g
-CFLAGS=-O2 -pipe -Wall -std=c11 $(DEBUG)
+CFLAGS=-O2 -pipe -Wall -std=c11 -D_POSIX_C_SOURCE $(DEBUG)
 LIBS=
 BINOUT=jasmcli
 
@@ -18,7 +18,7 @@ install: $(OBJS)
 	$(CC) $(CFLAGS) $(LIBS) -o $(BINOUT) $(OBJS)
 
 clean:
-	rm -fv *.o 
+	rm -fv *.o
 
 #make * (opt) means all
 .PHONY: install,clean
