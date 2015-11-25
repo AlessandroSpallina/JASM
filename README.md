@@ -50,9 +50,9 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
 Few days and we will release first module :)
 
-### Dipendencies
+### Dependencies
 
- * gtk3+
+ * gtk+2
 
 ### Licensing
 

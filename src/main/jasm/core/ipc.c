@@ -132,7 +132,9 @@ void start_server()
                                         client_len=sizeof(client_address);
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
                                         FD_SET(client_sockfd, &readfds);
-                                        sprintf(buf, "[CLIENT-CONNECT] %d", client_sockfd); //add IP
+                                        sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %d.%d.%d.%d\
+                                        ", client_sockfd, client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
+                                        //Using the client struct
                                         log_string(buf);
                                 } else {
                                         ioctl(fd, FIONREAD, &nread);
@@ -140,7 +142,9 @@ void start_server()
                                         if(nread==0) {
                                                 close(fd);
                                                 FD_CLR(fd, &readfds);
-                                                sprintf(buf, "[CLIENT-DISCONNECT] %d", fd); //add IP
+                                                sprintf(buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %d.%d.%d.%d \
+                                                ", fd, client_address.sin_addr.s_addr&0xFF, (client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
+                                                //Using the client struct
                                                 log_string(buf);
                                         } else {
                                                 read(fd, &received, BUFSIZ);
