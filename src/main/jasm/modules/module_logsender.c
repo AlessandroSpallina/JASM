@@ -24,9 +24,10 @@
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <pthread.h>
-#include "modules.h"
-#include "miscellaneous.h"
-#include "queue.h"
+
+#include "../core/modules.h"
+#include "../core/miscellaneous.h"
+#include "../core/queue.h"
 #include "module_logsender.h"
 
 
