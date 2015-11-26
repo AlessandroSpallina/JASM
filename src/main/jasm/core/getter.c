@@ -25,9 +25,6 @@
 #include "getter.h"
 #include "miscellaneous.h"
 
-//all getters bring in queue in the heap mem. what they are going to do
-//send_getter() to send the answer to the client
-
 void getVersion(int fd);
 void getCopyright(int fd);
 void getHostname(int fd);
@@ -46,7 +43,7 @@ void getGetter(int fd)
 {
         int i;
         int ngetter = NGETTER;
-        
+
         write(fd, &ngetter, sizeof(ngetter));
         for(i=0; i<NGETTER; i++) {
                 write(fd, getterName[i], BUFSIZ);

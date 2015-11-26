@@ -16,16 +16,8 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifndef _QUEUE_H
-#define _QUEUE_H
+#ifndef _LOGSENDER_H
+#define _LOGSENDER_H
 
-struct queue {
-  struct running_module info;
-  struct queue *next;
-};
-
-//extern void print_queue(struct queue *head);
-extern int add_queue(struct queue **head, struct running_module temp);
-extern struct running_module *del_queue(struct queue **head);
 
 #endif
