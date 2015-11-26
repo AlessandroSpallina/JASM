@@ -22,8 +22,10 @@
 #include <errno.h>
 
 #include "queue.h"
+#include "modules.h"
+#include "miscellaneous.h"
 
-void print_queue(struct queue *head)
+/*void print_queue(struct queue *head)
 {
         if(head==NULL) {
                 perror("[DEV] head is NULL!");
@@ -34,23 +36,23 @@ void print_queue(struct queue *head)
                 printf("# %s\n", head->string);
                 head=head->next;
         }
-}
+}*/
 
 /*
  *  Adds an element to the queue
  *  returns 0 if done successfully
  */
-int add_queue(struct queue **head, char temp[BUFSIZ])
+int add_queue(struct queue **head, struct running_module temp)
 {
 
         if((*head)==NULL) { //empty queue
 
                 (*head)=(struct queue *)malloc(sizeof(struct queue));
                 if(*head==NULL) {
-                        perror("[DEV] memory-allocation failed! {malloc()}");
+                        log_error("[DEV] memory-allocation failed! {malloc()}");
                         return 1;
                 }
-                strcpy((*head)->string, temp);
+                (*head)->info=temp;
                 (*head)->next=NULL;
 
         } else { //not empty queue
@@ -63,10 +65,10 @@ int add_queue(struct queue **head, char temp[BUFSIZ])
                 aus=aus->next;
 
                 if(aus==NULL) {
-                        perror("malloc fail");
+                        log_error("malloc fail");
                         return 1;
                 }
-                strcpy(aus->string, temp);
+                aus->info=temp;
                 aus->next=NULL;
         }
         return 0;
@@ -76,18 +78,18 @@ int add_queue(struct queue **head, char temp[BUFSIZ])
  *  deletes queue element
  *  Returns msg from deleted element
  */
-char *del_queue(struct queue **head)
+struct running_module *del_queue(struct queue **head)
 {
-        static char temp[BUFSIZ]="null";
+        static struct running_module temp = {.head=NULL, .fd=-1, .sec=-1};
 
         if((*head)==NULL) {
-                perror("[DEV] head is NULL!");
+                log_error("[DEV] head is NULL!");
                 return temp;
         }
 
         struct queue *aus=(*head);
         (*head)=(*head)->next;
-        strcpy(temp, aus->string);
+        temp = aus->info;
 
         free(aus);
         return temp;

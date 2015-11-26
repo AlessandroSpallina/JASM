@@ -19,9 +19,23 @@
 #ifndef _MODULES_H
 #define _MODULES_H
 
-struct running_modules {
+#define NMODULE 1
+
+struct running_module {
   char name[BUFSIZ];
   pthread_t tid;
+  //struct running_module *next;
+};
+
+struct functions {
+  void (*init) (void);  //inizializza l'ambiente del modulo e alloca in heap un elemento running_module (crea thread)
+  void (*start)(int, int);  //e starta modulo
+};
+
+struct thread_arguments {
+  struct running_module **head;
+  int fd;
+  int sec;
 };
 
 #endif

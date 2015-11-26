@@ -23,4 +23,5 @@
 
 #include "modules.h"
 
-const char modules[1][BUFSIZ]={"general info"};
+char moduleName[NMODULE][BUFSIZ]={"general info"};
+struct function[NMODULE]={};
