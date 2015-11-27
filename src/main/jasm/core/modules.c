@@ -21,7 +21,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+#include "../modules/module_logsender.h"
 #include "modules.h"
 
 char moduleName[NMODULE][BUFSIZ]={"general info"};
-struct function[NMODULE]={};
+struct functions modFunct[NMODULE]={};

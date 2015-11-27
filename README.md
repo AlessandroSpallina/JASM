@@ -48,6 +48,8 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  * Modules: time-functional stats/feature (such as CPU Usage) [src/main/jasm/modules]
  * Getters: non-time-functional stats/features (such as Machine nodename)
 
+*[INFO][DEVEL/STAGE]: module_logsender... development started*
+
 Few days and we will release first module :)
 
 ### Dependencies
