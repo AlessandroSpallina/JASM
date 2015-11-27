@@ -22,8 +22,8 @@
 //#define LOGPATH
 #define LOGFILENAME "jasm.log"
 
-#define VERSION "JustAnotherSystemMonitor v0.2"
-#define COPYRIGHT "GNU Public License v3"
+#define VERSION "jasm-develstage" //<-- CHANGE IT!
+#define COPYRIGHT "GNU Public License (GPL) v3" //<-- GPLv3
 
 extern char *getTime(void);
 extern void log_string(const char *message);
