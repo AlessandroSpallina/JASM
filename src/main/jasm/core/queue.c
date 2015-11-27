@@ -21,11 +21,11 @@
 #include <string.h>
 #include <errno.h>
 
-#include "queue.h"
-#include "modules.h"
-#include "miscellaneous.h"
+#include "modules.h" //running_module definition
+#include "queue.h" //main definitions
+#include "miscellaneous.h" //misc funct
 
-/*void print_queue(struct queue *head)
+void print_queue(struct queue *head)
 {
         if(head==NULL) {
                 perror("[DEV] head is NULL!");
@@ -36,13 +36,13 @@
                 printf("# %s\n", head->string);
                 head=head->next;
         }
-}*/
+}
 
 /*
  *  Adds an element to the queue
  *  returns 0 if done successfully
  */
-int add_queue(struct queue **head, struct running_module temp)
+int add_queue(struct queue **head, struct running_module *temp)
 {
 
         if((*head)==NULL) { //empty queue
@@ -80,7 +80,15 @@ int add_queue(struct queue **head, struct running_module temp)
  */
 struct running_module *del_queue(struct queue **head)
 {
-        static struct running_module temp = {.head=NULL, .fd=-1, .sec=-1};
+        static struct running_module *temp;
+        /*{
+          .head=NULL,
+          .fd=-1,
+          .sec=-1
+        };*/
+        temp->head=NULL;
+        temp->fd=-1;
+        temp->sec=-1;
 
         if((*head)==NULL) {
                 log_error("[DEV] head is NULL!");
@@ -92,5 +100,6 @@ struct running_module *del_queue(struct queue **head)
         temp = aus->info;
 
         free(aus);
+
         return temp;
 }
