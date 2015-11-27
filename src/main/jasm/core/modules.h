@@ -24,6 +24,9 @@
 struct running_module {
   char name[BUFSIZ];
   pthread_t tid;
+  int *head;
+  int fd;
+  int sec;
   //struct running_module *next;
 };
 

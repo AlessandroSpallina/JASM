@@ -19,13 +19,14 @@
 #ifndef _QUEUE_H
 #define _QUEUE_H
 
-struct queue {
-  struct running_module info;
+struct queue { //queue struct
+  struct running_module *info;
   struct queue *next;
+  char *string;
 };
 
-//extern void print_queue(struct queue *head);
-extern int add_queue(struct queue **head, struct running_module temp);
+extern void print_queue(struct queue *head);
+extern int add_queue(struct queue **head, struct running_module* temp);
 extern struct running_module *del_queue(struct queue **head);
 
-#endif
+#endif //_QUEUE_H
