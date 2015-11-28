@@ -1,0 +1,10 @@
+[Unit]
+Description=JASM Server Daemon
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/jasm
+
+[Install]
+WantedBy=multi-user.target
+

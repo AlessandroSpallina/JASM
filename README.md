@@ -31,6 +31,10 @@ We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makef
 
 We use C11
 
+### Versions
+
+ * develstage: high-development stage, then we get 0.0.9, before getting 0.1.0
+
 ### Project Structure
 
  * bin/: where binaries are placed after compilation
@@ -56,11 +60,24 @@ Few days and we will release first module :)
 
  * gtk+2
 
+ (Not now)
+ * libvncserver
+ * libcpuid
+ ...
+
+### Platform
+
+ * JASM Core: We think 70+% is completed
+ * JASM CLI: 100% completed, fully working
+ * JASM GTK2: Not started yet
+ * JASM on Android: Not started yet
+ * Getters/Modules: before, the core, after getters/modules
+
 ### Licensing
 
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more!
 Thanks to Free Software! Avoiding proprietary software! See LICENSE to get more infos about this license
- 
+
 ### Developers
 
  * Alessandro Spallina: Main founder of this project [github.com/AlessandroSpallina]
