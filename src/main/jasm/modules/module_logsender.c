@@ -30,7 +30,7 @@
 #include "../core/queue.h"
 #include "module_logsender.h"
 
-
+/*
 static void send_next(int fd)
 {
   char string[BUFSIZ];
@@ -43,11 +43,11 @@ static void send_next(int fd)
 }
 
 
-/*
+
  *  ritorna 0 se tutto è ok, 1 se l'inizializzazione è fallita.
  *  il thread main dovrà comunicare al client che l'inizializzazione è andata
  *  storta :'(
- */
+ 
 int init_logsender()
 {
   // ***************** check file exists **************************************
@@ -93,3 +93,16 @@ void stop_logsender()
   //dealloca il thread
   pthread_exit(NULL);
 }
+*/
+
+//
+int start_mod_logsender(int thread_sleep,int undefined)
+{
+	return 130;
+}
+
+void init_mod_logsender(void)
+{
+	return;
+}
+
