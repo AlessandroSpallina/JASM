@@ -22,7 +22,7 @@
 #define NMODULE 1
 
 struct running_module {
-  char name[BUFSIZ];
+  char *name[BUFSIZ];
   pthread_t tid;
   int *head;
   int fd;
@@ -40,5 +40,4 @@ struct thread_arguments {
   int fd;
   int sec;
 };
-
 #endif
