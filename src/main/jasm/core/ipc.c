@@ -94,6 +94,7 @@ void start_server()
         struct sockaddr_in server_address;
         struct sockaddr_in client_address;
         int result;
+        char* client_ipaddr="192.168.2.100"; // testing purposes
         fd_set readfds, testfds;
 
         server_sockfd=socket(AF_INET, SOCK_STREAM, 0);
@@ -132,6 +133,14 @@ void start_server()
                                         client_len=sizeof(client_address);
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
                                         FD_SET(client_sockfd, &readfds);
+                                        //sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
+																			  if(login_required(client_ipaddr) == 1)
+																				{
+                                          //checks that password file exists!
+																					check_passwd_file("* Password file not found!\n",client_sockfd);
+																					log_string("[CLIENT-AUTH][CURRENT-TESTING] Authentication required! ...");
+																				}
+
                                         sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %d.%d.%d.%d\
                                         ", client_sockfd, client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                         //Using the client struct

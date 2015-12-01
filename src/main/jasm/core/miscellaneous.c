@@ -22,6 +22,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <stdbool.h>
+#include <string.h>
 #include "miscellaneous.h"
 
 char *getTime()
@@ -45,7 +47,7 @@ void log_string(const char *message)
         #else
         #define LOGPATH ".jasm.log"
         #endif
-        
+
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {
@@ -112,4 +114,22 @@ void start_daemon()
         close(2);
         sprintf(buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid());
         log_string(buf);
+}
+
+int login_required(const char* clientaddr)
+{
+	if(strcmp(clientaddr,LOCALHOST) == 0)
+		return 0;
+	else
+		return 1;
+}
+
+/*TODO*/
+void check_passwd_file(const char* psw_file_notfound_msg,int fd)
+{
+	FILE *pswfile;
+	if((pswfile = fopen(PASSWD_ENC_FILE,"a+")) == NULL)
+		write(fd,psw_file_notfound_msg,sizeof(psw_file_notfound_msg));
+	else
+	  fclose(pswfile);
 }
