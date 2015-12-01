@@ -148,6 +148,7 @@ void start_server()
                                           write(client_sockfd,auth,sizeof(auth));
                                           read(client_sockfd,getpasswd,sizeof(getpasswd));
                                           log_string(getpasswd);
+                                          //check here
                                           if(strcmp(getpasswd,"jasmtest") == 0)
                                             write(client_sockfd,granted,sizeof(granted));
                                           else
