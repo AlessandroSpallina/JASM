@@ -60,7 +60,7 @@ int start_client(const char* srv_ip)
           printf("+-----------------------------------------------------------------------+\n");
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
           char get_my_pass[256];
-          get_my_pass[256] = getpass("* Password: ");
+          scanf("%s",&get_my_pass);
           char answer[256];
           write(sockfd,get_my_pass,sizeof(get_my_pass));
           read(sockfd,answer,sizeof(answer));
