@@ -64,6 +64,7 @@ int start_client(const char* srv_ip)
           char answer[256];
           write(sockfd,get_my_pass,sizeof(get_my_pass));
           read(sockfd,answer,sizeof(answer));
+          printf("%s\n",answer);
           if(strcmp(answer,"granted") == 0)
           {}
           else if(strcmp(answer,"denied") == 0)

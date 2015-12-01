@@ -147,6 +147,7 @@ void start_server()
 																					log_string("[CLIENT-AUTH]Authentication required! ...");
                                           write(client_sockfd,auth,sizeof(auth));
                                           read(client_sockfd,getpasswd,sizeof(getpasswd));
+                                          log_string(getpasswd);
                                           if(strcmp(getpasswd,"jasmtest") == 0)
                                             write(client_sockfd,granted,sizeof(granted));
                                           else
