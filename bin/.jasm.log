@@ -1,0 +1,10 @@
+[Tue Dec  1 18:32:56 2015][INFO] [JASM-DAEMON] success!
+[Tue Dec  1 18:32:56 2015][INFO] [THREAD-SPAWN][fork()] success
+[Tue Dec  1 18:32:56 2015][INFO] [THREAD-BACKGROUND][setsid()] success
+[Tue Dec  1 18:32:56 2015][INFO] [JASM-DAEMON][START] PID: 4202 , Parent PID: 2574
+[Tue Dec  1 18:32:56 2015][INFO] [JASM-DAEMON]Server started
+[Tue Dec  1 18:33:07 2015][INFO] [CLIENT-AUTH][CURRENT-TESTING] Authentication required! ...
+[Tue Dec  1 18:33:07 2015][INFO] [CLIENT-CONNECT] sockfd: 1, IP Address: 127.0.0.1                                        
+[Tue Dec  1 18:33:10 2015][INFO] [CLIENT-DISCONNECT] sockfd: 1, IP Address: 127.0.0.1                                                 
+[Tue Dec  1 19:00:40 2015][INFO] Received signal number 15
+[Tue Dec  1 19:00:40 2015][ERROR] [JASM-DAEMON]Server failed!

@@ -45,15 +45,14 @@ void log_string(const char *message)
         #ifdef LOGPATH
         //log in LOGPATH
         #else
-        #define LOGPATH ".jasm.log"
+        char LOGPATH[BUFSIZ];
+        sprintf(LOGPATH,"%s/.jasm.log",getenv("HOME"));
         #endif
 
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {
-                fp=fopen("jasm.log", "a+");
-                fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
-                fclose(fp);
+                fprintf(fp,"[%s][INFO]This file is created now.",getTime());
         } else {
                 fprintf(fp, "[%s][INFO] %s\n", getTime(), message);
                 fclose(fp);
@@ -65,15 +64,14 @@ void log_error(const char *message)
         #ifdef LOGPATH
         //log in LOGPATH
         #else
-        #define LOGPATH ".jasm.log"
+        char LOGPATH[BUFSIZ];
+        sprintf(LOGPATH,"%s/.jasm.log",getenv("HOME"));
         #endif
 
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {
-                fp=fopen("jasm.log", "a+");
-                fprintf(fp, "[%s] ERROR while opening [%s]\n", getTime(), LOGPATH);
-                fclose(fp);
+                fprintf(fp,"[%s][INFO] This file is created now.",getTime());
         } else {
                 fprintf(fp, "[%s][ERROR] %s!\n", getTime(), message);
                 fclose(fp);
