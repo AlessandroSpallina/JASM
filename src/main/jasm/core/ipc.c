@@ -141,9 +141,11 @@ void start_server()
 																			  if(login_required(client_ipaddr) == 1)
 																				{
                                           char getpasswd[256];
+                                          char auth[256]="auth-required";
                                           //checks that password file exists!
-																					check_passwd_file("auth-required",client_sockfd);
+																					check_passwd_file("passfile",client_sockfd);
 																					log_string("[CLIENT-AUTH]Authentication required! ...");
+                                          write(client_sockfd,auth,sizeof(auth));
                                           read(client_sockfd,getpasswd,sizeof(getpasswd));
                                           if(strcmp(getpasswd,"jasmtest") == 0)
                                             write(client_sockfd,granted,sizeof(granted));
