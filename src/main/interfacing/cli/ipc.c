@@ -23,6 +23,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
+
 #include "ipc.h"
 
 
@@ -31,6 +33,7 @@ int start_client(const char* srv_ip)
 {
         int sockfd;
         int len;
+        char get_msg_from_server[256];
         struct sockaddr_in address;
         int result;
 
@@ -48,6 +51,29 @@ int start_client(const char* srv_ip)
                 fprintf(stderr, "Unable to connect with server\n");
                 exit(1);
         }
+
+        read(sockfd,get_msg_from_server,255);
+
+        if(strcmp(get_msg_from_server, "auth-required") == 0)
+        {
+          printf("+-----------------------------------------------------------------------+\n");
+          printf("* Authentication is required before accessing JASM Command Line Interface\n");
+          char get_my_pass[256];
+          get_my_pass[256] = getpass("* Password: ");
+          char answer[256];
+          write(sockfd,get_my_pass,sizeof(get_my_pass));
+          read(sockfd,answer,sizeof(answer));
+          if(strcmp(answer,"granted") == 0)
+          {}
+          else if(strcmp(answer,"denied") == 0)
+          {
+            printf("--> Non authorized!!\n");
+            printf("--> Closing this session...\n");
+            exit(130);
+          }
+        }
+        else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
+          printf("* Authentication is not required for this session\n");
 
         return sockfd;
 }

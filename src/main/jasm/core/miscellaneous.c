@@ -114,6 +114,7 @@ void start_daemon()
         log_string(buf);
 }
 
+/*LOGIN SECTION*/
 int login_required(const char* clientaddr)
 {
 	if(strcmp(clientaddr,LOCALHOST) == 0)
@@ -122,7 +123,6 @@ int login_required(const char* clientaddr)
 		return 1;
 }
 
-/*TODO*/
 void check_passwd_file(const char* psw_file_notfound_msg,int fd)
 {
 	FILE *pswfile;
