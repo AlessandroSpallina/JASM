@@ -54,6 +54,7 @@ int start_client(const char* srv_ip)
 
         read(sockfd,get_msg_from_server,255);
 
+        printf("%s\n",get_msg_from_server);
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
           printf("+-----------------------------------------------------------------------+\n");
