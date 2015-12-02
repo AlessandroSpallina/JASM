@@ -116,8 +116,6 @@ int main(int argc, char *argv[])
         int fd;
         char buf[BUFSIZ]="none";
         char *username=getenv("USER");
-        char get_my_pass[30]="jasmtes";
-		char answer[BUFSIZ];
 
         server_ip = "127.0.0.1";
 

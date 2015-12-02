@@ -82,10 +82,29 @@ int start_client(const char* srv_ip)
 		  {
 			  printf("* Great                       *\n");
 			  printf("* Authorized for this session *\n");
-          }
+          }			 
+		  
 	  }
       else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
+      {
+		char if_set_file[14];
         printf("* Authentication is not required for this session\n");
-          
+        
+        read(sockfd,if_set_file,14);
+        
+        if(strcmp(if_set_file,"check-pwd-file") == 0)
+        {
+			  char psw_to_use[256];
+			  
+			  printf("* You have to set a password for JASM, in order to avoid intrusion\n");
+			  printf("* This password will be encrypted *\n");
+			  printf("* Password to use[MAX: 256 chars]: ");
+			  
+			  scanf("%s",&psw_to_use);
+			  write(sockfd,psw_to_use,sizeof(psw_to_use));
+		}
+		else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
+		{}
+	   }
         return sockfd;
 }

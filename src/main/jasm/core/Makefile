@@ -7,7 +7,7 @@ SHELL=/bin/sh
 CC=gcc
 DEBUG=-g
 #-DLOGPATH=/var/log/jasm.log
-CFLAGS=-O2 -pipe -Wall -std=c11 -D_XOPEN_SOURCE=700 $(DEBUG)
+CFLAGS=-O2 -pipe -Wall -std=c11 -lcrypt -D_XOPEN_SOURCE=700 $(DEBUG)
 LIBS=
 MODULES_SRC_DIRECTORY=../modules
 BINOUT=jasm

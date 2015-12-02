@@ -21,7 +21,7 @@
 
 //#define bool int //if needed
 #define LOCALHOST "127.0.0.1"
-#define PASSWD_ENC_FILE "/etc/.jasmencpsw"
+//#define PASSWD_ENC_FILE "/etc/.jasmencpsw"
 //#define LOGPATH
 #define LOGFILENAME "jasm.log"
 
@@ -33,6 +33,6 @@ extern void log_string(const char *message);
 extern void log_error(const char *message);
 extern void start_daemon(void);
 extern int login_required(const char *clientaddr);
-extern void check_passwd_file(const char* psw_file_notfound_msg,int fd);
+extern int check_passwd_file(const char* __pwdf, const char* __passwd);
 
 #endif
