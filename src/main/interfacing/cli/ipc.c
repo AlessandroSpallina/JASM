@@ -63,12 +63,12 @@ int start_client(const char* srv_ip)
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
           printf("* Password: ");
           //fgets(get_my_pass,sizeof(get_my_pass),stdin);
-          scanf("%s",&get_my_pass); //temporary
+          scanf("%s", get_my_pass); //temporary
           
-          if(write(sockfd,get_my_pass,256) < 0)
+          if(write(sockfd, get_my_pass, 256) < 0)
            printf("* Error on write\n");
            
-          if(read(sockfd,answer,sizeof(answer)) < 0)
+          if(read(sockfd, answer, sizeof(answer)+1) < 0)
            printf("* Error on read\n");
    
           if(strcmp(answer,"denied") == 0)
@@ -84,7 +84,7 @@ int start_client(const char* srv_ip)
 			  printf("* Authorized for this session *\n");
           }			 
 		  
-	  }
+	  	}
       else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
       {
 		char if_set_file[14];
@@ -100,7 +100,7 @@ int start_client(const char* srv_ip)
 			  printf("* This password will be encrypted *\n");
 			  printf("* Password to use[MAX: 256 chars]: ");
 			  
-			  scanf("%s",&psw_to_use);
+			  scanf("%s", psw_to_use);
 			  write(sockfd,psw_to_use,sizeof(psw_to_use));
 		}
 		else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
