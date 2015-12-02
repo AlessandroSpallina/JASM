@@ -56,7 +56,7 @@ int start_client(const char* srv_ip)
 
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
-		  char get_my_pass[30];
+		  char get_my_pass[30]="jdjd";
           printf("+-----------------------------------------------------------------------+\n");
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
           printf("* Password: ");

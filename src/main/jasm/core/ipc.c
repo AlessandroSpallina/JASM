@@ -158,7 +158,7 @@ void start_server()
                                           {
 											 log_string("[PWD][DEN]Wrong password!\n");
 											 log_string("[PWD][DEN]Closing connection...\n");
-											 close(client_sockfd);
+											 close(fd);
 										  }
 										}
                                         else
