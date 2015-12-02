@@ -138,22 +138,25 @@ void start_server()
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
                                         FD_SET(client_sockfd, &readfds);
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
-																			  if(login_required(client_ipaddr) == 1)
-																				{
+										if(login_required(client_ipaddr) == 1)
+										{
                                           char getpasswd[256];
                                           char auth[256]="auth-required";
                                           //checks that password file exists!
-																					//check_passwd_file("passfile",client_sockfd);
-																					log_string("[CLIENT-AUTH]Authentication required! ...");
+										  //check_passwd_file("passfile",client_sockfd);
+           								  log_string("[CLIENT-AUTH]Authentication required! ...");
                                           write(client_sockfd,auth,sizeof(auth));
                                           read(client_sockfd,getpasswd,sizeof(getpasswd));
                                           log_string(getpasswd);
                                           //check here
                                           if(strcmp(getpasswd,"jasmtest") == 0)
+                                          {
+											log_string("[DEBUG][PWD][OK]Password accepted!\n[DEBUG][PWD][OK]Authorized\n");
                                             write(client_sockfd,granted,sizeof(granted));
+								          }		
                                           else
                                             write(client_sockfd,denied,sizeof(denied));
-																				}
+										}
                                         else
                                         {
                                           write(client_sockfd,not_required,sizeof(not_required));
