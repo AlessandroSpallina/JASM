@@ -24,6 +24,8 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
+#include <crypt.h>
+
 #include "miscellaneous.h"
 
 char *getTime()
@@ -123,11 +125,18 @@ int login_required(const char* clientaddr)
 		return 1;
 }
 
-void check_passwd_file(const char* psw_file_notfound_msg,int fd)
+int check_passwd_file(const char* __pwdf,const char* __passwd)
 {
 	FILE *pswfile;
-	if((pswfile = fopen(PASSWD_ENC_FILE,"a+")) == NULL)
-		write(fd,psw_file_notfound_msg,sizeof(psw_file_notfound_msg));
+	if((pswfile = fopen(__pwdf,"a+")) == NULL)
+	{
+		fprintf(pswfile, "%s",crypt(__passwd,"$6$"));
+        fclose(pswfile);
+		return 1;
+	}
 	else
+	{
 	  fclose(pswfile);
+	  return 0;
+    }
 }

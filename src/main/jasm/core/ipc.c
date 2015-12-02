@@ -26,6 +26,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <crypt.h>
+
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "getter.h"
@@ -88,6 +90,13 @@ static void excecute_command(int fd, char *command)
 
 void start_server()
 {
+#ifdef PASSWD_ENC_FILE
+//use it
+#else
+char PASSWD_ENC_FILE[256];
+PASSWD_ENC_FILE[256]="%s/.jpwd",getenv("HOME");
+#endif
+
         int server_sockfd, client_sockfd;
         int server_len;
         socklen_t client_len;
@@ -141,9 +150,10 @@ void start_server()
                                           char auth[256]="auth-required";
                                           char granted[7]="granted";
                                           char denied[6]="denied";
+                                          //char chkpwd[15]="check-pwd-file";
                                           //checks that password file exists!
                                           /**PRIORITY FOR  check_passwd_file() **/
-										  //check_passwd_file("passfile",client_sockfd);
+										  //check_passwd_file(chkpwd,15,client_sockfd);
            								  log_string("[CLIENT-AUTH]Authentication required! ...");
                                           if(write(client_sockfd,auth,256) < 0) log_error("[write()][auth] Error\n");
                                           if(read(client_sockfd,getpasswd,256) < 0) log_error("[read()][getpasswd] Error\n");
@@ -166,10 +176,17 @@ void start_server()
 										}
                                         else
                                         {
+										  /**WIP**/
+										  char chkpwd[14]="check-pwd-file";
+										  char nochkpwd[13]="nochk-pwdfile";
+										  char getpwd[256];
+										  
 									      char not_required[18]="auth-not-required";
-                                          if(write(client_sockfd,not_required,18) < 0)
-                                           log_error("[write()] Error\n");
+                                          if(write(client_sockfd,not_required,18) < 0) log_error("[write()] Error\n");
                                           log_string("[CLIENT-AUTH]Authentication NOT required!\n");
+                                          if(write(client_sockfd,chkpwd,14) < 0) log_error("[write()] Error\n");
+                                          //                     ^-> replace with chkpwd
+                                          //check_passwd_file(PASSWD_ENC_FILE,"something");
                                         }
 
                                         sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %d.%d.%d.%d\
