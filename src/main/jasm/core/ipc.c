@@ -96,8 +96,6 @@ void start_server()
         int result;
         char client_ipaddr[30]; // testing purposes
         char not_required[19]="auth-not-required";
-        char granted[9]="granted";
-        char denied[7]="denied";
 
         fd_set readfds, testfds;
 
@@ -142,6 +140,8 @@ void start_server()
 										{
                                           char getpasswd[256];
                                           char auth[256]="auth-required";
+                                          char granted[9]="granted";
+                                          char denied[7]="denied";
                                           //checks that password file exists!
 										  //check_passwd_file("passfile",client_sockfd);
            								  log_string("[CLIENT-AUTH]Authentication required! ...");
@@ -156,9 +156,10 @@ void start_server()
 								          }		
                                           else if(strcmp(getpasswd,"jasmtest") != 0)
                                           {
-											 log_string("[PWD][DEN]Wrong password!\n");
-											 log_string("[PWD][DEN]Closing connection...\n");
-											 close(fd);
+											 log_error("[PWD][DEN]Wrong password!\n");
+											 log_error("[PWD][DEN]Closing connection...\n");
+											 if (write(client_sockfd,denied,sizeof(denied)) < 0)
+											   log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
 										  }
 										}
                                         else

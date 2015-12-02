@@ -36,6 +36,7 @@ int start_client(const char* srv_ip)
         char get_msg_from_server[256];
         struct sockaddr_in address;
         int result;
+        char get_my_pass[30]="jasmtes";
 
         sockfd=socket(AF_INET, SOCK_STREAM, 0);
 
@@ -56,15 +57,14 @@ int start_client(const char* srv_ip)
 
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
-		  char get_my_pass[30]="jdjd";
           printf("+-----------------------------------------------------------------------+\n");
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
-          printf("* Password: ");
+          printf("* Password: \n");
          
           write(sockfd,get_my_pass,sizeof(get_my_pass));
         }
         else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
           printf("* Authentication is not required for this session\n");
-
+          
         return sockfd;
 }

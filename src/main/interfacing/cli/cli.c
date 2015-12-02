@@ -116,12 +116,24 @@ int main(int argc, char *argv[])
         int fd;
         char buf[BUFSIZ]="none";
         char *username=getenv("USER");
+        char get_my_pass[30]="jasmtes";
+		char answer[BUFSIZ];
 
         server_ip = "127.0.0.1";
 
         parse_options(argc, argv);
 
         fd=start_client(server_ip);
+        if(read(fd,answer,sizeof(answer)) < 0)
+           printf("* Error on read\n");
+   
+          if(strcmp(answer,"denied") == 0)
+          {
+			  printf("* Non-authorized access!!\n");
+			  printf("* Exiting...\n");
+			  close(fd);
+			  exit(3);
+		  }
 
         print_welcome(username, fd);
 
