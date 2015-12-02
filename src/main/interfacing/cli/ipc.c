@@ -54,25 +54,15 @@ int start_client(const char* srv_ip)
 
         read(sockfd,get_msg_from_server,255);
 
-        printf("%s\n",get_msg_from_server);
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
+		  char get_my_pass[30];
           printf("+-----------------------------------------------------------------------+\n");
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
-          char get_my_pass[256];
+          printf("* Password: ");
+          
           scanf("%s",&get_my_pass);
-          char answer[256];
           write(sockfd,get_my_pass,sizeof(get_my_pass));
-          read(sockfd,answer,sizeof(answer));
-          printf("[DEBUG][ANSWER] Server says: %s\n",answer);
-          if(strcmp(answer,"granted") == 0)
-          {}
-          else if(strcmp(answer,"denied") == 0)
-          {
-            printf("--> Non authorized!!\n");
-            printf("--> Closing this session...\n");
-            exit(130);
-          }
         }
         else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
           printf("* Authentication is not required for this session\n");

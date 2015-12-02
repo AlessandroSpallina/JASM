@@ -147,15 +147,19 @@ void start_server()
            								  log_string("[CLIENT-AUTH]Authentication required! ...");
                                           write(client_sockfd,auth,sizeof(auth));
                                           read(client_sockfd,getpasswd,sizeof(getpasswd));
-                                          log_string(getpasswd);
+                                          //log_string(getpasswd);
                                           //check here
                                           if(strcmp(getpasswd,"jasmtest") == 0)
                                           {
-											log_string("[DEBUG][PWD][OK]Password accepted!\n[DEBUG][PWD][OK]Authorized\n");
-                                            write(client_sockfd,granted,sizeof(granted));
+											log_string("[PWD][OK]Password accepted!\n");
+											log_string("[PWD][OK]Authorized!\n");
 								          }		
-                                          else
-                                            write(client_sockfd,denied,sizeof(denied));
+                                          else if(strcmp(getpasswd,"jasmtest") != 0)
+                                          {
+											 log_string("[PWD][DEN]Wrong password!\n");
+											 log_string("[PWD][DEN]Closing connection...\n");
+											 close(client_sockfd);
+										  }
 										}
                                         else
                                         {
