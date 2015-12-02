@@ -60,8 +60,7 @@ int start_client(const char* srv_ip)
           printf("+-----------------------------------------------------------------------+\n");
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
           printf("* Password: ");
-          
-          scanf("%s",&get_my_pass);
+         
           write(sockfd,get_my_pass,sizeof(get_my_pass));
         }
         else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
