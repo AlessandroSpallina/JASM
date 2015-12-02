@@ -36,8 +36,9 @@ int start_client(const char* srv_ip)
         char get_msg_from_server[256];
         struct sockaddr_in address;
         int result;
-        char get_my_pass[30]="jasmtes";
-
+        char get_my_pass[256];
+        char answer[10];
+        
         sockfd=socket(AF_INET, SOCK_STREAM, 0);
 
         address.sin_family=AF_INET;
@@ -53,18 +54,38 @@ int start_client(const char* srv_ip)
                 exit(1);
         }
 
-        read(sockfd,get_msg_from_server,255);
+        if(read(sockfd,get_msg_from_server,256) < 0)
+         printf("* Read error\n");
 
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
           printf("+-----------------------------------------------------------------------+\n");
           printf("* Authentication is required before accessing JASM Command Line Interface\n");
-          printf("* Password: \n");
-         
-          write(sockfd,get_my_pass,sizeof(get_my_pass));
-        }
-        else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
-          printf("* Authentication is not required for this session\n");
+          printf("* Password: ");
+          //fgets(get_my_pass,sizeof(get_my_pass),stdin);
+          scanf("%s",&get_my_pass); //temporary
+          
+          if(write(sockfd,get_my_pass,256) < 0)
+           printf("* Error on write\n");
+           
+          if(read(sockfd,answer,sizeof(answer)) < 0)
+           printf("* Error on read\n");
+   
+          if(strcmp(answer,"denied") == 0)
+          {
+			  printf("* Non-authorized access!!\n");
+			  printf("* Exiting...\n");
+			  close(sockfd);
+			  exit(3);
+		  }
+		  else if(strcmp(answer,"granted") == 0)
+		  {
+			  printf("* Great                       *\n");
+			  printf("* Authorized for this session *\n");
+          }
+	  }
+      else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
+        printf("* Authentication is not required for this session\n");
           
         return sockfd;
 }

@@ -95,7 +95,6 @@ void start_server()
         struct sockaddr_in client_address;
         int result;
         char client_ipaddr[30]; // testing purposes
-        char not_required[19]="auth-not-required";
 
         fd_set readfds, testfds;
 
@@ -140,32 +139,37 @@ void start_server()
 										{
                                           char getpasswd[256];
                                           char auth[256]="auth-required";
-                                          char granted[9]="granted";
-                                          char denied[7]="denied";
+                                          char granted[7]="granted";
+                                          char denied[6]="denied";
                                           //checks that password file exists!
+                                          /**PRIORITY FOR  check_passwd_file() **/
 										  //check_passwd_file("passfile",client_sockfd);
            								  log_string("[CLIENT-AUTH]Authentication required! ...");
-                                          write(client_sockfd,auth,sizeof(auth));
-                                          read(client_sockfd,getpasswd,sizeof(getpasswd));
+                                          if(write(client_sockfd,auth,256) < 0) log_error("[write()][auth] Error\n");
+                                          if(read(client_sockfd,getpasswd,256) < 0) log_error("[read()][getpasswd] Error\n");
                                           //log_string(getpasswd);
                                           //check here
                                           if(strcmp(getpasswd,"jasmtest") == 0)
                                           {
 											log_string("[PWD][OK]Password accepted!\n");
 											log_string("[PWD][OK]Authorized!\n");
+											if(write(client_sockfd,granted,7) < 0)
+											  log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted\n");
 								          }		
                                           else if(strcmp(getpasswd,"jasmtest") != 0)
                                           {
 											 log_error("[PWD][DEN]Wrong password!\n");
 											 log_error("[PWD][DEN]Closing connection...\n");
-											 if (write(client_sockfd,denied,sizeof(denied)) < 0)
+											 if (write(client_sockfd,denied,6) < 0)
 											   log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
 										  }
 										}
                                         else
                                         {
-                                          write(client_sockfd,not_required,sizeof(not_required));
-                                          log_string("[CLIENT-AUTH]Authentication NOT required!");
+									      char not_required[18]="auth-not-required";
+                                          if(write(client_sockfd,not_required,18) < 0)
+                                           log_error("[write()] Error\n");
+                                          log_string("[CLIENT-AUTH]Authentication NOT required!\n");
                                         }
 
                                         sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %d.%d.%d.%d\
