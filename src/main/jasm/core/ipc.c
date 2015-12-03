@@ -26,12 +26,17 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <crypt.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "getter.h"
 
+/**
+ Todo:
+ -> fix sockets
+ -> passwd lenght
+ -> fgets()
+ */
 
 static void excecute_command(int fd, char *command)
 {
@@ -90,13 +95,13 @@ static void excecute_command(int fd, char *command)
 
 void start_server()
 {
-	#ifdef PASSWD_ENC_FILE
-	//use it
-	#else
-	char PASSWD_ENC_FILE[256];
-	strcpy(PASSWD_ENC_FILE, getenv("HOME"));
-	strcat(PASSWD_ENC_FILE, "/.jpwd");
-	#endif
+  #ifdef PASSWD_ENC_FILE
+        //use it
+  #else
+        char PASSWD_ENC_FILE[256];
+        strcpy(PASSWD_ENC_FILE, getenv("HOME"));
+        strcat(PASSWD_ENC_FILE, "/.jpwd");
+  #endif
 
         int server_sockfd, client_sockfd;
         int server_len;
@@ -145,49 +150,90 @@ void start_server()
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
                                         FD_SET(client_sockfd, &readfds);
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
-										if(login_required(client_ipaddr) == 1)
-										{
-                                          char getpasswd[256];
-                                          char auth[256]="auth-required";
-                                          char granted[7]="granted";
-                                          char denied[6]="denied";
-                                          //char chkpwd[15]="check-pwd-file";
-                                          //checks that password file exists!
-                                          /**PRIORITY FOR  check_passwd_file() **/
-										  //check_passwd_file(chkpwd,15,client_sockfd);
-           								  log_string("[CLIENT-AUTH]Authentication required! ...");
-                                          if(write(client_sockfd,auth,256) < 0) log_error("[write()][auth] Error\n");
-                                          if(read(client_sockfd,getpasswd,256) < 0) log_error("[read()][getpasswd] Error\n");
-                                          //log_string(getpasswd);
-                                          //check here
-                                          if(strcmp(getpasswd,"jasmtest") == 0)
-                                          {
-											log_string("[PWD][OK]Password accepted!\n");
-											log_string("[PWD][OK]Authorized!\n");
-											if(write(client_sockfd,granted,7) < 0)
-											  log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted\n");
-								          }
-                                          else if(strcmp(getpasswd,"jasmtest") != 0)
-                                          {
-											 log_error("[PWD][DEN]Wrong password!\n");
-											 log_error("[PWD][DEN]Closing connection...\n");
-											 if (write(client_sockfd,denied,6) < 0)
-											   log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
-										  }
-										}
+                                        if(login_required(client_ipaddr) == 1)
+                                        {
+                                                char getpasswd[256];
+                                                char auth[256]="auth-required";
+                                                char granted[7]="granted";
+                                                char denied[6]="denied";
+                                                char needfile[19]="need-to-create-file";
+                                                char notneedf[9]="pass-file";
+                                                char passwd_from_client[BUFSIZ];
+
+                                                FILE* source_passwd;
+
+
+                                                log_string("[CLIENT-AUTH]Authentication required! ...");
+                                                if(write(client_sockfd,auth,256) < 0)
+                                                        log_error("[write()][auth] Error\n");
+
+                                                if(check_passwd_file(PASSWD_ENC_FILE) == 0)
+                                                {
+                                                        if(write(client_sockfd,notneedf,9) < 0)
+                                                                log_error("[check_passwd_file][write()] Error\n");
+                                                }
+                                                else if(check_passwd_file(PASSWD_ENC_FILE) == 1)
+                                                {
+                                                        if(write(client_sockfd,needfile,19) < 0)
+                                                                log_error("[check_passwd_file][write()] Error\n");
+                                                }
+
+
+                                                if(read(client_sockfd,getpasswd,256) < 0) log_error("[read()][getpasswd] Error\n");
+
+                                                if((source_passwd=fopen(PASSWD_ENC_FILE,"r")) != NULL)
+                                                {
+                                                        fgets(passwd_from_client,BUFSIZ,source_passwd);
+                                                        fclose(source_passwd);
+                                                }
+
+                                                if(strcmp(getpasswd,passwd_from_client) == 0)
+                                                {
+                                                        log_string("[PWD][OK]Password accepted!\n");
+                                                        log_string("[PWD][OK]Authorized!\n");
+                                                        if(write(client_sockfd,granted,7) < 0)
+                                                                log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted\n");
+                                                }
+                                                else if(strcmp(getpasswd,passwd_from_client) != 0)
+                                                {
+                                                        log_error("[PWD][DEN]Wrong password!\n");
+                                                        log_error("[PWD][DEN]Closing connection...\n");
+                                                        if (write(client_sockfd,denied,6) < 0)
+                                                                log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
+                                                }
+                                        }
                                         else
                                         {
-										  /**WIP**/
-										  char chkpwd[14]="check-pwd-file";
-										  char nochkpwd[13]="nochk-pwdfile";
-										  char getpwd[256];
+                                                /**WIP**/
+                                                char chkpwd[15]="check-pwd-file\0";
+                                                char nochkpwd[14]="nochk-pwdfile\0";
+                                                int chkfile;
 
-									      char not_required[18]="auth-not-required";
-                                          if(write(client_sockfd,not_required,18) < 0) log_error("[write()] Error\n");
-                                          log_string("[CLIENT-AUTH]Authentication NOT required!\n");
-                                          if(write(client_sockfd,chkpwd,14) < 0) log_error("[write()] Error\n");
-                                          //                     ^-> replace with chkpwd
-                                          //check_passwd_file(PASSWD_ENC_FILE,"something");
+                                                char not_required[18]="auth-not-required\0";
+                                                if(write(client_sockfd,not_required,18) < 0) log_error("[not_required][write()] Error\n");
+                                                log_string("[CLIENT-AUTH]Authentication NOT required!\n");
+                                                chkfile=check_passwd_file(PASSWD_ENC_FILE);
+
+                                                if(chkfile == 0)
+                                                {
+                                                        if(write(client_sockfd,nochkpwd,14) < 0)
+                                                                log_error("[chkfile][retval0][write()] error\n");
+                                                }
+                                                else if(chkfile == 1)
+                                                {
+                                                        FILE *pswfp;
+                                                        char buf_in_passwd[256];
+
+                                                        if(write(client_sockfd,chkpwd,15) < 0) log_error("write() error\n");
+                                                        if(read(client_sockfd,buf_in_passwd,sizeof(buf_in_passwd)) < 0)
+                                                                log_error("[chkfile][retval1][read()] error\n");
+                                                        log_string(buf_in_passwd);
+                                                        if((pswfp=fopen(PASSWD_ENC_FILE,"w+")) != NULL)
+                                                        {
+                                                                fputs(buf_in_passwd,pswfp);
+                                                                fclose(pswfp);
+                                                        }
+                                                }
                                         }
 
                                         sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %d.%d.%d.%d\

@@ -40,7 +40,7 @@ void print_welcome(const char* usern, int sockfd)
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
-        
+
         if(strcmp("quit", buffer)==0) {
                 close(fd);
                 printf("Bye!\n");
@@ -52,18 +52,18 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
                         printf("Sending [%s]\n\n", buffer);
                         if(write(fd, "help\0", 5)<0)
-                        	perror("write on fd FAIL");
+                                perror("write on fd FAIL");
 
                         //riceve i getter
                         if(read(fd, &ngetter, sizeof(ngetter))<0)
-                        	perror("read on fd FAIL");
-                        	
+                                perror("read on fd FAIL");
+
                         printf("\n**JASM Help page**\n");
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
                                 if(read(fd, (void *)buffer, sizeof(buffer))<0)
-                                	perror("read on fd FAIL");
+                                        perror("read on fd FAIL");
                                 printf("%d) %s\n", i, buffer);
                         }
                         //riceve gli starter dei moduli
@@ -83,8 +83,8 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         return;
 
                 } else {
-                	int n;
-                
+                        int n;
+
                         printf("sending [%s - %d byte]\n", buffer, (int) write(fd, (void *)buffer, strlen(buffer)+1));
                         memset(buffer, 0, BUFSIZ);
                         n=read(fd, (void *)buffer, sizeof(buffer));
@@ -96,15 +96,15 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 }
 
-void clean_socket(int fd)
-{
-	char tmp[BUFSIZ];
-	
-	read(fd, tmp, sizeof(tmp));
-	printf("clean: %s\n", tmp);
+/*
+   void clean_socket(int fd)
+   {
+   char tmp[BUFSIZ];
 
-
-}
+   read(fd, tmp, sizeof(tmp));
+   printf("clean: %s\n", tmp);
+   }
+ */
 
 void parse_options(int argc, char *argv[])
 {
@@ -112,16 +112,16 @@ void parse_options(int argc, char *argv[])
         {
                 if(strcmp(argv[1],"--connect-server") == 0 )
                 {
-                  if(argc == 3)
-                  {
-                    server_ip = argv[2];
-                    printf("* Connecting to: %s ...\n",server_ip);
-                  }
-                  else if(argc < 3)
-                  {
-                    printf("* You must specify an IP address!\n");
-                    exit(3);
-                  }
+                        if(argc == 3)
+                        {
+                                server_ip = argv[2];
+                                printf("* Connecting to: %s ...\n",server_ip);
+                        }
+                        else if(argc < 3)
+                        {
+                                printf("* You must specify an IP address!\n");
+                                exit(3);
+                        }
                 }
         }
         //else if ...
@@ -138,11 +138,11 @@ int main(int argc, char *argv[])
         parse_options(argc, argv);
 
         fd=start_client(server_ip);
-       
+
         print_welcome(username, fd);
-        
+
         signal_catcher();
-        clean_socket(fd);
+        //clean_socket(fd);
 
         while(1) {
                 printf("-[%s]-> ", username);

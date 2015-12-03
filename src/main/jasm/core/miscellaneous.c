@@ -119,24 +119,12 @@ void start_daemon()
 /*LOGIN SECTION*/
 int login_required(const char* clientaddr)
 {
-	if(strcmp(clientaddr,LOCALHOST) == 0)
-		return 0;
-	else
-		return 1;
+	if(strcmp(clientaddr,LOCALHOST) == 0) return 0;
+	else return 1;
 }
 
-int check_passwd_file(const char* __pwdf,const char* __passwd)
+int check_passwd_file(const char* __pwdf)
 {
-	FILE *pswfile;
-	if((pswfile = fopen(__pwdf,"a+")) == NULL)
-	{
-		fprintf(pswfile, "%s",crypt(__passwd,"$6$"));
-        fclose(pswfile);
-		return 1;
-	}
-	else
-	{
-	  fclose(pswfile);
-	  return 0;
-    }
+	if(access(__pwdf,F_OK) != -1) return 0;
+  else return 1;
 }
