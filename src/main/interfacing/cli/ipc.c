@@ -37,8 +37,9 @@ int start_client(const char* srv_ip)
         struct sockaddr_in address;
         int result;
         char get_my_pass[256];
-        char answer[10];
-        
+        char answer[BUFSIZ];
+        char passauth[10];
+
         sockfd=socket(AF_INET, SOCK_STREAM, 0);
 
         address.sin_family=AF_INET;
@@ -55,56 +56,69 @@ int start_client(const char* srv_ip)
         }
 
         if(read(sockfd,get_msg_from_server,256) < 0)
-         printf("* Read error\n");
+                fprintf(stderr,"* Reading from socket error\n");
 
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
-          printf("+-----------------------------------------------------------------------+\n");
-          printf("* Authentication is required before accessing JASM Command Line Interface\n");
-          printf("* Password: ");
-          //fgets(get_my_pass,sizeof(get_my_pass),stdin);
-          scanf("%s", get_my_pass); //temporary
-          
-          if(write(sockfd, get_my_pass, 256) < 0)
-           printf("* Error on write\n");
-           
-          if(read(sockfd, answer, sizeof(answer)+1) < 0)
-           printf("* Error on read\n");
-   
-          if(strcmp(answer,"denied") == 0)
+          if(read(sockfd, answer, sizeof(answer)) < 0)printf("* Error on read\n");
+          //printf("%s",answer);
+          if(strcmp(answer,"need-to-create-file") == 0)
           {
-			  printf("* Non-authorized access!!\n");
-			  printf("* Exiting...\n");
-			  close(sockfd);
-			  exit(3);
-		  }
-		  else if(strcmp(answer,"granted") == 0)
-		  {
-			  printf("* Great                       *\n");
-			  printf("* Authorized for this session *\n");
-          }			 
-		  
-	  	}
-      else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
-      {
-		char if_set_file[14];
-        printf("* Authentication is not required for this session\n");
-        
-        read(sockfd,if_set_file,14);
-        
-        if(strcmp(if_set_file,"check-pwd-file") == 0)
+                  printf("* Password not availible\n");
+                  printf("* Access computer phisically, then run jasmcli to set a password\n");
+                  printf("* Instructions are explained from jasmcli.\n");
+                  close(sockfd);
+                  exit(4);
+          }
+          else if(strcmp(answer,"pass-file") == 0)
+          {}
+                printf("+-----------------------------------------------------------------------+\n");
+                printf("* Authentication is required before accessing JASM Command Line Interface\n");
+                printf("* Password: ");
+                //fgets(get_my_pass,256,stdin);
+                scanf("%s", get_my_pass); //temporary
+
+                if(write(sockfd, get_my_pass, 256) < 0)fprintf(stderr,"* Error writing pwd to server\n");
+                if(read(sockfd,passauth,sizeof(passauth)) < 0)fprintf(stderr,"* Error reading server response\n");
+
+                if(strcmp(passauth,"denied") == 0)
+                {
+                        printf("* Non-authorized access!!\n");
+                        printf("* Exiting...\n");
+                        close(sockfd);
+                        exit(3);
+                }
+                else if(strcmp(passauth,"granted") == 0)
+                {
+                        printf("* Great                       *\n");
+                        printf("* Authorized for this session *\n");
+                }
+
+
+        }
+        else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
         {
-			  char psw_to_use[256];
-			  
-			  printf("* You have to set a password for JASM, in order to avoid intrusion\n");
-			  printf("* This password will be encrypted *\n");
-			  printf("* Password to use[MAX: 256 chars]: ");
-			  
-			  scanf("%s", psw_to_use);
-			  write(sockfd,psw_to_use,sizeof(psw_to_use));
-		}
-		else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
-		{}
-	   }
+                char if_set_file[14];
+                printf("* Authentication is not required for this session\n");
+
+                if(read(sockfd,if_set_file,14)<0) fprintf(stderr,"* Error reading fexisting\n");
+
+                if(strcmp(if_set_file,"check-pwd-file") == 0)
+                {
+                        char psw_to_use[256];
+
+                        printf("* You have to set a password for JASM, in order to avoid intrusion\n");
+                        printf("* This password will NOT be encrypted *\n");
+                        printf("* Password to use[MAX: 256 chars]: ");
+
+                        scanf("%s", psw_to_use);
+                        strcat(psw_to_use,"\0");
+                        //printf("%s\n",psw_to_use);
+                        if(write(sockfd,psw_to_use,sizeof(psw_to_use))<0)fprintf(stderr,"* Error sending pwd\n");
+                }
+                else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
+                {}
+        }
+
         return sockfd;
 }
