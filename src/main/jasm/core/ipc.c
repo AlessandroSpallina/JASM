@@ -65,7 +65,7 @@ static void excecute_command(int fd, char *command)
                 }
 
                 log_error("Getter NOT found :(");
-                write(fd, "null\0", 4);
+                write(fd, "null\0", 5);
                 return;
         }
 
@@ -73,7 +73,7 @@ static void excecute_command(int fd, char *command)
         if(strncmp("start", command, 5)==0) { //recieved start mod
 
                 log_error("Start NOT found :(");
-                write(fd, "null\0", 4);
+                write(fd, "null\0", 5);
                 return;
         }
 
@@ -85,17 +85,18 @@ static void excecute_command(int fd, char *command)
         }
 
         log_error("[CMD] Command not found!");
-        write(fd, "NotFound\0", 8);
+        write(fd, "NotFound\0", 9);
 }
 
 void start_server()
 {
-#ifdef PASSWD_ENC_FILE
-//use it
-#else
-char PASSWD_ENC_FILE[256];
-PASSWD_ENC_FILE[256]="%s/.jpwd",getenv("HOME");
-#endif
+	#ifdef PASSWD_ENC_FILE
+	//use it
+	#else
+	char PASSWD_ENC_FILE[256];
+	strcpy(PASSWD_ENC_FILE, getenv("HOME"));
+	strcat(PASSWD_ENC_FILE, "/.jpwd");
+	#endif
 
         int server_sockfd, client_sockfd;
         int server_len;
@@ -165,7 +166,7 @@ PASSWD_ENC_FILE[256]="%s/.jpwd",getenv("HOME");
 											log_string("[PWD][OK]Authorized!\n");
 											if(write(client_sockfd,granted,7) < 0)
 											  log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted\n");
-								          }		
+								          }
                                           else if(strcmp(getpasswd,"jasmtest") != 0)
                                           {
 											 log_error("[PWD][DEN]Wrong password!\n");
@@ -180,7 +181,7 @@ PASSWD_ENC_FILE[256]="%s/.jpwd",getenv("HOME");
 										  char chkpwd[14]="check-pwd-file";
 										  char nochkpwd[13]="nochk-pwdfile";
 										  char getpwd[256];
-										  
+
 									      char not_required[18]="auth-not-required";
                                           if(write(client_sockfd,not_required,18) < 0) log_error("[write()] Error\n");
                                           log_string("[CLIENT-AUTH]Authentication NOT required!\n");

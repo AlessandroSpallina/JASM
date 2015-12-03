@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
@@ -39,7 +40,7 @@ void print_welcome(const char* usern, int sockfd)
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
-        signal_catcher();
+        
         if(strcmp("quit", buffer)==0) {
                 close(fd);
                 printf("Bye!\n");
@@ -50,15 +51,19 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         int ngetter=0;
 
                         printf("Sending [%s]\n\n", buffer);
-                        write(fd, (void *)buffer, BUFSIZ);
+                        if(write(fd, "help\0", 5)<0)
+                        	perror("write on fd FAIL");
 
                         //riceve i getter
-                        read(fd, &ngetter, sizeof(ngetter));
-                        printf("**JASM Help page**\n");
+                        if(read(fd, &ngetter, sizeof(ngetter))<0)
+                        	perror("read on fd FAIL");
+                        	
+                        printf("\n**JASM Help page**\n");
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
-                                read(fd, (void *)buffer, BUFSIZ);
+                                if(read(fd, (void *)buffer, sizeof(buffer))<0)
+                                	perror("read on fd FAIL");
                                 printf("%d) %s\n", i, buffer);
                         }
                         //riceve gli starter dei moduli
@@ -78,15 +83,26 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         return;
 
                 } else {
-                        printf("sending [%s]\n", buffer);
-                        write(fd, (void *)buffer, BUFSIZ);
+                	int n;
+                
+                        printf("sending [%s - %d byte]\n", buffer, (int) write(fd, (void *)buffer, strlen(buffer)+1));
                         memset(buffer, 0, BUFSIZ);
-                        read(fd, (void *)buffer, BUFSIZ);
-                        printf("%s\n", buffer);
+                        n=read(fd, (void *)buffer, sizeof(buffer));
+                        printf("receiving [%s - %d byte]\n", buffer, n);
                         return;
                 }
 
         }
+
+}
+
+void clean_socket(int fd)
+{
+	char tmp[BUFSIZ];
+	
+	read(fd, tmp, sizeof(tmp));
+	printf("clean: %s\n", tmp);
+
 
 }
 
@@ -124,6 +140,9 @@ int main(int argc, char *argv[])
         fd=start_client(server_ip);
        
         print_welcome(username, fd);
+        
+        signal_catcher();
+        clean_socket(fd);
 
         while(1) {
                 printf("-[%s]-> ", username);

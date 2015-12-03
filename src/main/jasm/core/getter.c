@@ -46,18 +46,18 @@ void getGetter(int fd)
 
         write(fd, &ngetter, sizeof(ngetter));
         for(i=0; i<NGETTER; i++) {
-                write(fd, getterName[i], BUFSIZ);
+                write(fd, getterName[i], strlen(getterName[i])+1);
         }
 }
 
 void getVersion(int fd)
 {
-        write(fd, VERSION, BUFSIZ);
+        write(fd, VERSION, strlen(VERSION)+1);
 }
 
 void getCopyright(int fd)
 {
-        write(fd, COPYRIGHT, BUFSIZ);
+        write(fd, COPYRIGHT, strlen(COPYRIGHT)+1);
 }
 
 void getHostname(int fd)
@@ -70,7 +70,7 @@ void getHostname(int fd)
                 return;
         } else {
                 strcpy(buf, info.nodename);
-                write(fd, buf, BUFSIZ);
+                write(fd, buf, strlen(buf)+1);
         }
 }
 
@@ -84,7 +84,7 @@ void getKernelName(int fd)
                 return;
         } else {
                 strcpy(buf, info.sysname);
-                write(fd, buf, BUFSIZ);
+                write(fd, buf, strlen(buf)+1);
         }
 }
 
@@ -98,7 +98,7 @@ void getKernelRelease(int fd)
                 return;
         } else {
                 strcpy(buf, info.release);
-                write(fd, buf, BUFSIZ);
+                write(fd, buf, strlen(buf)+1);
         }
 }
 
@@ -112,7 +112,7 @@ void getKernelVersion(int fd)
                 return;
         } else {
                 strcpy(buf, info.version);
-                write(fd, buf, BUFSIZ);
+                write(fd, buf, strlen(buf)+1);
         }
 }
 
@@ -126,6 +126,6 @@ void getMachine(int fd)
                 return;
         } else {
                 strcpy(buf, info.machine);
-                write(fd, buf, BUFSIZ);
+                write(fd, buf, strlen(buf)+1);
         }
 }
