@@ -113,6 +113,8 @@ void start_server()
 
         fd_set readfds, testfds;
 
+        client_sockfd=0;
+        
         server_sockfd=socket(AF_INET, SOCK_STREAM, 0); //fix
         server_address.sin_family=AF_INET;
         server_address.sin_addr.s_addr=htonl(INADDR_ANY);
@@ -168,28 +170,14 @@ void start_server()
                                                 char auth[14]="auth-required\0"; //fix this (array Bytes)
                                                 char granted[8]="granted\0";
                                                 char denied[7]="denied\0";
-                                                char needfile[20]="need-to-create-file\0";
-                                                char notneedf[10]="pass-file\0";
                                                 char passwd_from_client[BUFSIZ];
 											    // Check
 
                                                 FILE* source_passwd;
 
                                                 log_string("[CLIENT-AUTH]Authentication required! ...");
-                                                if(write(client_sockfd,auth,14) < 0)
+                                                if(write(client_sockfd,auth,sizeof(auth)) < 0)
                                                         log_error("[write()][auth] Error\n");
-
-                                                if(check_passwd_file(PASSWD_ENC_FILE) == 0)
-                                                {
-                                                        if(write(client_sockfd,notneedf,10) < 0)
-                                                                log_error("[check_passwd_file][write()] Error\n");
-                                                }
-                                                else if(check_passwd_file(PASSWD_ENC_FILE) == 1)
-                                                {
-                                                        if(write(client_sockfd,needfile,20) < 0)
-                                                                log_error("[check_passwd_file][write()] Error\n");
-                                                }
-
 
                                                 if(read(client_sockfd,getpasswd,sizeof(getpasswd)) < 0) log_error("[read()][getpasswd] Error\n");
 

@@ -37,7 +37,6 @@ int start_client(const char* srv_ip)
         struct sockaddr_in address;
         int result;
         char get_my_pass[256];
-        char answer[20]; //check this
         char passauth[10];
 
         sockfd=socket(AF_INET, SOCK_STREAM, 0); //return code checking
@@ -61,26 +60,12 @@ int start_client(const char* srv_ip)
         printf("%s\n",get_msg_from_server);
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
-		  //sizeof() deprecated to get string lenght. use strlen() instead
-		  //use sizeof() to get other value
-          if(read(sockfd, answer, sizeof(answer)) < 0)printf("* Error on read\n");
 
-          printf("%s",answer);
-          if(strcmp(answer,"need-to-create-file") == 0)
-          {
-                  printf("* Password not availible\n");
-                  printf("* Access computer phisically, then run jasmcli to set a password\n");
-                  printf("* Instructions are explained from jasmcli.\n");
-                  close(sockfd);
-                  exit(4);
-          }
-          else if(strcmp(answer,"pass-file") == 0)
-          {}
                 printf("+-----------------------------------------------------------------------+\n");
                 printf("* Authentication is required before accessing JASM Command Line Interface\n");
                 printf("* Password: ");
-                //fgets(get_my_pass,256,stdin);
-                scanf("%s", get_my_pass); //temporary,avoiding buffer overflow
+                fgets(get_my_pass,BUFSIZ,stdin);
+                //scanf("%s", get_my_pass); //temporary,avoiding buffer overflow
 
                 if(write(sockfd, get_my_pass, 256) < 0)fprintf(stderr,"* Error writing pwd to server\n");
 			    //strlen()
@@ -118,10 +103,10 @@ int start_client(const char* srv_ip)
                         printf("* This password will NOT be encrypted *\n");
                         printf("* Password to use[MAX: 256 chars]: ");
 
-                        scanf("%s", psw_to_use);
+                        //scanf("%s", psw_to_use);
+                        fgets(psw_to_use,BUFSIZ,stdin);
                         strcat(psw_to_use,"\0");
                         //printf("%s\n",psw_to_use);
-					    //strlen()+1
                         if(write(sockfd,psw_to_use,sizeof(psw_to_use))<0)fprintf(stderr,"* Error sending pwd\n");
                 }
                 else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
