@@ -130,7 +130,7 @@ void parse_options(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
         int fd;
-        char buf[BUFSIZ]="none";
+        char buf[BUFSIZ]="none"; //check
         char *username=getenv("USER");
 
         server_ip = "127.0.0.1";

@@ -1,0 +1,4 @@
+*.anjuta
+*.cbp
+*.depend
+*.vimrc

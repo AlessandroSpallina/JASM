@@ -109,7 +109,7 @@ void start_server()
         struct sockaddr_in server_address;
         struct sockaddr_in client_address;
         int result;
-        char client_ipaddr[30];
+        char client_ipaddr[30]; // testing purposes
 
         fd_set readfds, testfds;
 
@@ -119,19 +119,11 @@ void start_server()
         server_address.sin_port=htons(SERVER_PORT);
         server_len=sizeof(server_address);
 
-	    // fix
-        if(bind(server_sockfd, (struct sockaddr *)&server_address, server_len) < 0)
-        {
-            log_error("[JASM-DAEMON][bind()]Failed to bind socket! Exiting...\n");
-            exit(4);
-        }
+	    // fix 
+        bind(server_sockfd, (struct sockaddr *)&server_address, server_len);
 
-	    // fix
-        if(listen(server_sockfd, 5) < 0)
-        {
-            log_error("[JASM-DAEMON][listen()]Failed to put socket in listening mode! Exiting...\n");
-            exit(4);
-        }
+	    // fix 
+        listen(server_sockfd, 5);
 
         FD_ZERO(&readfds);
         FD_SET(server_sockfd, &readfds);
@@ -149,7 +141,7 @@ void start_server()
                 result=select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, (struct timeval *)0);
 
                 if(result<1) {
-                        log_error("[JASM-DAEMON][select()]Server failed");
+                        log_error("[JASM-DAEMON]Server failed");
                         exit(1);
                 }
 
@@ -159,39 +151,39 @@ void start_server()
                                         client_len=sizeof(client_address);
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
                                         FD_SET(client_sockfd, &readfds);
-									    //fix this below
+									    //fix this below 
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                         if(login_required(client_ipaddr) == 1)
                                         {
 											    // I need to add \0 -> 0 Byte
                                                 char getpasswd[256];
-                                                char auth[14]="auth-required\0"; //fix this (array Bytes)
-                                                char granted[8]="granted\0";
-                                                char denied[7]="denied\0";
-                                                char needfile[20]="need-to-create-file\0";
-                                                char notneedf[10]="pass-file\0";
+                                                char auth[256]="auth-required"; //fix this (array Bytes)
+                                                char granted[7]="granted";
+                                                char denied[6]="denied";
+                                                char needfile[19]="need-to-create-file";
+                                                char notneedf[9]="pass-file";
                                                 char passwd_from_client[BUFSIZ];
-											    // Check
+											    // Check 
 
                                                 FILE* source_passwd;
 
                                                 log_string("[CLIENT-AUTH]Authentication required! ...");
-                                                if(write(client_sockfd,auth,14) < 0)
+                                                if(write(client_sockfd,auth,256) < 0)
                                                         log_error("[write()][auth] Error\n");
 
                                                 if(check_passwd_file(PASSWD_ENC_FILE) == 0)
                                                 {
-                                                        if(write(client_sockfd,notneedf,10) < 0)
+                                                        if(write(client_sockfd,notneedf,9) < 0)
                                                                 log_error("[check_passwd_file][write()] Error\n");
                                                 }
                                                 else if(check_passwd_file(PASSWD_ENC_FILE) == 1)
                                                 {
-                                                        if(write(client_sockfd,needfile,20) < 0)
+                                                        if(write(client_sockfd,needfile,19) < 0)
                                                                 log_error("[check_passwd_file][write()] Error\n");
                                                 }
 
 
-                                                if(read(client_sockfd,getpasswd,sizeof(getpasswd)) < 0) log_error("[read()][getpasswd] Error\n");
+                                                if(read(client_sockfd,getpasswd,256) < 0) log_error("[read()][getpasswd] Error\n");
 
                                                 if((source_passwd=fopen(PASSWD_ENC_FILE,"r")) != NULL)
                                                 {
@@ -203,14 +195,14 @@ void start_server()
                                                 {
                                                         log_string("[PWD][OK]Password accepted!\n");
                                                         log_string("[PWD][OK]Authorized!\n");
-                                                        if(write(client_sockfd,granted,8) < 0)
+                                                        if(write(client_sockfd,granted,7) < 0)
                                                                 log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted\n");
                                                 }
                                                 else if(strcmp(getpasswd,passwd_from_client) != 0)
                                                 {
                                                         log_error("[PWD][DEN]Wrong password!\n");
                                                         log_error("[PWD][DEN]Closing connection...\n");
-                                                        if (write(client_sockfd,denied,7) < 0)
+                                                        if (write(client_sockfd,denied,6) < 0)
                                                                 log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
                                                 }
                                         }
@@ -248,8 +240,10 @@ void start_server()
                                                 }
                                         }
 
-                                        sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s",client_sockfd,client_ipaddr);
-
+									    //replace "%d.%d.%d.%d" notation with client_ipaddr "%s" to get
+									    //better performance
+                                        sprintf(buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %d.%d.%d.%d\
+                                        ", client_sockfd, client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                         //Using the client struct
                                         log_string(buf);
                                 } else {
@@ -258,7 +252,8 @@ void start_server()
                                         if(nread==0) {
                                                 close(fd);
                                                 FD_CLR(fd, &readfds);
-                                                sprintf(buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s",client_sockfd,client_ipaddr);
+                                                sprintf(buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %d.%d.%d.%d \
+                                                ", fd, client_address.sin_addr.s_addr&0xFF, (client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                                 //Using the client struct
                                                 log_string(buf);
                                         } else {
