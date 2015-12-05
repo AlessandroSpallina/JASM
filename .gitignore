@@ -2,3 +2,4 @@
 *.cbp
 *.depend
 *.vimrc
+*.anjuta_sym_db.db
