@@ -19,6 +19,13 @@
 #include <stdio.h>
 #include <time.h>
 
+char color[4][BUFSIZ]={
+  "\033[32m", //green
+  "\033[31m", //red
+  "\033[33m", //yellow
+  "\033[34m" //blue
+};
+
 void log_string(const char *message)
 {
   printf("# Sys: %s\n", message);

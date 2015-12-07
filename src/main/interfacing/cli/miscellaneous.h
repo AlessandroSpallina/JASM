@@ -19,6 +19,8 @@
 #ifndef _MISCELLANEOUS_H
 #define _MISCELLANEOUS_H
 
+char color[4][BUFSIZ];
+
 extern void log_string(const char *message);
 extern char* getTime(void);
 
