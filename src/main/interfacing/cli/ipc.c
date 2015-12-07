@@ -26,7 +26,9 @@
 #include <string.h>
 
 #include "ipc.h"
+#include "miscellaneous.h"
 
+//NOTE:Error codes defined @ miscellaneous.h
 
 //Connects to the server and returns *** socket
 int start_client(const char* srv_ip)
@@ -43,7 +45,7 @@ int start_client(const char* srv_ip)
         if(sockfd < 0)
         {
           perror("* Error while creating new socket\n* Exiting...\n");
-          exit(3);
+          exit(SOCKET_CREATION_FAILED);
         }
 
         address.sin_family=AF_INET;
@@ -56,16 +58,15 @@ int start_client(const char* srv_ip)
         if(result < 0)
         {
                 perror("Unable to connect with server\n");
-                exit(1);
+                exit(SOCKET_CONNECTION_FAILED);
         }
 
         if(read(sockfd,get_msg_from_server,sizeof(get_msg_from_server)) < 0)
                 perror("* Reading from socket error\n");
 
-        printf("%s\n",get_msg_from_server);
+        //printf("%s\n",get_msg_from_server);
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
-
                 printf("+-----------------------------------------------------------------------+\n");
                 printf("* Authentication is required before accessing JASM Command Line Interface\n");
                 printf("* Password: ");
@@ -79,7 +80,7 @@ int start_client(const char* srv_ip)
                         printf("* Non-authorized access!!\n");
                         printf("* Exiting...\n");
                         close(sockfd);
-                        exit(3);
+                        exit(PASSWD_REFUSED_ERROR);
                 }
                 else if(strcmp(passauth,"granted") == 0)
                 {
@@ -95,7 +96,7 @@ int start_client(const char* srv_ip)
                 printf("* Authentication is not required for this session\n");
 
                 if(read(sockfd,if_set_file,15)<0) perror("* Error reading fexisting\n");
-                printf("%s\n",if_set_file);
+                //printf("%s\n",if_set_file);
 
                 if(strcmp(if_set_file,"check-pwd-file") == 0)
                 {

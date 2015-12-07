@@ -18,6 +18,10 @@
 ****************************************************************************/
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
+
+char buildtime[BUFSIZ]="null";
+char debugstr[BUFSIZ]="null";
 
 char color[4][BUFSIZ]={
   "\033[32m", //green
@@ -43,4 +47,22 @@ char *getTime()
         ret[24]='\0';
 
         return ret;
+}
+
+void check_debug()
+{
+  #ifdef DEBUG
+  strcpy(debugstr,"* You are using JASMCLI *debug* build!");
+  #else
+  strcpy(debugstr,"\0");
+  #endif
+}
+
+void check_release()
+{
+  #ifdef BUILD_DATE_CLI
+  strcpy(buildtime,BUILD_DATE_CLI);
+  #else
+  strcpy("not availible",BUILD_DATE_CLI);
+  #endif
 }

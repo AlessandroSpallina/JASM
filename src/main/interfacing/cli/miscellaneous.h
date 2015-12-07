@@ -19,9 +19,24 @@
 #ifndef _MISCELLANEOUS_H
 #define _MISCELLANEOUS_H
 
-char color[4][BUFSIZ];
+#define _EXIT_SUCCESS 0
+
+#define ARG_SPECIFY_IPADDR 137
+
+#define PASSWD_REFUSED_ERROR 10
+
+#define NOPASSWD_SET_JASM 20
+
+#define SOCKET_CREATION_FAILED 120
+#define SOCKET_CONNECTION_FAILED 121
+
+extern char color[4][BUFSIZ];
+extern char buildtime[BUFSIZ];
+extern char debugstr[BUFSIZ];
 
 extern void log_string(const char *message);
 extern char* getTime(void);
+extern void check_debug(void);
+extern void check_release(void);
 
 #endif

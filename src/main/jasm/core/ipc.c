@@ -26,17 +26,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <syslog.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "getter.h"
 
-/**
- Todo:
- -> return codes
- -> syslog
- -> errno check for bind()
- */
+//NOTE: Error codes defined @ miscellaneous.h
 
 static void excecute_command(int fd, char *command)
 {
@@ -86,7 +82,10 @@ static void excecute_command(int fd, char *command)
         if(strcmp("halt", command)==0) { //turn off jasm
                 log_string("[CMD] halt exec");
                 write(fd, "Killing JASM...\0", 18);
-                exit(0);
+                openlog("JASM",LOG_PID,LOG_DAEMON);
+                syslog(LOG_INFO,"exiting as requested from client...");
+                closelog();
+                exit(_EXIT_SUCCESS);
         }
 
         log_error("[CMD] Command not found!");
@@ -119,7 +118,10 @@ void start_server()
         if(server_sockfd < 0)
         {
           log_error("[JASM-DAEMON][socket()]Failed to create new socket! Exiting...\n");
-          exit(4);
+          openlog("JASM",LOG_PID,LOG_DAEMON);
+          syslog(LOG_ERR,"socket creation failed!! Exiting!");
+          closelog();
+          exit(SOCKET_CREATION_FAILED);
         }
         server_address.sin_family=AF_INET;
         server_address.sin_addr.s_addr=htonl(INADDR_ANY);
@@ -128,14 +130,24 @@ void start_server()
 
         if(bind(server_sockfd, (struct sockaddr *)&server_address, server_len) < 0)
         {
-            log_error("[JASM-DAEMON][bind()]Failed to bind socket! Exiting...\n");
-            exit(4);
+            char *error_dyn="null";
+            sprintf(error_dyn,"[JASM-DAEMON][bind()]Error: %s\n",strerror(errno));
+            log_error("[JASM-DAEMON][bind()]Failed to bind socket!\n");
+            log_error(error_dyn);
+            log_error("[JASM-DAEMON] Exiting !\n");
+            openlog("JASM",LOG_PID,LOG_DAEMON);
+            syslog(LOG_ERR,"socket not correctly binded... exiting!");
+            closelog();
+            exit(SOCKET_BINDING_FAILED);
         }
 
         if(listen(server_sockfd, 5) < 0)
         {
-            log_error("[JASM-DAEMON][listen()]Failed to put socket in listening mode! Exiting...\n");
-            exit(4);
+            log_error("[JASM-DAEMON][listen()]Failed to put socket in listening mode! \n");
+            openlog("JASM",LOG_PID,LOG_DAEMON);
+            syslog(LOG_ERR,"FATAL! socket was not put to listening mode! Exiting...");
+            closelog();
+            exit(SOCKET_LISTENING_CONNECTION_FAILED);
         }
 
         FD_ZERO(&readfds);
@@ -166,7 +178,10 @@ void start_server()
                                         if(client_sockfd < 0)
                                         {
                                           log_error("[JASM-DAEMON][accept()]Failed to accept socket connection!\n");
-                                          exit(6);
+                                          openlog("JASM",LOG_PID,LOG_DAEMON);
+                                          syslog(LOG_ERR,"FATAL! Failed to accept client incoming connection! Exiting...");
+                                          closelog();
+                                          exit(SOCKET_CLIENT_CONNECTION_FAILED);
                                         }
 
                                         FD_SET(client_sockfd, &readfds);
@@ -191,6 +206,12 @@ void start_server()
                                                 {
                                                         fgets(passwd_from_client,BUFSIZ,source_passwd);
                                                         fclose(source_passwd);
+                                                }
+                                                else
+                                                {
+                                                        log_error("[JASM-DAEMON][FILE]Password file not found!");
+                                                        log_error("[SECURITY]JASM is going to be killed to avoid intrusion");
+                                                        exit(NOFILE_ERROR);
                                                 }
 
                                                 if(strcmp(getpasswd,passwd_from_client) == 0)

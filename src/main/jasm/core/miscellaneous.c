@@ -24,9 +24,11 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
-#include <crypt.h>
+#include <syslog.h>
 
 #include "miscellaneous.h"
+
+char buildate[256]="null";
 
 char *getTime()
 {
@@ -40,6 +42,15 @@ char *getTime()
         ret[24]='\0';
 
         return ret;
+}
+
+void check_buildate()
+{
+  #ifdef BUILD_DATE_CORE
+  strcpy(buildate,BUILD_DATE_CORE);
+  #else
+  strcpy(buildate,"not availible");
+  #endif
 }
 
 void log_string(const char *message)
@@ -82,20 +93,30 @@ void log_error(const char *message)
 
 void start_daemon()
 {
+        check_buildate();
 
         pid_t pid;
         char buf[BUFSIZ];
+        char buf_intro[BUFSIZ];
 
-        log_string("[JASM-DAEMON] success!");
+        sprintf(buf_intro,"[START]JASM System Monitor Starting Up... Version: %s , Build Date: %s\n",VERSION,buildate);
+
+        log_string("=======================================");
+        #ifdef DEBUG
+        log_string("[BUILD] You are using JASM debug build!");
+        #endif
+
+        log_string(buf_intro);
+        log_string("[JASM-DAEMON] Creating new process...");
         pid=fork();
         switch(pid) {
         case -1:
-                log_error("[THREAD-SPAWN][fork()] failed");
+                log_error("[PROCESS-SPAWN][fork()] failed");
                 exit(1);
                 break;
 
         case 0:
-                log_string("[THREAD-SPAWN][fork()] success");
+                log_string("[PROCESS-SPAWN][fork()] success");
                 break;
 
         default:
@@ -103,10 +124,10 @@ void start_daemon()
                 break;
         }
         if(setsid()<0) {
-                log_error("[THREAD-BACKGROUND][setsid()] failed");
+                log_error("[PROCESS-BACKGROUND][setsid()] failed");
                 exit(1);
         } else {
-                log_string("[THREAD-BACKGROUND][setsid()] success");
+                log_string("[PROCESS-BACKGROUND][setsid()] success");
         }
         //closes fd: stdin, stdout, stderr
         close(0);
@@ -114,6 +135,11 @@ void start_daemon()
         close(2);
         sprintf(buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid());
         log_string(buf);
+        log_string("[JASM-DAEMON][START] Start phase successfully completed!");
+        log_string("[JASM-DAEMON][STATUS] Ready!");
+        openlog("JASM",LOG_PID,LOG_DAEMON);
+        syslog(LOG_INFO,"SUCCESS! New jasm process created! READY!");
+        closelog();
 }
 
 /*LOGIN SECTION*/
