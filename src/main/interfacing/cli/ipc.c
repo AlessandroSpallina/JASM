@@ -26,7 +26,9 @@
 #include <string.h>
 
 #include "ipc.h"
+#include "miscellaneous.h"
 
+//NOTE:Error codes defined @ miscellaneous.h
 
 //Connects to the server and returns *** socket
 int start_client(const char* srv_ip)
@@ -40,6 +42,11 @@ int start_client(const char* srv_ip)
         char passauth[10];
 
         sockfd=socket(AF_INET, SOCK_STREAM, 0); //return code checking
+        if(sockfd < 0)
+        {
+          perror("* Error while creating new socket\n* Exiting...\n");
+          exit(SOCKET_CREATION_FAILED);
+        }
 
         address.sin_family=AF_INET;
         address.sin_addr.s_addr=inet_addr(srv_ip);
@@ -50,33 +57,30 @@ int start_client(const char* srv_ip)
 
         if(result < 0)
         {
-                fprintf(stderr, "Unable to connect with server\n");
-                exit(1);
+                perror("Unable to connect with server\n");
+                exit(SOCKET_CONNECTION_FAILED);
         }
 
         if(read(sockfd,get_msg_from_server,sizeof(get_msg_from_server)) < 0)
-                fprintf(stderr,"* Reading from socket error\n");
+                perror("* Reading from socket error\n");
 
-        printf("%s\n",get_msg_from_server);
+        //printf("%s\n",get_msg_from_server);
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
-
                 printf("+-----------------------------------------------------------------------+\n");
                 printf("* Authentication is required before accessing JASM Command Line Interface\n");
                 printf("* Password: ");
                 fgets(get_my_pass,BUFSIZ,stdin);
-                //scanf("%s", get_my_pass); //temporary,avoiding buffer overflow
 
-                if(write(sockfd, get_my_pass, 256) < 0)fprintf(stderr,"* Error writing pwd to server\n");
-			    //strlen()
-                if(read(sockfd,passauth,sizeof(passauth)) < 0)fprintf(stderr,"* Error reading server response\n");
+                if(write(sockfd, get_my_pass, 256) < 0)perror("* Error writing pwd to server\n");
+                if(read(sockfd,passauth,sizeof(passauth)) < 0)perror("* Error reading server response\n");
 
                 if(strcmp(passauth,"denied") == 0)
                 {
                         printf("* Non-authorized access!!\n");
                         printf("* Exiting...\n");
                         close(sockfd);
-                        exit(3);
+                        exit(PASSWD_REFUSED_ERROR);
                 }
                 else if(strcmp(passauth,"granted") == 0)
                 {
@@ -91,8 +95,8 @@ int start_client(const char* srv_ip)
                 char if_set_file[15];
                 printf("* Authentication is not required for this session\n");
 
-                if(read(sockfd,if_set_file,15)<0) fprintf(stderr,"* Error reading fexisting\n");
-                printf("%s\n",if_set_file);
+                if(read(sockfd,if_set_file,15)<0) perror("* Error reading fexisting\n");
+                //printf("%s\n",if_set_file);
 
                 if(strcmp(if_set_file,"check-pwd-file") == 0)
                 {
@@ -103,11 +107,10 @@ int start_client(const char* srv_ip)
                         printf("* This password will NOT be encrypted *\n");
                         printf("* Password to use[MAX: 256 chars]: ");
 
-                        //scanf("%s", psw_to_use);
                         fgets(psw_to_use,BUFSIZ,stdin);
                         strcat(psw_to_use,"\0");
                         //printf("%s\n",psw_to_use);
-                        if(write(sockfd,psw_to_use,sizeof(psw_to_use))<0)fprintf(stderr,"* Error sending pwd\n");
+                        if(write(sockfd,psw_to_use,sizeof(psw_to_use))<0)perror("* Error sending pwd\n");
                 }
                 else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
                 {}

@@ -26,17 +26,13 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <syslog.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "getter.h"
 
-/**
- Todo:
- -> fix sockets
- -> passwd lenght (using strlen() )
- -> fgets()
- */
+//NOTE: Error codes defined @ miscellaneous.h
 
 static void excecute_command(int fd, char *command)
 {
@@ -86,7 +82,10 @@ static void excecute_command(int fd, char *command)
         if(strcmp("halt", command)==0) { //turn off jasm
                 log_string("[CMD] halt exec");
                 write(fd, "Killing JASM...\0", 18);
-                exit(0);
+                openlog("JASM",LOG_PID,LOG_DAEMON);
+                syslog(LOG_INFO,"exiting as requested from client...");
+                closelog();
+                exit(_EXIT_SUCCESS);
         }
 
         log_error("[CMD] Command not found!");
@@ -114,25 +113,41 @@ void start_server()
         fd_set readfds, testfds;
 
         client_sockfd=0;
-        
+
         server_sockfd=socket(AF_INET, SOCK_STREAM, 0); //fix
+        if(server_sockfd < 0)
+        {
+          log_error("[JASM-DAEMON][socket()]Failed to create new socket! Exiting...\n");
+          openlog("JASM",LOG_PID,LOG_DAEMON);
+          syslog(LOG_ERR,"socket creation failed!! Exiting!");
+          closelog();
+          exit(SOCKET_CREATION_FAILED);
+        }
         server_address.sin_family=AF_INET;
         server_address.sin_addr.s_addr=htonl(INADDR_ANY);
         server_address.sin_port=htons(SERVER_PORT);
         server_len=sizeof(server_address);
 
-	    // fix
         if(bind(server_sockfd, (struct sockaddr *)&server_address, server_len) < 0)
         {
-            log_error("[JASM-DAEMON][bind()]Failed to bind socket! Exiting...\n");
-            exit(4);
+            char *error_dyn="null";
+            sprintf(error_dyn,"[JASM-DAEMON][bind()]Error: %s\n",strerror(errno));
+            log_error("[JASM-DAEMON][bind()]Failed to bind socket!\n");
+            log_error(error_dyn);
+            log_error("[JASM-DAEMON] Exiting !\n");
+            openlog("JASM",LOG_PID,LOG_DAEMON);
+            syslog(LOG_ERR,"socket not correctly binded... exiting!");
+            closelog();
+            exit(SOCKET_BINDING_FAILED);
         }
 
-	    // fix
         if(listen(server_sockfd, 5) < 0)
         {
-            log_error("[JASM-DAEMON][listen()]Failed to put socket in listening mode! Exiting...\n");
-            exit(4);
+            log_error("[JASM-DAEMON][listen()]Failed to put socket in listening mode! \n");
+            openlog("JASM",LOG_PID,LOG_DAEMON);
+            syslog(LOG_ERR,"FATAL! socket was not put to listening mode! Exiting...");
+            closelog();
+            exit(SOCKET_LISTENING_CONNECTION_FAILED);
         }
 
         FD_ZERO(&readfds);
@@ -160,18 +175,24 @@ void start_server()
                                 if(fd==server_sockfd) {
                                         client_len=sizeof(client_address);
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
+                                        if(client_sockfd < 0)
+                                        {
+                                          log_error("[JASM-DAEMON][accept()]Failed to accept socket connection!\n");
+                                          openlog("JASM",LOG_PID,LOG_DAEMON);
+                                          syslog(LOG_ERR,"FATAL! Failed to accept client incoming connection! Exiting...");
+                                          closelog();
+                                          exit(SOCKET_CLIENT_CONNECTION_FAILED);
+                                        }
+
                                         FD_SET(client_sockfd, &readfds);
-									    //fix this below
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                         if(login_required(client_ipaddr) == 1)
                                         {
-											    // I need to add \0 -> 0 Byte
                                                 char getpasswd[256];
-                                                char auth[14]="auth-required\0"; //fix this (array Bytes)
+                                                char auth[14]="auth-required\0";
                                                 char granted[8]="granted\0";
                                                 char denied[7]="denied\0";
-                                                char passwd_from_client[BUFSIZ];
-											    // Check
+                                                char passwd_from_client[256];
 
                                                 FILE* source_passwd;
 
@@ -185,6 +206,12 @@ void start_server()
                                                 {
                                                         fgets(passwd_from_client,BUFSIZ,source_passwd);
                                                         fclose(source_passwd);
+                                                }
+                                                else
+                                                {
+                                                        log_error("[JASM-DAEMON][FILE]Password file not found!");
+                                                        log_error("[SECURITY]JASM is going to be killed to avoid intrusion");
+                                                        exit(NOFILE_ERROR);
                                                 }
 
                                                 if(strcmp(getpasswd,passwd_from_client) == 0)
@@ -227,7 +254,7 @@ void start_server()
                                                         if(write(client_sockfd,chkpwd,15) < 0) log_error("write() error\n");
                                                         if(read(client_sockfd,buf_in_passwd,sizeof(buf_in_passwd)) < 0) //sizeof() may be replaced
                                                                 log_error("[chkfile][retval1][read()] error\n");
-                                                        log_string(buf_in_passwd);
+                                                        //log_string(buf_in_passwd);
                                                         if((pswfp=fopen(PASSWD_ENC_FILE,"w+")) != NULL)
                                                         {
                                                                 fputs(buf_in_passwd,pswfp);

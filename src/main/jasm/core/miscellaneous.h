@@ -19,6 +19,16 @@
 #ifndef _MISCELLANEOUS_H
 #define _MISCELLANEOUS_H
 
+#define _EXIT_SUCCESS 0
+
+#define SOCKET_CREATION_FAILED 120
+#define SOCKET_CLIENT_CONNECTION_FAILED 121
+#define SOCKET_BINDING_FAILED 122
+#define SOCKET_SELECT_FAILED 123
+#define SOCKET_LISTENING_CONNECTION_FAILED 124
+
+#define NOFILE_ERROR 5
+
 //#define bool int //if needed
 #define LOCALHOST "127.0.0.1"
 //#define PASSWD_ENC_FILE "/etc/.jasmencpsw"
@@ -27,6 +37,8 @@
 
 #define VERSION "jasm-develstage" //<-- CHANGE IT!
 #define COPYRIGHT "GNU Public License (GPL) v3" //<-- GPLv3
+
+extern char buildate[256];
 
 extern char *getTime(void);
 extern void log_string(const char *message);

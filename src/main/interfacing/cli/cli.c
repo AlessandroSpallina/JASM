@@ -32,10 +32,11 @@
 
 char* server_ip;
 
-void print_welcome(const char* usern, int sockfd)
+void print_welcome(const char* usern, int sockfd,const char* releasetime, const char* debugrel)
 {
-        printf("JASM Command Line Interface\nSession started: %s\nSocket fd: %d\nUser: %s\nBasic Commands:\nhelp : get help\
-  \nquit : exits cli\nhalt : halt jasm\n\n",getTime(),sockfd,usern);
+        printf("%s\n",debugrel);
+        printf("JASM Command Line Interface\nBuild date: %s\nSession started: %s\nSocket fd: %d\nUser: %s\nBasic Commands:\nhelp : get help\
+  \nquit : exits cli\nhalt : halt jasm\n\n",releasetime,getTime(),sockfd,usern);
 }
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
@@ -44,7 +45,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
         if(strcmp("quit", buffer)==0) {
                 close(fd);
                 printf("Bye!\n");
-                exit(0);
+                exit(_EXIT_SUCCESS);
         } else {
 
                 if(strcmp("help", buffer)==0) {
@@ -120,7 +121,7 @@ void parse_options(int argc, char *argv[])
                         else if(argc < 3)
                         {
                                 printf("* You must specify an IP address!\n");
-                                exit(3);
+                                exit(ARG_SPECIFY_IPADDR);
                         }
                 }
         }
@@ -129,6 +130,9 @@ void parse_options(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+        check_debug();
+        check_release();
+
         int fd;
         char buf[BUFSIZ]="none"; //check
         char *username=getenv("USER");
@@ -139,7 +143,7 @@ int main(int argc, char *argv[])
 
         fd=start_client(server_ip);
 
-        print_welcome(username, fd);
+        print_welcome(username, fd,buildtime, debugstr);
 
         signal_catcher();
         //clean_socket(fd);
