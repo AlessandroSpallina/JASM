@@ -34,7 +34,7 @@
 /**
  Todo:
  -> return codes
- -> syslog 
+ -> syslog
  -> errno check for bind()
  */
 
@@ -116,6 +116,11 @@ void start_server()
         client_sockfd=0;
 
         server_sockfd=socket(AF_INET, SOCK_STREAM, 0); //fix
+        if(server_sockfd < 0)
+        {
+          log_error("[JASM-DAEMON][socket()]Failed to create new socket! Exiting...\n");
+          exit(4);
+        }
         server_address.sin_family=AF_INET;
         server_address.sin_addr.s_addr=htonl(INADDR_ANY);
         server_address.sin_port=htons(SERVER_PORT);
@@ -158,6 +163,12 @@ void start_server()
                                 if(fd==server_sockfd) {
                                         client_len=sizeof(client_address);
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
+                                        if(client_sockfd < 0)
+                                        {
+                                          log_error("[JASM-DAEMON][accept()]Failed to accept socket connection!\n");
+                                          exit(6);
+                                        }
+
                                         FD_SET(client_sockfd, &readfds);
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                         if(login_required(client_ipaddr) == 1)
@@ -166,7 +177,7 @@ void start_server()
                                                 char auth[14]="auth-required\0";
                                                 char granted[8]="granted\0";
                                                 char denied[7]="denied\0";
-                                                char passwd_from_client[BUFSIZ];
+                                                char passwd_from_client[256];
 
                                                 FILE* source_passwd;
 
@@ -222,7 +233,7 @@ void start_server()
                                                         if(write(client_sockfd,chkpwd,15) < 0) log_error("write() error\n");
                                                         if(read(client_sockfd,buf_in_passwd,sizeof(buf_in_passwd)) < 0) //sizeof() may be replaced
                                                                 log_error("[chkfile][retval1][read()] error\n");
-                                                        log_string(buf_in_passwd);
+                                                        //log_string(buf_in_passwd);
                                                         if((pswfp=fopen(PASSWD_ENC_FILE,"w+")) != NULL)
                                                         {
                                                                 fputs(buf_in_passwd,pswfp);
