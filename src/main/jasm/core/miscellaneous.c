@@ -25,8 +25,11 @@
 #include <stdbool.h>
 #include <string.h>
 #include <syslog.h>
+#include <errno.h>
 
 #include "miscellaneous.h"
+
+char errlog[BUFSIZ];
 
 char buildate[256]="null";
 
@@ -111,8 +114,13 @@ void start_daemon()
         pid=fork();
         switch(pid) {
         case -1:
+                sprintf(errlog,"[PROCESS-SPAWN]Error: %s\n",strerror(errno));
                 log_error("[PROCESS-SPAWN][fork()] failed");
-                exit(1);
+                log_error(errlog);
+                openlog("JASM",LOG_PID,LOG_DAEMON);
+                syslog(LOG_ERR,"Process spawning failed!");
+                closelog();
+                exit(ERR_SET_PROCESS_SPAWN);
                 break;
 
         case 0:
@@ -125,10 +133,15 @@ void start_daemon()
         }
         if(setsid()<0) {
                 log_error("[PROCESS-BACKGROUND][setsid()] failed");
-                exit(1);
-        } else {
-                log_string("[PROCESS-BACKGROUND][setsid()] success");
+                sprintf(errlog,"[PROCESS-BACKGROUND]Error: %s\n",strerror(errno));
+                log_error(errlog);
+                openlog("JASM",LOG_PID,LOG_DAEMON);
+                syslog(LOG_ERR,"Put process background failed!");
+                closelog();
+                exit(ERR_SET_PROCESS_BACKGROUND);
         }
+        else   log_string("[PROCESS-BACKGROUND][setsid()] success");
+
         //closes fd: stdin, stdout, stderr
         close(0);
         close(1);

@@ -22,8 +22,14 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <sys/utsname.h>
+#include <errno.h>
+
 #include "getter.h"
 #include "miscellaneous.h"
+
+char error[BUFSIZ];
+
+//TODO: checks + errno
 
 void getVersion(int fd);
 void getCopyright(int fd);
@@ -44,20 +50,40 @@ void getGetter(int fd)
         int i;
         int ngetter = NGETTER;
 
-        write(fd, &ngetter, sizeof(ngetter));
+        if(write(fd, &ngetter, sizeof(ngetter))<0)
+        {
+          sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+          log_error("[JASM-DAEMON][getGetter][write()] Error!");
+          log_error(error);
+        }
         for(i=0; i<NGETTER; i++) {
-                write(fd, getterName[i], strlen(getterName[i])+1);
+              if(write(fd, getterName[i], strlen(getterName[i])+1)<0)
+              {
+                sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                log_error("[JASM-DAEMON][getGetter][write()] Error!");
+                log_error(error);
+              }
         }
 }
 
 void getVersion(int fd)
 {
-        write(fd, VERSION, strlen(VERSION)+1);
+        if(write(fd, VERSION, strlen(VERSION)+1) < 0)
+        {
+          sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+          log_error("[JASM-DAEMON][getGetter][write()] Error!");
+          log_error(error);
+        }
 }
 
 void getCopyright(int fd)
 {
-        write(fd, COPYRIGHT, strlen(COPYRIGHT)+1);
+        if(write(fd, COPYRIGHT, strlen(COPYRIGHT)+1) < 0)
+        {
+          sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+          log_error("[JASM-DAEMON][getGetter][write()] Error!");
+          log_error(error);
+        }
 }
 
 void getHostname(int fd)
@@ -70,7 +96,12 @@ void getHostname(int fd)
                 return;
         } else {
                 strcpy(buf, info.nodename);
-                write(fd, buf, strlen(buf)+1);
+                if(write(fd, buf, strlen(buf)+1) < 0)
+                {
+                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                  log_error("[JASM-DAEMON][getGetter][write()] Error!");
+                  log_error(error);
+                }
         }
 }
 
@@ -84,7 +115,12 @@ void getKernelName(int fd)
                 return;
         } else {
                 strcpy(buf, info.sysname);
-                write(fd, buf, strlen(buf)+1);
+                if(write(fd, buf, strlen(buf)+1)<0)
+                {
+                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                  log_error("[JASM-DAEMON][getGetter][write()] Error!");
+                  log_error(error);
+                }
         }
 }
 
@@ -98,7 +134,12 @@ void getKernelRelease(int fd)
                 return;
         } else {
                 strcpy(buf, info.release);
-                write(fd, buf, strlen(buf)+1);
+                if(write(fd, buf, strlen(buf)+1)<0)
+                {
+                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                  log_error("[JASM-DAEMON][getGetter][write()] Error!");
+                  log_error(error);
+                }
         }
 }
 
@@ -112,7 +153,12 @@ void getKernelVersion(int fd)
                 return;
         } else {
                 strcpy(buf, info.version);
-                write(fd, buf, strlen(buf)+1);
+                if(write(fd, buf, strlen(buf)+1)<0)
+                {
+                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                  log_error("[JASM-DAEMON][getGetter][write()] Error!");
+                  log_error(error);
+                }
         }
 }
 
@@ -126,6 +172,11 @@ void getMachine(int fd)
                 return;
         } else {
                 strcpy(buf, info.machine);
-                write(fd, buf, strlen(buf)+1);
+                if(write(fd, buf, strlen(buf)+1)<0)
+                {
+                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                  log_error("[JASM-DAEMON][getGetter][write()] Error!");
+                  log_error(error);
+                }
         }
 }

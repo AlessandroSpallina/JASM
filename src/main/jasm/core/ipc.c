@@ -32,6 +32,8 @@
 #include "miscellaneous.h"
 #include "getter.h"
 
+char errlog[BUFSIZ];
+
 //NOTE: Error codes defined @ miscellaneous.h
 
 static void excecute_command(int fd, char *command)
@@ -156,6 +158,7 @@ void start_server()
         log_string("[JASM-DAEMON]Server started");
 
         while(1) {
+
                 char buf[BUFSIZ];
                 char received[BUFSIZ];
                 int fd;
@@ -166,8 +169,10 @@ void start_server()
                 result=select(FD_SETSIZE, &testfds, (fd_set *)0, (fd_set *)0, (struct timeval *)0);
 
                 if(result<1) {
+                        sprintf(errlog,"[JASM-DAEMON]Error: %s\n",strerror(errno));
                         log_error("[JASM-DAEMON][select()]Server failed");
-                        exit(1);
+                        log_error(errlog);
+                        //exit(SOCKET_SELECT_FAILED);
                 }
 
                 for(fd=0; fd<FD_SETSIZE; fd++) {
@@ -223,10 +228,12 @@ void start_server()
                                                 }
                                                 else if(strcmp(getpasswd,passwd_from_client) != 0)
                                                 {
+
                                                         log_error("[PWD][DEN]Wrong password!\n");
                                                         log_error("[PWD][DEN]Closing connection...\n");
                                                         if (write(client_sockfd,denied,7) < 0)
                                                                 log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
+                                                        close(client_sockfd);
                                                 }
                                         }
                                         else

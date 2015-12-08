@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
@@ -45,6 +46,9 @@ int start_client(const char* srv_ip)
         if(sockfd < 0)
         {
           perror("* Error while creating new socket\n* Exiting...\n");
+          #ifdef DEBUG
+          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+          #endif
           exit(SOCKET_CREATION_FAILED);
         }
 
@@ -58,13 +62,24 @@ int start_client(const char* srv_ip)
         if(result < 0)
         {
                 perror("Unable to connect with server\n");
+                #ifdef DEBUG
+                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                #endif
                 exit(SOCKET_CONNECTION_FAILED);
         }
 
         if(read(sockfd,get_msg_from_server,sizeof(get_msg_from_server)) < 0)
+        {
+          #ifdef DEBUG
+          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+          #endif
                 perror("* Reading from socket error\n");
+        }
 
-        //printf("%s\n",get_msg_from_server);
+        #ifdef DEBUG
+        printf("[DEBUG] Auth response: %s\n",get_msg_from_server);
+        #endif
+
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
                 printf("+-----------------------------------------------------------------------+\n");
@@ -72,8 +87,25 @@ int start_client(const char* srv_ip)
                 printf("* Password: ");
                 fgets(get_my_pass,BUFSIZ,stdin);
 
-                if(write(sockfd, get_my_pass, 256) < 0)perror("* Error writing pwd to server\n");
-                if(read(sockfd,passauth,sizeof(passauth)) < 0)perror("* Error reading server response\n");
+                #ifdef DEBUG
+                printf("[DEBUG] Password: %s\n",get_my_pass);
+                #endif
+                
+                if(write(sockfd, get_my_pass, 256) < 0)
+                {
+                  perror("Error sending password!");
+                  #ifdef DEBUG
+                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  #endif
+                }
+
+                if(read(sockfd,passauth,sizeof(passauth)) < 0)
+                {
+                  perror("* Error reading server response\n");
+                  #ifdef DEBUG
+                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  #endif
+                }
 
                 if(strcmp(passauth,"denied") == 0)
                 {
@@ -95,8 +127,17 @@ int start_client(const char* srv_ip)
                 char if_set_file[15];
                 printf("* Authentication is not required for this session\n");
 
-                if(read(sockfd,if_set_file,15)<0) perror("* Error reading fexisting\n");
-                //printf("%s\n",if_set_file);
+                if(read(sockfd,if_set_file,15)<0)
+                {
+                  perror("* Error reading fexisting\n");
+                  #ifdef DEBUG
+                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  #endif
+                }
+
+                #ifdef DEBUG
+                printf("[DEBUG] File response: %s\n",if_set_file);
+                #endif
 
                 if(strcmp(if_set_file,"check-pwd-file") == 0)
                 {
@@ -109,8 +150,18 @@ int start_client(const char* srv_ip)
 
                         fgets(psw_to_use,BUFSIZ,stdin);
                         strcat(psw_to_use,"\0");
-                        //printf("%s\n",psw_to_use);
-                        if(write(sockfd,psw_to_use,sizeof(psw_to_use))<0)perror("* Error sending pwd\n");
+
+                        #ifdef DEBUG
+                        printf("[DEBUG] Password: %s\n",psw_to_use);
+                        #endif
+
+                        if(write(sockfd,psw_to_use,sizeof(psw_to_use))<0)
+                        {
+                          perror("* Error sending pwd\n");
+                          #ifdef DEBUG
+                          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                          #endif
+                        }
                 }
                 else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
                 {}
