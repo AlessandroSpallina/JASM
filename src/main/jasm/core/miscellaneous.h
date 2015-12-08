@@ -29,6 +29,9 @@
 
 #define NOFILE_ERROR 5
 
+#define ERR_SET_PROCESS_BACKGROUND 140
+#define ERR_SET_PROCESS_SPAWN 141
+
 //#define bool int //if needed
 #define LOCALHOST "127.0.0.1"
 //#define PASSWD_ENC_FILE "/etc/.jasmencpsw"

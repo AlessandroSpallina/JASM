@@ -53,18 +53,33 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
                         printf("Sending [%s]\n\n", buffer);
                         if(write(fd, "help\0", 5)<0)
+                        {
                                 perror("write on fd FAIL");
+                                #ifdef DEBUG
+                                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                                #endif
+                        }
 
-                        //riceve i getter
+                        //gets getter list
                         if(read(fd, &ngetter, sizeof(ngetter))<0)
+                        {
                                 perror("read on fd FAIL");
+                                #ifdef DEBUG
+                                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                                #endif
+                        }
 
                         printf("\n**JASM Help page**\n");
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
                                 if(read(fd, (void *)buffer, sizeof(buffer))<0)
+                                {
                                         perror("read on fd FAIL");
+                                        #ifdef DEBUG
+                                        fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                                        #endif
+                                }
                                 printf("%d) %s\n", i, buffer);
                         }
                         //riceve gli starter dei moduli
@@ -89,6 +104,13 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         printf("sending [%s - %d byte]\n", buffer, (int) write(fd, (void *)buffer, strlen(buffer)+1));
                         memset(buffer, 0, BUFSIZ);
                         n=read(fd, (void *)buffer, sizeof(buffer));
+                        if(n < 0)
+                        {
+                          perror("* Error on read()");
+                          #ifdef DEBUG
+                          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                          #endif
+                        }
                         printf("receiving [%s - %d byte]\n", buffer, n);
                         return;
                 }

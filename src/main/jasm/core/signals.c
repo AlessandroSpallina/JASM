@@ -21,13 +21,14 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include "miscellaneous.h"
 #include "signals.h"
 
 static void generic_signal_log(int sig)
 {
 	char buf[BUFSIZ];
-	
+
 	sprintf(buf, "Received signal number %d", sig);
 	log_string(buf);
 }
@@ -35,8 +36,8 @@ static void generic_signal_log(int sig)
 void set_signals_feel()
 {
 	struct sigaction act;
-	
-	act.sa_handler=generic_signal_log;	
+
+	act.sa_handler=generic_signal_log;
 	act.sa_flags=0;
 	sigaction(SIGINT, &act, 0);
 	sigaction(SIGQUIT, &act, 0);
