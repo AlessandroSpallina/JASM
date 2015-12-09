@@ -5,4 +5,5 @@
 *.anjuta_sym_db.db
 *.o
 *.vim
+*.layout
 

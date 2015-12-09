@@ -90,7 +90,7 @@ int start_client(const char* srv_ip)
                 #ifdef DEBUG
                 printf("[DEBUG] Password: %s\n",get_my_pass);
                 #endif
-                
+
                 if(write(sockfd, get_my_pass, 256) < 0)
                 {
                   perror("Error sending password!");
@@ -109,10 +109,44 @@ int start_client(const char* srv_ip)
 
                 if(strcmp(passauth,"denied") == 0)
                 {
-                        printf("* Non-authorized access!!\n");
-                        printf("* Exiting...\n");
-                        close(sockfd);
-                        exit(PASSWD_REFUSED_ERROR);
+                        char if_retry[BUFSIZ];
+
+                        for(int i=1;i<=4;i++)
+                        {
+
+                            if(read(sockfd,if_retry,sizeof(if_retry)) < 0)
+                                perror("* Error while getting response...\n");
+
+                            #ifdef DEBUG
+                            printf("[DEBUG] Response: %s\n",if_retry);
+                            #endif // DEBUG
+
+                            if(strcmp(if_retry,"ry")==0 ||
+                               strcmp(if_retry,"retry")== 0)
+                            {
+                                if(i==4)
+                                {
+
+                                    printf("* Too much attempts!\n");
+                                    printf("* Closing connection...\n");
+                                    printf("* To prevent intrusion!\n");
+                                    close(sockfd);
+                                    exit(190);
+                                 }
+
+                                printf("* Attempt: %d\n",i);
+                                printf("* Retry\n");
+                                printf("* Password: ");
+                                fgets(get_my_pass,BUFSIZ,stdin);
+                                if(write(sockfd,get_my_pass,sizeof(get_my_pass)) < 0)
+                                    perror("* Error while sending pswd");
+                            }
+                            else if(strcmp(if_retry,"authorized")==0)
+                            {
+                                printf("* Authorized [attempt: %d]\n",i);
+                                break;
+                            }
+                        }
                 }
                 else if(strcmp(passauth,"granted") == 0)
                 {

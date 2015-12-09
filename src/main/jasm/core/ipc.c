@@ -193,6 +193,7 @@ void start_server()
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr&0xFF,(client_address.sin_addr.s_addr&0xFF00)>>8, (client_address.sin_addr.s_addr&0xFF0000)>>16, (client_address.sin_addr.s_addr&0xFF000000)>>24);
                                         if(login_required(client_ipaddr) == 1)
                                         {
+                                                int rpwd;
                                                 char getpasswd[256];
                                                 char auth[14]="auth-required\0";
                                                 char granted[8]="granted\0";
@@ -205,7 +206,8 @@ void start_server()
                                                 if(write(client_sockfd,auth,sizeof(auth)) < 0)
                                                         log_error("[write()][auth] Error\n");
 
-                                                if(read(client_sockfd,getpasswd,sizeof(getpasswd)) < 0) log_error("[read()][getpasswd] Error\n");
+                                                if((rpwd = read(client_sockfd,getpasswd,sizeof(getpasswd))) < 0)
+                                                    log_error("[read()][getpasswd] Error\n");
 
                                                 if((source_passwd=fopen(PASSWD_ENC_FILE,"r")) != NULL)
                                                 {
@@ -230,10 +232,37 @@ void start_server()
                                                 {
 
                                                         log_error("[PWD][DEN]Wrong password!\n");
-                                                        log_error("[PWD][DEN]Closing connection...\n");
-                                                        if (write(client_sockfd,denied,7) < 0)
-                                                                log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending denied\n");
-                                                        close(client_sockfd);
+                                                        if(write(client_sockfd,denied,7)<0)
+                                                            log_error("[JASM-DAEMON][write()] Error!\n");
+                                                        if(write(client_sockfd,"retry\0",6) < 0)
+                                                               log_error("[JASM-DAEMON][write()] Error\n");
+
+                                                        for(int i=1;i<=4;i++)
+                                                        {
+
+                                                            char passwd[256];
+
+                                                            int nbs = read(client_sockfd,passwd,sizeof(passwd));
+                                                            if(nbs==0) break;
+                                                            else if(nbs < 0)
+                                                                log_error("[JASM-DAEMON][read()] Error\n");
+
+                                                            if(strcmp(passwd,passwd_from_client) == 0)
+                                                            {
+                                                                if(write(client_sockfd,"authorized\0",11))
+                                                                    log_error("[JASM-DAEMON][write()] Error\n");
+                                                                break;
+                                                            }
+                                                            else if(strcmp(passwd,passwd_from_client) != 0)
+                                                            {
+                                                                if(write(client_sockfd,"retry\0",6))
+                                                                    log_error("[JASM-DAEMON][write()] Error\n");
+
+                                                                 if(i==3) close(client_sockfd);
+                                                            }
+
+
+                                                        }
                                                 }
                                         }
                                         else
