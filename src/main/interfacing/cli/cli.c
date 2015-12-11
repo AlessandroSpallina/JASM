@@ -69,7 +69,7 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
   \nquit : exits cli\nhalt : halt jasm\n\n",releasetime,getTime(),sockfd,usern);
 }
 
-void secureJasmCommunication(char buffer[BUFSIZ], int fd)
+void secureJasmCommunication(char * buffer, int fd)
 {
                 int n;
 
@@ -101,7 +101,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
-                                if((n=read(fd, (void *)buffer, sizeof(buffer)))<0)
+                                if((n=read(fd, (void*)buffer, sizeof(buffer)))<0)
                                 {
                                         perror("read on fd FAIL");
                                         #ifdef DEBUG
@@ -184,8 +184,8 @@ int main(int argc, char *argv[])
         check_debug();
         check_release();
 
+        char buf[BUFSIZ];
         int fd;
-        char buf[BUFSIZ]="none"; //check
         char *username=getenv("USER");
 
         server_ip = "127.0.0.1";
