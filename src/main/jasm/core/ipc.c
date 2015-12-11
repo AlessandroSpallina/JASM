@@ -217,6 +217,13 @@ void start_server()
                                                 if((rpwd = read(client_sockfd,getpasswd,sizeof(getpasswd))) < 0)
                                                     log_error("[read()][getpasswd] Error\n");
 
+                                                if(rpwd == 0)
+                                                {
+                                                    log_string("[JASM-DAEMON]Recieved 0 Byte data");
+                                                    shutdown(client_sockfd,2);
+                                                    break;
+                                                }
+
                                                 if((source_passwd=fopen(PASSWD_ENC_FILE,"r")) != NULL)
                                                 {
                                                         fgets(passwd_from_client,BUFSIZ,source_passwd);
@@ -299,7 +306,6 @@ void start_server()
                                         }
                                         else
                                         {
-                                                /**WIP**/
                                                 char chkpwd[15]="check-pwd-file\0";
                                                 char nochkpwd[14]="nochk-pwdfile\0";
                                                 int chkfile;
