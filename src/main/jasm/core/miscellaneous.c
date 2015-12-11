@@ -29,7 +29,7 @@
 
 #include "miscellaneous.h"
 
-char errlog[BUFSIZ];
+char errlog[BUFSIZ]; // pattern to follow: [SECTION][ERROR]Errno: %s ...
 
 char buildate[256]="null";
 

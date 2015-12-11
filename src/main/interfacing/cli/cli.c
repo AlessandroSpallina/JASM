@@ -89,6 +89,10 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         }
                         else if(n==0)
                         {
+                            #ifdef DEBUG
+                            printf("[DEBUG]Errno: %s",strerror(errno));
+                            #endif // DEBUG
+
                             printf("* Server disconnected\n");
                             exit(SERVER_DISCONNECTED);
                         }
@@ -136,11 +140,14 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         {
                           perror("* Error on read()");
                           #ifdef DEBUG
-                          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                          printf("[DEBUG] Errno result: %s\n",strerror(errno));
                           #endif
                         }
                         else if(n == 0)
                         {
+                            #ifdef DEBUG
+                            printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                            #endif // DEBUG
                             printf("* Server disconnected\n");
                             exit(SERVER_DISCONNECTED);
                         }

@@ -63,7 +63,7 @@ int start_client(const char* srv_ip)
         {
                 perror("Unable to connect with server\n");
                 #ifdef DEBUG
-                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                printf("[DEBUG] Errno result: %s\n",strerror(errno));
                 #endif
                 exit(SOCKET_CONNECTION_FAILED);
         }
@@ -71,7 +71,7 @@ int start_client(const char* srv_ip)
         if(read(sockfd,get_msg_from_server,sizeof(get_msg_from_server)) < 0)
         {
           #ifdef DEBUG
-          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+          printf("[DEBUG] Errno result: %s\n",strerror(errno));
           #endif
                 perror("* Reading from socket error\n");
         }
@@ -95,7 +95,7 @@ int start_client(const char* srv_ip)
                 {
                   perror("Error sending password!");
                   #ifdef DEBUG
-                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 }
 
@@ -103,7 +103,7 @@ int start_client(const char* srv_ip)
                 {
                   perror("* Error reading server response\n");
                   #ifdef DEBUG
-                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 }
 
@@ -165,7 +165,7 @@ int start_client(const char* srv_ip)
                 {
                   perror("* Error reading fexisting\n");
                   #ifdef DEBUG
-                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 }
 
