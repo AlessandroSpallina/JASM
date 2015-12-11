@@ -42,31 +42,20 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
 
-        if(strcmp("quit", buffer)==0) {
-                close(fd);
-                printf("Bye!\n");
-                exit(_EXIT_SUCCESS);
-        } else {
-
+        
                 if(strcmp("help", buffer)==0) {
                         int ngetter=0;
 
                         printf("Sending [%s]\n\n", buffer);
-                        if(write(fd, "help\0", 5)<0)
+                        if(write(fd, "help", strlen("help"))<0)
                         {
                                 perror("write on fd FAIL");
-                                #ifdef DEBUG
-                                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
-                                #endif
                         }
 
                         //gets getter list
                         if(read(fd, &ngetter, sizeof(ngetter))<0)
                         {
                                 perror("read on fd FAIL");
-                                #ifdef DEBUG
-                                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
-                                #endif
                         }
 
                         printf("\n**JASM Help page**\n");
@@ -115,19 +104,8 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         return;
                 }
 
-        }
-
 }
 
-/*
-   void clean_socket(int fd)
-   {
-   char tmp[BUFSIZ];
-
-   read(fd, tmp, sizeof(tmp));
-   printf("clean: %s\n", tmp);
-   }
- */
 
 void parse_options(int argc, char *argv[])
 {
@@ -165,15 +143,21 @@ int main(int argc, char *argv[])
 
         fd=start_client(server_ip);
 
-        print_welcome(username, fd,buildtime, debugstr);
+        print_welcome(username, fd, buildtime, debugstr);
 
         signal_catcher();
-        //clean_socket(fd);
+        
 
         while(1) {
                 printf("-[%s]-> ", username);
                 scanf("%s", buf);
-                secureJasmCommunication(buf, fd);
+                if(strcmp(buf, "quit")==0) {
+                	close(fd);
+                	printf("Bye!\n");
+                	exit(_EXIT_SUCCESS);
+                } else {
+                	secureJasmCommunication(buf, fd);
+                }
                 printf("\n");
         }
 }
