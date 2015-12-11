@@ -30,6 +30,8 @@
 #define SOCKET_CREATION_FAILED 120
 #define SOCKET_CONNECTION_FAILED 121
 
+#define SERVER_DISCONNECTED 190
+
 extern char color[4][BUFSIZ];
 extern char buildtime[BUFSIZ];
 extern char debugstr[BUFSIZ];

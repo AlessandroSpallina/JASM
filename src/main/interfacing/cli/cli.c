@@ -71,7 +71,7 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
-
+                int n;
 
                 if(strcmp("help", buffer)==0) {
                         int ngetter=0;
@@ -83,21 +83,31 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         }
 
                         //gets getter list
-                        if(read(fd, &ngetter, sizeof(ngetter))<0)
+                        if((n=read(fd, &ngetter, sizeof(ngetter)))<0)
                         {
                                 perror("read on fd FAIL");
+                        }
+                        else if(n==0)
+                        {
+                            printf("* Server disconnected\n");
+                            exit(SERVER_DISCONNECTED);
                         }
 
                         printf("\n**JASM Help page**\n");
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
-                                if(read(fd, (void *)buffer, sizeof(buffer))<0)
+                                if((n=read(fd, (void *)buffer, sizeof(buffer)))<0)
                                 {
                                         perror("read on fd FAIL");
                                         #ifdef DEBUG
                                         fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
                                         #endif
+                                }
+                                else if(n == 0)
+                                {
+                                    printf("* Server disconnected\n");
+                                    exit(SERVER_DISCONNECTED);
                                 }
                                 printf("%d) %s\n", i, buffer);
                         }
@@ -118,7 +128,6 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         return;
 
                 } else {
-                        int n;
 
                         printf("sending [%s - %d byte]\n", buffer, (int) write(fd, (void *)buffer, strlen(buffer)+1));
                         memset(buffer, 0, BUFSIZ);
@@ -130,6 +139,12 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                           fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
                           #endif
                         }
+                        else if(n == 0)
+                        {
+                            printf("* Server disconnected\n");
+                            exit(SERVER_DISCONNECTED);
+                        }
+
                         printf("receiving [%s - %d byte]\n", buffer, n);
                         return;
                 }
