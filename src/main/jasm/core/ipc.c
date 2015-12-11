@@ -104,6 +104,14 @@ void start_server()
         strcat(PASSWD_ENC_FILE, "/.jpwd");
   #endif
 
+  #ifdef CHECK_ACCESS_FILE
+  //use it
+  #else
+  char CHECK_ACCESS_FILE[256];
+  strcpy(CHECK_ACCESS_FILE,getenv("HOME"));
+  strcat(CHECK_ACCESS_FILE,"/.jpwdchk");
+  #endif // CHECK_ACCESS_FILE
+
         int server_sockfd, client_sockfd;
         int server_len;
         socklen_t client_len;
@@ -239,29 +247,53 @@ void start_server()
 
                                                         for(int i=1;i<=4;i++)
                                                         {
-
+                                                            FILE * chkfile;
                                                             char passwd[256];
+                                                            char attstr[BUFSIZ];
 
                                                             int nbs = read(client_sockfd,passwd,sizeof(passwd));
-                                                            if(nbs==0) break;
+                                                            if(nbs==0)
+                                                            {
+                                                                log_string("[JASM-DAEMON][LOGIN]0 Bytes received!");
+                                                                break;
+                                                            }
                                                             else if(nbs < 0)
                                                                 log_error("[JASM-DAEMON][read()] Error\n");
 
                                                             if(strcmp(passwd,passwd_from_client) == 0)
                                                             {
+                                                                if((chkfile=fopen(CHECK_ACCESS_FILE,"w+"))==NULL)
+                                                                {}
+                                                                fprintf(chkfile,"false");
+                                                                fclose(chkfile);
+                                                                sprintf(attstr,"[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!",i);
+                                                                log_string(attstr);
                                                                 if(write(client_sockfd,"authorized\0",11))
                                                                     log_error("[JASM-DAEMON][write()] Error\n");
                                                                 break;
+
                                                             }
                                                             else if(strcmp(passwd,passwd_from_client) != 0)
                                                             {
+                                                                if((chkfile=fopen(CHECK_ACCESS_FILE,"w+"))==NULL)
+                                                                {}
+                                                                fprintf(chkfile,"true");
+                                                                fclose(chkfile);
+                                                                sprintf(attstr,"[JASM-DAEMON][LOGIN]Attempt: %d FAILED!",i);
+                                                                log_string(attstr);
+
                                                                 if(write(client_sockfd,"retry\0",6))
                                                                     log_error("[JASM-DAEMON][write()] Error\n");
 
-                                                                 if(i==3) shutdown(client_sockfd,2);
+
+                                                                 if(i==3)
+                                                                 {
+                                                                        shutdown(client_sockfd,2);
+                                                                        log_string("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
+                                                                        log_string("[JASM-DAEMON][ALERT]More than 3 tries failed!");
+                                                                        break;
+                                                                 }
                                                             }
-
-
                                                         }
                                                 }
                                         }
