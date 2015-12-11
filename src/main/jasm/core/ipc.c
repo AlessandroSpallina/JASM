@@ -172,7 +172,7 @@ void start_server()
                         sprintf(errlog,"[JASM-DAEMON]Error: %s\n",strerror(errno));
                         log_error("[JASM-DAEMON][select()]Server failed");
                         log_error(errlog);
-                        //exit(SOCKET_SELECT_FAILED);
+                        exit(SOCKET_SELECT_FAILED);
                 }
 
                 for(fd=0; fd<FD_SETSIZE; fd++) {
@@ -258,7 +258,7 @@ void start_server()
                                                                 if(write(client_sockfd,"retry\0",6))
                                                                     log_error("[JASM-DAEMON][write()] Error\n");
 
-                                                                 if(i==3) close(client_sockfd);
+                                                                 if(i==3) shutdown(client_sockfd,2);
                                                             }
 
 
