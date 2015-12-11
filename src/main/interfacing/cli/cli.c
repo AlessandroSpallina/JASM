@@ -34,6 +34,36 @@ char* server_ip;
 
 void print_welcome(const char* usern, int sockfd,const char* releasetime, const char* debugrel)
 {
+  #ifdef CHECK_ACCESS_FILE
+  //use it
+  #else
+  char CHECK_ACCESS_FILE[256];
+  strcpy(CHECK_ACCESS_FILE,getenv("HOME"));
+  strcat(CHECK_ACCESS_FILE,"/.jpwdchk");
+  #endif // CHECK_ACCESS_FILE
+
+        if(check_if_file_exists(CHECK_ACCESS_FILE)==1)
+        {
+            char msg_from_file[BUFSIZ];
+            FILE * fn;
+            if((fn=fopen(CHECK_ACCESS_FILE,"r"))!=NULL)
+            {
+                fgets(msg_from_file,BUFSIZ,fn);
+                if(strcmp(msg_from_file,"true")==0)
+                {
+                    printf("*IMPORTANT NOTICE*\n*JASM detected that someone tried to access this server more than 3 times!\n*Check server log!\n");
+                    fclose(fn);
+                    if((fn=fopen(CHECK_ACCESS_FILE,"w"))==NULL){}
+                    fprintf(fn,"false");
+                    fclose(fn);
+                }
+                else if(strcmp(msg_from_file,"false")==0)
+                    fclose(fn);
+            }
+        }
+        else
+        {}
+
         printf("%s\n",debugrel);
         printf("JASM Command Line Interface\nBuild date: %s\nSession started: %s\nSocket fd: %d\nUser: %s\nBasic Commands:\nhelp : get help\
   \nquit : exits cli\nhalt : halt jasm\n\n",releasetime,getTime(),sockfd,usern);
@@ -42,7 +72,7 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
 
-        
+
                 if(strcmp("help", buffer)==0) {
                         int ngetter=0;
 
@@ -106,7 +136,6 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 }
 
-
 void parse_options(int argc, char *argv[])
 {
         if(argc > 1 && argc <= 3)
@@ -146,7 +175,7 @@ int main(int argc, char *argv[])
         print_welcome(username, fd, buildtime, debugstr);
 
         signal_catcher();
-        
+
 
         while(1) {
                 printf("-[%s]-> ", username);

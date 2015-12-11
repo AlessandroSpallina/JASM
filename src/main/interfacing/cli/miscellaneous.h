@@ -38,5 +38,6 @@ extern void log_string(const char *message);
 extern char* getTime(void);
 extern void check_debug(void);
 extern void check_release(void);
+extern int check_if_file_exists(const char * __fname);
 
 #endif
