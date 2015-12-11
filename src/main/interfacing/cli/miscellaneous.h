@@ -30,6 +30,8 @@
 #define SOCKET_CREATION_FAILED 120
 #define SOCKET_CONNECTION_FAILED 121
 
+#define SERVER_DISCONNECTED 190
+
 extern char color[4][BUFSIZ];
 extern char buildtime[BUFSIZ];
 extern char debugstr[BUFSIZ];
@@ -38,5 +40,6 @@ extern void log_string(const char *message);
 extern char* getTime(void);
 extern void check_debug(void);
 extern void check_release(void);
+extern int check_if_file_exists(const char * __fname);
 
 #endif

@@ -17,6 +17,7 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
 #include <stdio.h>
+#include <unistd.h>
 #include <time.h>
 #include <string.h>
 
@@ -65,4 +66,10 @@ void check_release()
   #else
   strcpy("not availible",BUILD_DATE_CLI);
   #endif
+}
+
+int check_if_file_exists(const char * __fname)
+{
+    if(access(__fname,F_OK)!=-1)return 1;
+    else return 0;
 }

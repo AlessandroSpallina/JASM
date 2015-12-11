@@ -34,6 +34,36 @@ char* server_ip;
 
 void print_welcome(const char* usern, int sockfd,const char* releasetime, const char* debugrel)
 {
+  #ifdef CHECK_ACCESS_FILE
+  //use it
+  #else
+  char CHECK_ACCESS_FILE[256];
+  strcpy(CHECK_ACCESS_FILE,getenv("HOME"));
+  strcat(CHECK_ACCESS_FILE,"/.jpwdchk");
+  #endif // CHECK_ACCESS_FILE
+
+        if(check_if_file_exists(CHECK_ACCESS_FILE)==1)
+        {
+            char msg_from_file[BUFSIZ];
+            FILE * fn;
+            if((fn=fopen(CHECK_ACCESS_FILE,"r"))!=NULL)
+            {
+                fgets(msg_from_file,BUFSIZ,fn);
+                if(strcmp(msg_from_file,"true")==0)
+                {
+                    printf("*IMPORTANT NOTICE*\n*JASM detected that someone tried to access this server more than 3 times!\n*Check server log!\n");
+                    fclose(fn);
+                    if((fn=fopen(CHECK_ACCESS_FILE,"w"))==NULL){}
+                    fprintf(fn,"false");
+                    fclose(fn);
+                }
+                else if(strcmp(msg_from_file,"false")==0)
+                    fclose(fn);
+            }
+        }
+        else
+        {}
+
         printf("%s\n",debugrel);
         printf("JASM Command Line Interface\nBuild date: %s\nSession started: %s\nSocket fd: %d\nUser: %s\nBasic Commands:\nhelp : get help\
   \nquit : exits cli\nhalt : halt jasm\n\n",releasetime,getTime(),sockfd,usern);
@@ -41,8 +71,8 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
+                int n;
 
-        
                 if(strcmp("help", buffer)==0) {
                         int ngetter=0;
 
@@ -53,21 +83,31 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         }
 
                         //gets getter list
-                        if(read(fd, &ngetter, sizeof(ngetter))<0)
+                        if((n=read(fd, &ngetter, sizeof(ngetter)))<0)
                         {
                                 perror("read on fd FAIL");
+                        }
+                        else if(n==0)
+                        {
+                            printf("* Server disconnected\n");
+                            exit(SERVER_DISCONNECTED);
                         }
 
                         printf("\n**JASM Help page**\n");
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
-                                if(read(fd, (void *)buffer, sizeof(buffer))<0)
+                                if((n=read(fd, (void *)buffer, sizeof(buffer)))<0)
                                 {
                                         perror("read on fd FAIL");
                                         #ifdef DEBUG
                                         fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
                                         #endif
+                                }
+                                else if(n == 0)
+                                {
+                                    printf("* Server disconnected\n");
+                                    exit(SERVER_DISCONNECTED);
                                 }
                                 printf("%d) %s\n", i, buffer);
                         }
@@ -88,7 +128,6 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         return;
 
                 } else {
-                        int n;
 
                         printf("sending [%s - %d byte]\n", buffer, (int) write(fd, (void *)buffer, strlen(buffer)+1));
                         memset(buffer, 0, BUFSIZ);
@@ -100,12 +139,17 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                           fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
                           #endif
                         }
+                        else if(n == 0)
+                        {
+                            printf("* Server disconnected\n");
+                            exit(SERVER_DISCONNECTED);
+                        }
+
                         printf("receiving [%s - %d byte]\n", buffer, n);
                         return;
                 }
 
 }
-
 
 void parse_options(int argc, char *argv[])
 {
@@ -146,7 +190,7 @@ int main(int argc, char *argv[])
         print_welcome(username, fd, buildtime, debugstr);
 
         signal_catcher();
-        
+
 
         while(1) {
                 printf("-[%s]-> ", username);
