@@ -128,7 +128,7 @@ void start_daemon()
                 break;
 
         default:
-                exit(0);
+                exit(_EXIT_SUCCESS);
                 break;
         }
         if(setsid()<0) {
@@ -165,5 +165,5 @@ int login_required(const char* clientaddr)
 int check_passwd_file(const char* __pwdf)
 {
 	if(access(__pwdf,F_OK) != -1) return 0;
-  else return 1;
+    else return 1;
 }

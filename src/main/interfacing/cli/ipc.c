@@ -131,7 +131,7 @@ int start_client(const char* srv_ip)
                                     printf("* Closing connection...\n");
                                     printf("* To prevent intrusion!\n");
                                     close(sockfd);
-                                    exit(190);
+                                    exit(LOGIN_TOO_MUCH_ATTEMPTS);
                                  }
 
                                 printf("* Attempt: %d\n",i);
