@@ -302,7 +302,7 @@ void start_server()
                                                             {
                                                                 if((chkfile=fopen(CHECK_ACCESS_FILE,"w+"))==NULL)
                                                                 {}
-                                                                fprintf(chkfile,"false");
+                                                                fprintf(chkfile,"falset");
                                                                 fclose(chkfile);
                                                                 sprintf(attstr,"[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!",i);
                                                                 log_string(attstr);

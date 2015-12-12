@@ -49,7 +49,8 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
             if((fn=fopen(CHECK_ACCESS_FILE,"r"))!=NULL)
             {
                 fgets(msg_from_file,BUFSIZ,fn);
-                if(strcmp(msg_from_file,"true")==0)
+                if(strcmp(msg_from_file,"true")==0 ||
+                   strcmp(msg_from_file,"falset")==0)
                 {
                     printf("*IMPORTANT NOTICE*\n*JASM detected that someone tried to access this server more than 3 times!\n*Check server log!\n");
                     fclose(fn);
