@@ -30,7 +30,7 @@
 #include "miscellaneous.h"
 #include "signals.h"
 
-char* server_ip;
+char * server_ip;
 
 void print_welcome(const char* usern, int sockfd,const char* releasetime, const char* debugrel)
 {
@@ -38,58 +38,50 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
   //use it
   #else
   char CHECK_ACCESS_FILE[256];
-  strcpy(CHECK_ACCESS_FILE,getenv("HOME"));
-  strcat(CHECK_ACCESS_FILE,"/.jpwdchk");
+  strcpy(CHECK_ACCESS_FILE, getenv("HOME"));
+  strcat(CHECK_ACCESS_FILE, "/.jpwdchk");
   #endif // CHECK_ACCESS_FILE
 
-        if(check_if_file_exists(CHECK_ACCESS_FILE)==1)
-        {
+        if(check_if_file_exists(CHECK_ACCESS_FILE) == 1) {
             char msg_from_file[BUFSIZ];
             FILE * fn;
-            if((fn=fopen(CHECK_ACCESS_FILE,"r"))!=NULL)
-            {
+            if((fn = fopen(CHECK_ACCESS_FILE,"r")) != NULL) {
                 fgets(msg_from_file,BUFSIZ,fn);
-                if(strcmp(msg_from_file,"true")==0 ||
-                   strcmp(msg_from_file,"falset")==0)
-                {
+                if(strcmp(msg_from_file, "true")==0 || strcmp(msg_from_file, "falset") == 0) {
                     printf("*IMPORTANT NOTICE*\n*JASM detected that someone tried to access this server more than 3 times!\n*Check server log!\n");
                     fclose(fn);
-                    if((fn=fopen(CHECK_ACCESS_FILE,"w"))==NULL){}
+                    if((fn=fopen(CHECK_ACCESS_FILE,"w"))==NULL)
+                    {/*Stefano Belli Re dei Bug*/}
                     fprintf(fn,"false");
                     fclose(fn);
-                }
-                else if(strcmp(msg_from_file,"false")==0)
+                } else if(strcmp(msg_from_file,"false")==0)
                     fclose(fn);
             }
         }
         else
-        {}
+        {/*Sei proprio uno sporcaccione*/}
 
-        printf("%s\n",debugrel);
+        printf("%s\n", debugrel);
         printf("JASM Command Line Interface\nBuild date: %s\nSession started: %s\nSocket fd: %d\nUser: %s\nBasic Commands:\nhelp : get help\
   \nquit : exits cli\nhalt : halt jasm\n\n",releasetime,getTime(),sockfd,usern);
 }
 
-void secureJasmCommunication(char * buffer, int fd)
+void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
                 int n;
 
                 if(strcmp("help", buffer)==0) {
-                        int ngetter=0;
+                  int ngetter=0;
 
-                        printf("Sending [%s]\n\n", buffer);
-                        if(write(fd, "help", strlen("help"))<0)
-                        {
-                                perror("write on fd FAIL");
-                        }
+                  printf("Sending [%s]\n\n", buffer);
+                  if(write(fd, "help", strlen("help"))<0) {
+                    perror("write on fd FAIL");
+                    }
 
-                        //gets getter list
-                        if((n=read(fd, &ngetter, sizeof(ngetter)))<0)
-                        {
-                                perror("read on fd FAIL");
-                        }
-                        else if(n==0)
-                        {
+                //gets getter list
+                if((n = read(fd, &ngetter, sizeof(ngetter)))<0) {
+                    perror("read on fd FAIL");
+                } else if(n == 0) {
                             #ifdef DEBUG
                             printf("[DEBUG]Errno: %s",strerror(errno));
                             #endif // DEBUG
@@ -100,21 +92,20 @@ void secureJasmCommunication(char * buffer, int fd)
 
                         printf("\n**JASM Help page**\n");
                         printf("* Getters *\n");
+                        char temp[BUFSIZ];
+
                         for(int i=0; i<ngetter; i++) {
-                                memset(buffer, 0, BUFSIZ);
-                                if((n=read(fd, (void*)buffer, sizeof(buffer)))<0)
-                                {
+                                memset(temp, 0, BUFSIZ);
+                                if((n = read(fd, temp, sizeof(temp)))<0) {
                                         perror("read on fd FAIL");
                                         #ifdef DEBUG
-                                        fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                                        fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
                                         #endif
-                                }
-                                else if(n == 0)
-                                {
+                                } else if(n == 0) {
                                     printf("* Server disconnected\n");
                                     exit(SERVER_DISCONNECTED);
                                 }
-                                printf("%d) %s\n", i, buffer);
+                                printf("%d) %s\n", i, temp);
                         }
                         //riceve gli starter dei moduli
                         //riceve altro
@@ -134,18 +125,15 @@ void secureJasmCommunication(char * buffer, int fd)
 
                 } else {
 
-                        printf("sending [%s - %d byte]\n", buffer, (int) write(fd, (void *)buffer, strlen(buffer)+1));
+                        printf("sending [%s - %d byte]\n", buffer, (int) write(fd, buffer, strlen(buffer)));
                         memset(buffer, 0, BUFSIZ);
-                        n=read(fd, (void *)buffer, sizeof(buffer));
-                        if(n < 0)
-                        {
+                        n = read(fd, buffer, BUFSIZ);
+                        if(n < 0) {
                           perror("* Error on read()");
                           #ifdef DEBUG
-                          printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                          printf("[DEBUG] Errno result: %s\n", strerror(errno));
                           #endif
-                        }
-                        else if(n == 0)
-                        {
+                        } else if(n == 0) {
                             #ifdef DEBUG
                             printf("[DEBUG] Errno result: %s\n",strerror(errno));
                             #endif // DEBUG
@@ -161,17 +149,13 @@ void secureJasmCommunication(char * buffer, int fd)
 
 void parse_options(int argc, char *argv[])
 {
-        if(argc > 1 && argc <= 3)
-        {
-                if(strcmp(argv[1],"--connect-server") == 0 )
-                {
-                        if(argc == 3)
-                        {
+        if(argc > 1 && argc <= 3) {
+
+                if(strcmp(argv[1],"--connect-server") == 0 ) {
+                        if(argc == 3) {
                                 server_ip = argv[2];
                                 printf("* Connecting to: %s ...\n",server_ip);
-                        }
-                        else if(argc < 3)
-                        {
+                        } else if(argc < 3) {
                                 printf("* You must specify an IP address!\n");
                                 exit(ARG_SPECIFY_IPADDR);
                         }
@@ -187,13 +171,13 @@ int main(int argc, char *argv[])
 
         char buf[BUFSIZ];
         int fd;
-        char *username=getenv("USER");
+        char *username = getenv("USER");
 
         server_ip = "127.0.0.1";
 
         parse_options(argc, argv);
 
-        fd=start_client(server_ip);
+        fd = start_client(server_ip);
 
         print_welcome(username, fd, buildtime, debugstr);
 

@@ -41,8 +41,6 @@ void set_signals_feel()
 	act.sa_flags=0;
 	sigaction(SIGINT, &act, 0);
 	sigaction(SIGQUIT, &act, 0);
-	sigaction(SIGKILL, &act, 0);
-	sigaction(SIGTERM, &act, 0);
 	sigaction(SIGCONT, &act, 0);
 	sigaction(SIGSTOP, &act, 0);
 }
