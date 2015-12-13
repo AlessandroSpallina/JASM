@@ -63,17 +63,27 @@ int start_client(const char* srv_ip)
         {
                 perror("Unable to connect with server\n");
                 #ifdef DEBUG
-                fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                printf("[DEBUG] Errno result: %s\n",strerror(errno));
                 #endif
                 exit(SOCKET_CONNECTION_FAILED);
         }
 
-        if(read(sockfd,get_msg_from_server,sizeof(get_msg_from_server)) < 0)
+        int byte_read, initial_msg_byte_read;
+
+        byte_read=0; // Initializing as 0 Byte integer
+        initial_msg_byte_read=0;
+
+        if((initial_msg_byte_read=read(sockfd,get_msg_from_server,sizeof(get_msg_from_server))) < 0)
         {
           #ifdef DEBUG
-          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+          printf("[DEBUG] Errno result: %s\n",strerror(errno));
           #endif
                 perror("* Reading from socket error\n");
+        }
+        else if(initial_msg_byte_read==0)
+        {
+            printf("* Server disconnected\n");
+            exit(SERVER_DISCONNECTED);
         }
 
         #ifdef DEBUG
@@ -82,6 +92,10 @@ int start_client(const char* srv_ip)
 
         if(strcmp(get_msg_from_server, "auth-required") == 0)
         {
+                get_msg_from_server[initial_msg_byte_read]='\0';
+                fflush(stdout);
+                get_msg_from_server[0]='\0';
+
                 printf("+-----------------------------------------------------------------------+\n");
                 printf("* Authentication is required before accessing JASM Command Line Interface\n");
                 printf("* Password: ");
@@ -95,16 +109,21 @@ int start_client(const char* srv_ip)
                 {
                   perror("Error sending password!");
                   #ifdef DEBUG
-                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 }
 
-                if(read(sockfd,passauth,sizeof(passauth)) < 0)
+                if((byte_read=read(sockfd,passauth,sizeof(passauth))) < 0)
                 {
                   perror("* Error reading server response\n");
                   #ifdef DEBUG
-                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
+                }
+                else if(byte_read==0)
+                {
+                    printf("* Server disconnected\n");
+                    exit(SERVER_DISCONNECTED);
                 }
 
                 if(strcmp(passauth,"denied") == 0)
@@ -114,8 +133,18 @@ int start_client(const char* srv_ip)
                         for(int i=1;i<=4;i++)
                         {
 
-                            if(read(sockfd,if_retry,sizeof(if_retry)) < 0)
+                            if((byte_read=read(sockfd,if_retry,sizeof(if_retry))) < 0)
+                            {
                                 perror("* Error while getting response...\n");
+                                #ifdef DEBUG
+                                printf("[DEBUG]Errno: %s\n",strerror(errno));
+                                #endif // DEBUG
+                            }
+                            else if(byte_read==0)
+                            {
+                                printf("* Server disconnected\n");
+                                exit(SERVER_DISCONNECTED);
+                            }
 
                             #ifdef DEBUG
                             printf("[DEBUG] Response: %s\n",if_retry);
@@ -131,7 +160,7 @@ int start_client(const char* srv_ip)
                                     printf("* Closing connection...\n");
                                     printf("* To prevent intrusion!\n");
                                     close(sockfd);
-                                    exit(190);
+                                    exit(LOGIN_TOO_MUCH_ATTEMPTS);
                                  }
 
                                 printf("* Attempt: %d\n",i);
@@ -158,16 +187,26 @@ int start_client(const char* srv_ip)
         }
         else if(strcmp(get_msg_from_server, "auth-not-required") == 0)
         {
-                char if_set_file[15];
+                get_msg_from_server[initial_msg_byte_read]='\0';
+                fflush(stdout);
+                get_msg_from_server[0]='\0';
+
+                char if_set_file[BUFSIZ];
                 printf("* Authentication is not required for this session\n");
 
-                if(read(sockfd,if_set_file,15)<0)
+                if((byte_read=read(sockfd,if_set_file,sizeof(if_set_file)))<0)
                 {
                   perror("* Error reading fexisting\n");
                   #ifdef DEBUG
-                  fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 }
+                else if(byte_read==0)
+                {
+                  printf("* Server disconnected\n");
+                  exit(SERVER_DISCONNECTED);
+                }
+
 
                 #ifdef DEBUG
                 printf("[DEBUG] File response: %s\n",if_set_file);
@@ -198,7 +237,9 @@ int start_client(const char* srv_ip)
                         }
                 }
                 else if(strcmp(if_set_file,"nochk-pwdfile") == 0)
-                {}
+                {
+                    printf("\n");
+                }
         }
 
         return sockfd;

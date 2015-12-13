@@ -127,7 +127,9 @@ void start_server()
         server_sockfd=socket(AF_INET, SOCK_STREAM, 0); //fix
         if(server_sockfd < 0)
         {
+          sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
           log_error("[JASM-DAEMON][socket()]Failed to create new socket! Exiting...\n");
+          log_error(errlog);
           openlog("JASM",LOG_PID,LOG_DAEMON);
           syslog(LOG_ERR,"socket creation failed!! Exiting!");
           closelog();
@@ -140,10 +142,9 @@ void start_server()
 
         if(bind(server_sockfd, (struct sockaddr *)&server_address, server_len) < 0)
         {
-            char *error_dyn="null";
-            sprintf(error_dyn,"[JASM-DAEMON][bind()]Error: %s\n",strerror(errno));
+            sprintf(errlog,"[JASM-DAEMON][bind()]Error: %s\n",strerror(errno));
             log_error("[JASM-DAEMON][bind()]Failed to bind socket!\n");
-            log_error(error_dyn);
+            log_error(errlog);
             log_error("[JASM-DAEMON] Exiting !\n");
             openlog("JASM",LOG_PID,LOG_DAEMON);
             syslog(LOG_ERR,"socket not correctly binded... exiting!");
@@ -153,7 +154,9 @@ void start_server()
 
         if(listen(server_sockfd, 5) < 0)
         {
+            sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
             log_error("[JASM-DAEMON][listen()]Failed to put socket in listening mode! \n");
+            log_error(errlog);
             openlog("JASM",LOG_PID,LOG_DAEMON);
             syslog(LOG_ERR,"FATAL! socket was not put to listening mode! Exiting...");
             closelog();
@@ -190,7 +193,9 @@ void start_server()
                                         client_sockfd=accept(server_sockfd, (struct sockaddr *)&client_address, &client_len);
                                         if(client_sockfd < 0)
                                         {
+                                          sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                           log_error("[JASM-DAEMON][accept()]Failed to accept socket connection!\n");
+                                          log_error(errlog);
                                           openlog("JASM",LOG_PID,LOG_DAEMON);
                                           syslog(LOG_ERR,"FATAL! Failed to accept client incoming connection! Exiting...");
                                           closelog();
@@ -212,14 +217,22 @@ void start_server()
 
                                                 log_string("[CLIENT-AUTH]Authentication required! ...");
                                                 if(write(client_sockfd,auth,sizeof(auth)) < 0)
+                                                {
+                                                        sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                         log_error("[write()][auth] Error\n");
+                                                        log_error(errlog);
+                                                }
 
                                                 if((rpwd = read(client_sockfd,getpasswd,sizeof(getpasswd))) < 0)
+                                                {
+                                                    sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                     log_error("[read()][getpasswd] Error\n");
+                                                    log_error(errlog);
+                                                }
 
                                                 if(rpwd == 0)
                                                 {
-                                                    log_string("[JASM-DAEMON]Recieved 0 Byte data");
+                                                    log_string("[JASM-DAEMON]Client disconnected or leaved empty while inserting password");
                                                     shutdown(client_sockfd,2);
                                                     break;
                                                 }
@@ -241,16 +254,30 @@ void start_server()
                                                         log_string("[PWD][OK]Password accepted!\n");
                                                         log_string("[PWD][OK]Authorized!\n");
                                                         if(write(client_sockfd,granted,8) < 0)
+                                                        {
+                                                                sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                                 log_error("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted\n");
+                                                                log_error(errlog);
+                                                        }
+
                                                 }
                                                 else if(strcmp(getpasswd,passwd_from_client) != 0)
                                                 {
 
                                                         log_error("[PWD][DEN]Wrong password!\n");
                                                         if(write(client_sockfd,denied,7)<0)
+                                                        {
+                                                            sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                             log_error("[JASM-DAEMON][write()] Error!\n");
+                                                            log_error(errlog);
+                                                        }
+
                                                         if(write(client_sockfd,"retry\0",6) < 0)
-                                                               log_error("[JASM-DAEMON][write()] Error\n");
+                                                        {
+                                                            sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+                                                            log_error("[JASM-DAEMON][write()] Error\n");
+                                                            log_error(errlog);
+                                                        }
 
                                                         for(int i=1;i<=4;i++)
                                                         {
@@ -265,18 +292,26 @@ void start_server()
                                                                 break;
                                                             }
                                                             else if(nbs < 0)
+                                                            {
+                                                                sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                                 log_error("[JASM-DAEMON][read()] Error\n");
+                                                                log_error(errlog);
+                                                            }
 
                                                             if(strcmp(passwd,passwd_from_client) == 0)
                                                             {
                                                                 if((chkfile=fopen(CHECK_ACCESS_FILE,"w+"))==NULL)
                                                                 {}
-                                                                fprintf(chkfile,"false");
+                                                                fprintf(chkfile,"falset");
                                                                 fclose(chkfile);
                                                                 sprintf(attstr,"[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!",i);
                                                                 log_string(attstr);
-                                                                if(write(client_sockfd,"authorized\0",11))
+                                                                if(write(client_sockfd,"authorized\0",11)<0)
+                                                                {
+                                                                    sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                                     log_error("[JASM-DAEMON][write()] Error\n");
+                                                                    log_error(errlog);
+                                                                }
                                                                 break;
 
                                                             }
@@ -289,9 +324,12 @@ void start_server()
                                                                 sprintf(attstr,"[JASM-DAEMON][LOGIN]Attempt: %d FAILED!",i);
                                                                 log_string(attstr);
 
-                                                                if(write(client_sockfd,"retry\0",6))
+                                                                if(write(client_sockfd,"retry\0",6)<0)
+                                                                {
+                                                                    sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
                                                                     log_error("[JASM-DAEMON][write()] Error\n");
-
+                                                                    log_error(errlog);
+                                                                }
 
                                                                  if(i==3)
                                                                  {
@@ -318,16 +356,31 @@ void start_server()
                                                 if(chkfile == 0)
                                                 {
                                                         if(write(client_sockfd,nochkpwd,14) < 0)
-                                                                log_error("[chkfile][retval0][write()] error\n");
+                                                        {
+                                                            sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+                                                            log_error("[chkfile][write()] error\n");
+                                                            log_error(errlog);
+                                                        }
                                                 }
                                                 else if(chkfile == 1)
                                                 {
                                                         FILE *pswfp;
                                                         char buf_in_passwd[256];
 
-                                                        if(write(client_sockfd,chkpwd,15) < 0) log_error("write() error\n");
-                                                        if(read(client_sockfd,buf_in_passwd,sizeof(buf_in_passwd)) < 0) //sizeof() may be replaced
-                                                                log_error("[chkfile][retval1][read()] error\n");
+                                                        if(write(client_sockfd,chkpwd,15) < 0)
+                                                        {
+                                                            sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+                                                            log_error("[chkfile][write()] error\n");
+                                                            log_error(errlog);
+                                                        }
+
+                                                        if(read(client_sockfd,buf_in_passwd,sizeof(buf_in_passwd)) < 0) //sizeof()may be replaced
+                                                        {
+                                                            sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+                                                            log_error("[chkfile][read()] error\n");
+                                                            log_error(errlog);
+                                                        }
+
                                                         //log_string(buf_in_passwd);
                                                         if((pswfp=fopen(PASSWD_ENC_FILE,"w+")) != NULL)
                                                         {

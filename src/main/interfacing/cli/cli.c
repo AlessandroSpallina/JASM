@@ -49,7 +49,8 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
             if((fn=fopen(CHECK_ACCESS_FILE,"r"))!=NULL)
             {
                 fgets(msg_from_file,BUFSIZ,fn);
-                if(strcmp(msg_from_file,"true")==0)
+                if(strcmp(msg_from_file,"true")==0 ||
+                   strcmp(msg_from_file,"falset")==0)
                 {
                     printf("*IMPORTANT NOTICE*\n*JASM detected that someone tried to access this server more than 3 times!\n*Check server log!\n");
                     fclose(fn);
@@ -69,7 +70,7 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
   \nquit : exits cli\nhalt : halt jasm\n\n",releasetime,getTime(),sockfd,usern);
 }
 
-void secureJasmCommunication(char buffer[BUFSIZ], int fd)
+void secureJasmCommunication(char * buffer, int fd)
 {
                 int n;
 
@@ -89,6 +90,10 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         }
                         else if(n==0)
                         {
+                            #ifdef DEBUG
+                            printf("[DEBUG]Errno: %s",strerror(errno));
+                            #endif // DEBUG
+
                             printf("* Server disconnected\n");
                             exit(SERVER_DISCONNECTED);
                         }
@@ -97,7 +102,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         printf("* Getters *\n");
                         for(int i=0; i<ngetter; i++) {
                                 memset(buffer, 0, BUFSIZ);
-                                if((n=read(fd, (void *)buffer, sizeof(buffer)))<0)
+                                if((n=read(fd, (void*)buffer, sizeof(buffer)))<0)
                                 {
                                         perror("read on fd FAIL");
                                         #ifdef DEBUG
@@ -136,11 +141,14 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         {
                           perror("* Error on read()");
                           #ifdef DEBUG
-                          fprintf(stderr,"[DEBUG] Errno result: %s\n",strerror(errno));
+                          printf("[DEBUG] Errno result: %s\n",strerror(errno));
                           #endif
                         }
                         else if(n == 0)
                         {
+                            #ifdef DEBUG
+                            printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                            #endif // DEBUG
                             printf("* Server disconnected\n");
                             exit(SERVER_DISCONNECTED);
                         }
@@ -177,8 +185,8 @@ int main(int argc, char *argv[])
         check_debug();
         check_release();
 
+        char buf[BUFSIZ];
         int fd;
-        char buf[BUFSIZ]="none"; //check
         char *username=getenv("USER");
 
         server_ip = "127.0.0.1";
