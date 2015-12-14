@@ -34,13 +34,17 @@ char error[BUFSIZ];
 void getVersion(int fd);
 void getCopyright(int fd);
 void getHostname(int fd);
+void getKernelName(int fd);
+void getKernelRelease(int fd);
+void getKernelVersion(int fd);
+void getMachine(int fd);
 void getGetter(int fd);
 
 char getterName[NGETTER][BUFSIZ]={"Version", "Copyright", "Hostname", "KernelName",
                                   "KernelRelease", "KernelVersion", "Machine"};
 
 void (*getterFunction[NGETTER])(int)={getVersion, getCopyright, getHostname,
-                                      getKernelName, getKernelVersion, getKernelVersion, getMachine};
+                                      getKernelName, getKernelRelease, getKernelVersion, getMachine};
 
 /*
  *  scrive su fd int numero getter e N stringhe nomiGetter
@@ -50,16 +54,15 @@ void getGetter(int fd)
         int i;
         int ngetter = NGETTER;
 
-        if(write(fd, &ngetter, sizeof(ngetter))<0)
-        {
-          sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+        if(write(fd, &ngetter, sizeof(ngetter))<0) {
+          sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
           log_error("[JASM-DAEMON][getGetter][write()] Error!");
           log_error(error);
         }
+
         for(i=0; i<NGETTER; i++) {
-              if(write(fd, getterName[i], strlen(getterName[i])+1)<0)
-              {
-                sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+              if(write(fd, getterName[i], strlen(getterName[i])+1)<0) {
+                sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                 log_error("[JASM-DAEMON][getGetter][write()] Error!");
                 log_error(error);
               }
@@ -67,20 +70,28 @@ void getGetter(int fd)
 }
 
 void getVersion(int fd)
-{
-        if(write(fd, VERSION, strlen(VERSION)+1) < 0)
-        {
-          sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+{	int n;
+
+	n = write(fd, VERSION, strlen(VERSION));
+        if(n < 0) {
+          sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
           log_error("[JASM-DAEMON][getGetter][write()] Error!");
           log_error(error);
-        }
+        } else {
+        	if(n < strlen(VERSION)) {
+          	sprintf(error, "[JASM-DAEMON][getGetter][write()] sent %d byte, correct num byte is %d", n, strlen(VERSION));
+          	log_error(error);
+          	} else {
+          	sprintf(error, "[JASM-DAEMON][getGetter][write()] sent %d byte", n);
+          	log_string(error);
+        	}
+	}
 }
 
 void getCopyright(int fd)
 {
-        if(write(fd, COPYRIGHT, strlen(COPYRIGHT)+1) < 0)
-        {
-          sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+        if(write(fd, COPYRIGHT, strlen(COPYRIGHT)) < 0) {
+          sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
           log_error("[JASM-DAEMON][getGetter][write()] Error!");
           log_error(error);
         }
@@ -96,9 +107,8 @@ void getHostname(int fd)
                 return;
         } else {
                 strcpy(buf, info.nodename);
-                if(write(fd, buf, strlen(buf)+1) < 0)
-                {
-                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                if(write(fd, buf, strlen(buf)) < 0) {
+                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                   log_error("[JASM-DAEMON][getGetter][write()] Error!");
                   log_error(error);
                 }
@@ -115,9 +125,8 @@ void getKernelName(int fd)
                 return;
         } else {
                 strcpy(buf, info.sysname);
-                if(write(fd, buf, strlen(buf)+1)<0)
-                {
-                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                if(write(fd, buf, strlen(buf))<0) {
+                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                   log_error("[JASM-DAEMON][getGetter][write()] Error!");
                   log_error(error);
                 }
@@ -134,9 +143,8 @@ void getKernelRelease(int fd)
                 return;
         } else {
                 strcpy(buf, info.release);
-                if(write(fd, buf, strlen(buf)+1)<0)
-                {
-                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                if(write(fd, buf, strlen(buf))<0) {
+                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                   log_error("[JASM-DAEMON][getGetter][write()] Error!");
                   log_error(error);
                 }
@@ -153,9 +161,8 @@ void getKernelVersion(int fd)
                 return;
         } else {
                 strcpy(buf, info.version);
-                if(write(fd, buf, strlen(buf)+1)<0)
-                {
-                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                if(write(fd, buf, strlen(buf))<0) {
+                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                   log_error("[JASM-DAEMON][getGetter][write()] Error!");
                   log_error(error);
                 }
@@ -172,9 +179,8 @@ void getMachine(int fd)
                 return;
         } else {
                 strcpy(buf, info.machine);
-                if(write(fd, buf, strlen(buf)+1)<0)
-                {
-                  sprintf(error,"[JASM-DAEMON][errno] %s\n",strerror(errno));
+                if(write(fd, buf, strlen(buf))<0) {
+                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                   log_error("[JASM-DAEMON][getGetter][write()] Error!");
                   log_error(error);
                 }

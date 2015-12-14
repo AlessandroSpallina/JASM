@@ -22,6 +22,6 @@
 #define SERVER_PORT 9734
 //#define SERVER_IP "127.0.0.1"
 
-extern int start_client(const char* srv_ip);
+extern int start_client(const char * srv_ip);
 
 #endif

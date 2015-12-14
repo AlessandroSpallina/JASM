@@ -102,7 +102,7 @@ void start_daemon()
         char buf[BUFSIZ];
         char buf_intro[BUFSIZ];
 
-        sprintf(buf_intro,"[START]JASM System Monitor Starting Up... Version: %s , Build Date: %s\n",VERSION,buildate);
+        sprintf(buf_intro,"[START]JASM System Monitor Starting Up... Version: %s , Build Date: %s",VERSION,buildate);
 
         log_string("=======================================");
         #ifdef DEBUG
