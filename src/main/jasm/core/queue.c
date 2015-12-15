@@ -82,10 +82,10 @@ struct running_module *del_queue(struct queue **head)
 {
         static struct running_module *temp;
         /*{
-          .head=NULL,
-          .fd=-1,
-          .sec=-1
-        };*/
+           .head=NULL,
+           .fd=-1,
+           .sec=-1
+           };*/
         temp->head=NULL;
         temp->fd=-1;
         temp->sec=-1;

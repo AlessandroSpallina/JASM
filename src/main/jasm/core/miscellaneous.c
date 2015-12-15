@@ -50,9 +50,9 @@ char *getTime()
 void check_buildate()
 {
   #ifdef BUILD_DATE_CORE
-  strcpy(buildate,BUILD_DATE_CORE);
+        strcpy(buildate,BUILD_DATE_CORE);
   #else
-  strcpy(buildate,"not availible");
+        strcpy(buildate,"not availible");
   #endif
 }
 
@@ -158,12 +158,12 @@ void start_daemon()
 /*LOGIN SECTION*/
 int login_required(const char* clientaddr)
 {
-	if(strcmp(clientaddr,LOCALHOST) == 0) return 0;
-	else return 1;
+        if(strcmp(clientaddr,LOCALHOST) == 0) return 0;
+        else return 1;
 }
 
 int check_passwd_file(const char* __pwdf)
 {
-	if(access(__pwdf,F_OK) != -1) return 0;
-    else return 1;
+        if(access(__pwdf,F_OK) != -1) return 0;
+        else return 1;
 }

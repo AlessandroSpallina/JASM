@@ -25,15 +25,15 @@ char buildtime[BUFSIZ]="null";
 char debugstr[BUFSIZ]="null";
 
 char color[4][BUFSIZ]={
-  "\033[32m", //green
-  "\033[31m", //red
-  "\033[33m", //yellow
-  "\033[34m" //blue
+        "\033[32m", //green
+        "\033[31m", //red
+        "\033[33m", //yellow
+        "\033[34m" //blue
 };
 
 void log_string(const char *message)
 {
-  printf("# Sys: %s\n", message);
+        printf("# Sys: %s\n", message);
 }
 
 char *getTime()
@@ -53,23 +53,23 @@ char *getTime()
 void check_debug()
 {
   #ifdef DEBUG
-  strcpy(debugstr,"* You are using JASMCLI *debug* build!");
+        strcpy(debugstr,"* You are using JASMCLI *debug* build!");
   #else
-  strcpy(debugstr,"\0");
+        strcpy(debugstr,"\0");
   #endif
 }
 
 void check_release()
 {
   #ifdef BUILD_DATE_CLI
-  strcpy(buildtime,BUILD_DATE_CLI);
+        strcpy(buildtime,BUILD_DATE_CLI);
   #else
-  strcpy("not availible",BUILD_DATE_CLI);
+        strcpy("not availible",BUILD_DATE_CLI);
   #endif
 }
 
 int check_if_file_exists(const char * __fname)
 {
-    if(access(__fname,F_OK)!=-1)return 1;
-    else return 0;
+        if(access(__fname,F_OK)!=-1) return 1;
+        else return 0;
 }

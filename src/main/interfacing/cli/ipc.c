@@ -44,11 +44,11 @@ int start_client(const char* srv_ip)
 
         sockfd=socket(AF_INET, SOCK_STREAM, 0); //return code checking
         if(sockfd < 0) {
-          perror("* Error while creating new socket\n* Exiting...\n");
+                perror("* Error while creating new socket\n* Exiting...\n");
           #ifdef DEBUG
-          fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
+                fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
           #endif
-          exit(SOCKET_CREATION_FAILED);
+                exit(SOCKET_CREATION_FAILED);
         }
 
         address.sin_family=AF_INET;
@@ -74,12 +74,12 @@ int start_client(const char* srv_ip)
         if((initial_msg_byte_read = read(sockfd, get_msg_from_server, sizeof(get_msg_from_server))) < 0)
         {
           #ifdef DEBUG
-          printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                printf("[DEBUG] Errno result: %s\n",strerror(errno));
           #endif
                 perror("* Reading from socket error\n");
         } else if(initial_msg_byte_read==0) {
-            printf("* Server disconnected\n");
-            exit(SERVER_DISCONNECTED);
+                printf("* Server disconnected\n");
+                exit(SERVER_DISCONNECTED);
         }
 
         #ifdef DEBUG
@@ -101,20 +101,20 @@ int start_client(const char* srv_ip)
                 #endif
 
                 if(write(sockfd, get_my_pass, strlen(get_my_pass)) < 0) {
-                  perror("Error sending password!");
+                        perror("Error sending password!");
                   #ifdef DEBUG
-                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                        printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 }
 
                 if((byte_read = read(sockfd, passauth, sizeof(passauth))) < 0) {
-                  perror("* Error reading server response\n");
+                        perror("* Error reading server response\n");
                   #ifdef DEBUG
-                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                        printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 } else if(byte_read == 0) {
-                    printf("* Server disconnected\n");
-                    exit(SERVER_DISCONNECTED);
+                        printf("* Server disconnected\n");
+                        exit(SERVER_DISCONNECTED);
                 }
 
                 if(strcmp(passauth, "denied") == 0) {
@@ -122,40 +122,40 @@ int start_client(const char* srv_ip)
 
                         for (int i=1; i<=4; i++) {
 
-                            if((byte_read = read(sockfd, if_retry, sizeof(if_retry))) < 0) {
-                                perror("* Error while getting response...\n");
+                                if((byte_read = read(sockfd, if_retry, sizeof(if_retry))) < 0) {
+                                        perror("* Error while getting response...\n");
                                 #ifdef DEBUG
-                                printf("[DEBUG]Errno: %s\n",strerror(errno));
+                                        printf("[DEBUG]Errno: %s\n",strerror(errno));
                                 #endif // DEBUG
-                            } else if(byte_read==0) {
-                                printf("* Server disconnected\n");
-                                exit(SERVER_DISCONNECTED);
-                            }
+                                } else if(byte_read==0) {
+                                        printf("* Server disconnected\n");
+                                        exit(SERVER_DISCONNECTED);
+                                }
 
                             #ifdef DEBUG
-                            printf("[DEBUG] Response: %s\n",if_retry);
+                                printf("[DEBUG] Response: %s\n",if_retry);
                             #endif // DEBUG
 
-                            if(strcmp(if_retry,"ry")==0 || strcmp(if_retry,"retry")== 0) {
-                                if(i == 4) {
+                                if(strcmp(if_retry,"ry")==0 || strcmp(if_retry,"retry")== 0) {
+                                        if(i == 4) {
 
-                                    printf("* Too much attempts!\n");
-                                    printf("* Closing connection...\n");
-                                    printf("* To prevent intrusion!\n");
-                                    close(sockfd);
-                                    exit(LOGIN_TOO_MUCH_ATTEMPTS);
-                                 }
+                                                printf("* Too much attempts!\n");
+                                                printf("* Closing connection...\n");
+                                                printf("* To prevent intrusion!\n");
+                                                close(sockfd);
+                                                exit(LOGIN_TOO_MUCH_ATTEMPTS);
+                                        }
 
-                                printf("* Attempt: %d\n",i);
-                                printf("* Retry\n");
-                                printf("* Password: ");
-                                fgets(get_my_pass,BUFSIZ,stdin);
-                                if(write(sockfd,get_my_pass,sizeof(get_my_pass)) < 0)
-                                    perror("* Error while sending pswd");
-                            } else if(strcmp(if_retry,"authorized")==0) {
-                                printf("* Authorized [attempt: %d]\n",i);
-                                break;
-                            }
+                                        printf("* Attempt: %d\n",i);
+                                        printf("* Retry\n");
+                                        printf("* Password: ");
+                                        fgets(get_my_pass,BUFSIZ,stdin);
+                                        if(write(sockfd,get_my_pass,sizeof(get_my_pass)) < 0)
+                                                perror("* Error while sending pswd");
+                                } else if(strcmp(if_retry,"authorized")==0) {
+                                        printf("* Authorized [attempt: %d]\n",i);
+                                        break;
+                                }
                         }
                 } else if(strcmp(passauth,"granted") == 0) {
                         printf("* Great                       *\n");
@@ -172,13 +172,13 @@ int start_client(const char* srv_ip)
                 printf("* Authentication is not required for this session\n");
 
                 if((byte_read = read(sockfd, if_set_file, sizeof(if_set_file)))<0) {
-                  perror("* Error reading fexisting\n");
+                        perror("* Error reading fexisting\n");
                   #ifdef DEBUG
-                  printf("[DEBUG] Errno result: %s\n",strerror(errno));
+                        printf("[DEBUG] Errno result: %s\n",strerror(errno));
                   #endif
                 } else if(byte_read==0) {
-                  printf("* Server disconnected\n");
-                  exit(SERVER_DISCONNECTED);
+                        printf("* Server disconnected\n");
+                        exit(SERVER_DISCONNECTED);
                 }
 
 
@@ -201,13 +201,13 @@ int start_client(const char* srv_ip)
                         #endif
 
                         if(write(sockfd, psw_to_use, strlen(psw_to_use))<0) {
-                          perror("* Error sending pwd\n");
+                                perror("* Error sending pwd\n");
                           #ifdef DEBUG
-                          fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
+                                fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
                           #endif
                         }
                 } else if(strcmp(if_set_file,"nochk-pwdfile") == 0) {
-                    printf("\n");
+                        printf("\n");
                 }
         }
 
