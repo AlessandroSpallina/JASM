@@ -72,6 +72,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/main/jasm/core/Makefile" />
+		<Unit filename="src/main/jasm/core/configfile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/main/jasm/core/configfile.h" />
 		<Unit filename="src/main/jasm/core/getter.c">
 			<Option compilerVar="CC" />
 		</Unit>
