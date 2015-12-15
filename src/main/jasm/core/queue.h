@@ -20,9 +20,9 @@
 #define _QUEUE_H
 
 struct queue { //queue struct
-  struct running_module *info;
-  struct queue *next;
-  char *string;
+        struct running_module *info;
+        struct queue *next;
+        char *string;
 };
 
 extern void print_queue(struct queue *head);

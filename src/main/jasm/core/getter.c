@@ -58,76 +58,49 @@ void getGetter(int fd)
         write(fd, &ngetter, sizeof(ngetter));
 
         for(i=0; i<NGETTER; i++) {
-          count = strlen(getterName[i]);
-          write(fd, &count, sizeof(count));
-          write(fd, getterName[i], strlen(getterName[i]));
+                count = strlen(getterName[i]);
+                //aggiungere check errore nell'invio
+                write(fd, &count, sizeof(count));
+                write(fd, getterName[i], strlen(getterName[i]));
         }
-
-        /*// scrive su socket int numero char di tutti i getter+'\0'
-        for(i=0; i<NGETTER; i++)
-          count += (strlen(getterName[i])+1);
-
-          if(write(fd, &count, sizeof(count)) < 0) {
-            sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-            log_error("[JASM-DAEMON][getGetter][write()] Error!");
-            log_error(error);
-          }
-
-        //scrive su socket tutti i getter divisi da '\0'
-        for(i=0; i<NGETTER; i++) {
-          n = write(fd, getterName[i], strlen(getterName[i])+1);  //invia anche \0
-          if(n < 0) {
-            sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-            log_error("[JASM-DAEMON][getGetter][write()] Error!");
-            log_error(error);
-          } else {
-            if(n < (strlen(getterName[i])+1)) {
-              sprintf(error, "[JASM-DAEMON][getGetter][write()] sent %d byte, correct num byte is %zu", n, (strlen(getterName[i])+1));
-            	log_error(error);
-            } else {
-              sprintf(error, "[JASM-DAEMON][getGetter][write()] sent %d byte", n);
-            	log_string(error);
-            }
-          }
-        }*/
 }
 
 void getVersion(int fd)
 {
-  int n;
+        int n;
 
-	 n = write(fd, VERSION, strlen(VERSION));
+        n = write(fd, VERSION, strlen(VERSION));
         if(n < 0) {
-          sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-          log_error("[JASM-DAEMON][getVersion][write()] Error!");
-          log_error(error);
+                sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
+                log_error("[JASM-DAEMON][getVersion][write()] Error!");
+                log_error(error);
         } else {
-        	if(n < strlen(VERSION)) {
-          	sprintf(error, "[JASM-DAEMON][getVersion][write()] sent %d byte, correct num byte is %zu", n, strlen(VERSION));
-          	log_error(error);
-          	} else {
-          	sprintf(error, "[JASM-DAEMON][getVersion][write()] sent %d byte", n);
-          	log_string(error);
-        	}
-	       }
+                if(n < strlen(VERSION)) {
+                        sprintf(error, "[JASM-DAEMON][getVersion][write()] sent %d byte, correct num byte is %zu", n, strlen(VERSION));
+                        log_error(error);
+                } else {
+                        sprintf(error, "[JASM-DAEMON][getVersion][write()] sent %d byte", n);
+                        log_string(error);
+                }
+        }
 }
 
 void getCopyright(int fd)
 {
         int n;
 
-         n = write(fd, COPYRIGHT, strlen(COPYRIGHT));
-              if(n < 0) {
+        n = write(fd, COPYRIGHT, strlen(COPYRIGHT));
+        if(n < 0) {
                 sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
                 log_error("[JASM-DAEMON][getCopyright][write()] Error!");
                 log_error(error);
-              } else {
+        } else {
                 if(n < strlen(COPYRIGHT)) {
-                  sprintf(error, "[JASM-DAEMON][getCopyright][write()] sent %d byte, correct num byte is %zu", n, strlen(COPYRIGHT));
-                  log_error(error);
-                  } else {
-                  sprintf(error, "[JASM-DAEMON][getCopyright][write()] sent %d byte", n);
-                  log_string(error);
+                        sprintf(error, "[JASM-DAEMON][getCopyright][write()] sent %d byte, correct num byte is %zu", n, strlen(COPYRIGHT));
+                        log_error(error);
+                } else {
+                        sprintf(error, "[JASM-DAEMON][getCopyright][write()] sent %d byte", n);
+                        log_string(error);
                 }
         }
 }
@@ -144,17 +117,17 @@ void getHostname(int fd)
                 strcpy(buf, info.nodename);
                 int n = write(fd, buf, strlen(buf));
                 if(n < 0) {
-                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-                  log_error("[JASM-DAEMON][getHostname][write()] Error!");
-                  log_error(error);
+                        sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
+                        log_error("[JASM-DAEMON][getHostname][write()] Error!");
+                        log_error(error);
                 } else {
-                  if(n < strlen(buf)) {
-                    sprintf(error, "[JASM-DAEMON][getHostname][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
-                    log_error(error);
-                  } else {
-                    sprintf(error, "[JASM-DAEMON][getHostname][write()] sent %d byte", n);
-                    log_string(error);
-                  }
+                        if(n < strlen(buf)) {
+                                sprintf(error, "[JASM-DAEMON][getHostname][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
+                                log_error(error);
+                        } else {
+                                sprintf(error, "[JASM-DAEMON][getHostname][write()] sent %d byte", n);
+                                log_string(error);
+                        }
                 }
         }
 }
@@ -171,17 +144,17 @@ void getKernelName(int fd)
                 strcpy(buf, info.sysname);
                 int n = write(fd, buf, strlen(buf));
                 if(n < 0) {
-                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-                  log_error("[JASM-DAEMON][getKernelName][write()] Error!");
-                  log_error(error);
+                        sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
+                        log_error("[JASM-DAEMON][getKernelName][write()] Error!");
+                        log_error(error);
                 } else {
-                  if(n < strlen(buf)) {
-                    sprintf(error, "[JASM-DAEMON][getKernelName][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
-                    log_error(error);
-                  } else {
-                    sprintf(error, "[JASM-DAEMON][getKernelName][write()] sent %d byte", n);
-                    log_string(error);
-                  }
+                        if(n < strlen(buf)) {
+                                sprintf(error, "[JASM-DAEMON][getKernelName][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
+                                log_error(error);
+                        } else {
+                                sprintf(error, "[JASM-DAEMON][getKernelName][write()] sent %d byte", n);
+                                log_string(error);
+                        }
                 }
         }
 }
@@ -198,17 +171,17 @@ void getKernelRelease(int fd)
                 strcpy(buf, info.release);
                 int n = write(fd, buf, strlen(buf));
                 if(n < 0) {
-                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-                  log_error("[JASM-DAEMON][getKernelRelease][write()] Error!");
-                  log_error(error);
+                        sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
+                        log_error("[JASM-DAEMON][getKernelRelease][write()] Error!");
+                        log_error(error);
                 } else {
-                  if(n < strlen(buf)) {
-                    sprintf(error, "[JASM-DAEMON][getKernelRelease][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
-                    log_error(error);
-                  } else {
-                    sprintf(error, "[JASM-DAEMON][getKernelName][write()] sent %d byte", n);
-                    log_string(error);
-                  }
+                        if(n < strlen(buf)) {
+                                sprintf(error, "[JASM-DAEMON][getKernelRelease][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
+                                log_error(error);
+                        } else {
+                                sprintf(error, "[JASM-DAEMON][getKernelRelease][write()] sent %d byte", n);
+                                log_string(error);
+                        }
                 }
         }
 }
@@ -225,17 +198,17 @@ void getKernelVersion(int fd)
                 strcpy(buf, info.version);
                 int n = write(fd, buf, strlen(buf));
                 if(n < 0) {
-                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-                  log_error("[JASM-DAEMON][getKernelVersion][write()] Error!");
-                  log_error(error);
+                        sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
+                        log_error("[JASM-DAEMON][getKernelVersion][write()] Error!");
+                        log_error(error);
                 } else {
-                  if(n < strlen(buf)) {
-                    sprintf(error, "[JASM-DAEMON][getKernelVersion][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
-                    log_error(error);
-                  } else {
-                    sprintf(error, "[JASM-DAEMON][getKernelVersion][write()] sent %d byte", n);
-                    log_string(error);
-                  }
+                        if(n < strlen(buf)) {
+                                sprintf(error, "[JASM-DAEMON][getKernelVersion][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
+                                log_error(error);
+                        } else {
+                                sprintf(error, "[JASM-DAEMON][getKernelVersion][write()] sent %d byte", n);
+                                log_string(error);
+                        }
                 }
         }
 }
@@ -252,17 +225,17 @@ void getMachine(int fd)
                 strcpy(buf, info.machine);
                 int n = write(fd, buf, strlen(buf));
                 if(n < 0) {
-                  sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
-                  log_error("[JASM-DAEMON][getMachine][write()] Error!");
-                  log_error(error);
+                        sprintf(error, "[JASM-DAEMON][errno] %s", strerror(errno));
+                        log_error("[JASM-DAEMON][getMachine][write()] Error!");
+                        log_error(error);
                 } else {
-                  if(n < strlen(buf)) {
-                    sprintf(error, "[JASM-DAEMON][getMachine][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
-                    log_error(error);
-                  } else {
-                    sprintf(error, "[JASM-DAEMON][getMachine][write()] sent %d byte", n);
-                    log_string(error);
-                  }
+                        if(n < strlen(buf)) {
+                                sprintf(error, "[JASM-DAEMON][getMachine][write()] sent %d byte, correct num byte is %zu", n, strlen(buf));
+                                log_error(error);
+                        } else {
+                                sprintf(error, "[JASM-DAEMON][getMachine][write()] sent %d byte", n);
+                                log_string(error);
+                        }
                 }
         }
 }

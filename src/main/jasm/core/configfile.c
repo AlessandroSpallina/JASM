@@ -2,10 +2,10 @@
 
 char * get_property_value(char * __prop)
 {
-    return "null";
+        return "null";
 }
 
 void set_property_value(void)
 {
-    return;
+        return;
 }
