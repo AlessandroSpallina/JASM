@@ -69,34 +69,39 @@ void print_welcome(const char* usern, int sockfd,const char* releasetime, const 
 void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 {
                 int n;
+                int counter;
 
                 if(strcmp("help", buffer)==0) {
-                  int ngetter=0;
+                  int ngetter = 0;
 
                   printf("Sending [%s]\n\n", buffer);
                   if(write(fd, "help", strlen("help"))<0) {
                     perror("write on fd FAIL");
                     }
-
+                    
                 //gets getter list
                 if((n = read(fd, &ngetter, sizeof(ngetter)))<0) {
                     perror("read on fd FAIL");
                 } else if(n == 0) {
-                            #ifdef DEBUG
-                            printf("[DEBUG]Errno: %s",strerror(errno));
-                            #endif // DEBUG
+                    #ifdef DEBUG
+                    printf("[DEBUG]Errno: %s",strerror(errno));
+                    #endif // DEBUG
 
-                            printf("* Server disconnected\n");
-                            exit(SERVER_DISCONNECTED);
-                        }
+                    printf("* Server disconnected\n");
+                    exit(SERVER_DISCONNECTED);
+                }
 
-                        printf("\n**JASM Help page**\n");
-                        printf("* Getters *\n");
-                        char temp[BUFSIZ];
+                printf("\n**JASM Help page**\n");
+                printf("* Getters *\n");
+                char temp[BUFSIZ];
 
-                        for(int i=0; i<ngetter; i++) {
-                                memset(temp, 0, BUFSIZ);
-                                if((n = read(fd, temp, sizeof(temp)))<0) {
+                for(int i=0; i<ngetter; i++) {
+                   memset(temp, 0, BUFSIZ);
+                   read(fd, &counter, sizeof(counter));
+                   read(fd, temp, counter);
+                   
+                   printf("%d# get%s\n", i, temp);
+                                /*if((n = read(fd, temp, sizeof(temp)))<0) {
                                         perror("read on fd FAIL");
                                         #ifdef DEBUG
                                         fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
@@ -105,7 +110,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                                     printf("* Server disconnected\n");
                                     exit(SERVER_DISCONNECTED);
                                 }
-                                printf("%d) %s\n", i, temp);
+                                printf("%d) %s\n", i, temp);*/
                         }
                         //riceve gli starter dei moduli
                         //riceve altro
