@@ -27,6 +27,7 @@
 #include <syslog.h>
 #include <errno.h>
 
+#include "configfile.h"
 #include "miscellaneous.h"
 
 char errlog[BUFSIZ]; // pattern to follow: [SECTION][ERROR]Errno: %s ...
@@ -146,6 +147,7 @@ void start_daemon()
         close(0);
         close(1);
         close(2);
+
         sprintf(buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid());
         log_string(buf);
         log_string("[JASM-DAEMON][START] Start phase successfully completed!");
