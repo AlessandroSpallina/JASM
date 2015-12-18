@@ -38,5 +38,11 @@ int main(int argc, char *argv[])
         } else
           log_string("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
 
+        #ifdef DEBUG
+        char logval[BUFSIZ];
+        sprintf(logval,"[JASM-DAEMON][DEBUG][EXTERNAL-CHECK]Reading value: %d ,%d",*(int*)_config[0].config_values,*(int*)_config[1].config_values);
+        log_string(logval);
+        #endif
+
         start_server(); //starts server after the daemon (ready to get commands)
 }
