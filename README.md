@@ -73,6 +73,9 @@ Few days and we will release first module :)
  * JASM on Android: Not started yet
  * Getters/Modules: before, the core, after getters/modules
 
+### Files
+ * $HOME/.jasm_config: JASM Configuration file *IMPLEMENTING* {*WIP*}
+
 ### Licensing
 
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more!
