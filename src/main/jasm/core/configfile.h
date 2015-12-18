@@ -3,8 +3,14 @@
 
 #define NCONFIG_PROPERTIES 2
 
-extern char property_names[NCONFIG_PROPERTIES][BUFSIZ];
-extern int property_values[NCONFIG_PROPERTIES];
+#define CONFIG_MAX_AUTHENTICATION_TRIES 1
+#define CONFIG_MAX_CONNECTIONS 0
+#define CONFIG_ALL -1
+
+extern struct config {
+  char * config_name;
+  void * config_values;
+}_config[NCONFIG_PROPERTIES];
 
 extern int set_property_value(void);
 
