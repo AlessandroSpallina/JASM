@@ -141,7 +141,7 @@ void start_server()
 
         if(bind(server_sockfd, (struct sockaddr *)&server_address, server_len) < 0) {
                 sprintf(errlog, "[JASM-DAEMON][bind()]Error: %s\n", strerror(errno));
-                log_error("[JASM-DAEMON][bind()]Failed to bind socket!");
+                log_error("[JASM-DAEMON][bind()]Failed to bind socket");
                 log_error(errlog);
                 log_error("[JASM-DAEMON] Exiting !");
                 openlog("JASM",LOG_PID,LOG_DAEMON);

@@ -101,16 +101,6 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         read(fd, temp, counter);
 
                         printf("%d# get%s\n", i, temp);
-                        /*if((n = read(fd, temp, sizeof(temp)))<0) {
-                                perror("read on fd FAIL");
-                           #ifdef DEBUG
-                                fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
-                           #endif
-                           } else if(n == 0) {
-                            printf("* Server disconnected\n");
-                            exit(SERVER_DISCONNECTED);
-                           }
-                           printf("%d) %s\n", i, temp);*/
                 }
                 //riceve gli starter dei moduli
                 //riceve altro
@@ -152,6 +142,13 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 }
 
+void print_usage()
+{
+	printf("USAGE: jasmcli --connect-server <IP>\n");
+
+
+}
+
 void parse_options(int argc, char *argv[])
 {
         if(argc > 1 && argc <= 3) {
@@ -164,9 +161,17 @@ void parse_options(int argc, char *argv[])
                                 printf("* You must specify an IP address!\n");
                                 exit(ARG_SPECIFY_IPADDR);
                         }
+                } else {
+                	print_usage();
+                	exit(0);
                 }
+        } else {
+        	if(argc > 1) {
+        		print_usage();
+        		exit(0);
+        	}
+        
         }
-        //else if ...
 }
 
 int main(int argc, char *argv[])
