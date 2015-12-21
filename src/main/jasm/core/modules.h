@@ -33,4 +33,6 @@ extern char moduleName[NMODULE][BUFSIZ];
 extern void (*moduleInit[NMODULE])(int, int);
 extern void (*moduleStart[NMODULE])(void);
 
+extern void getModule(int fd);
+
 #endif

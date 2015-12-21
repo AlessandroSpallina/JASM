@@ -26,3 +26,20 @@
 char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
 void (*moduleInit[NMODULE])(int, int) = {init_logsender};
 void (*moduleStart[NMODULE])(void) = {start_logsender};
+
+void getModule(int fd)
+{
+  int count=0;
+  int nmodule = NMODULE;
+
+  write(fd, &nmodule, sizeof(nmodule));
+
+  for(int i=0; i<NMODULE; i++) {
+    count = strlen(moduleName[i]);
+
+    //aggiungere check errore nell'invio
+    write(fd, &count, sizeof(count));
+    write(fd, moduleName[i], strlen(moduleName[i]));
+  }
+
+}

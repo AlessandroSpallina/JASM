@@ -38,5 +38,15 @@ void signal_catcher(void)
 
         sigaction(SIGSTOP, &act, 0);
         sigaction(SIGQUIT, &act, 0);
-        sigaction(SIGINT, &act, 0);
+        //sigaction(SIGINT, &act, 0);
 }
+
+
+
+
+
+
+
+
+
+

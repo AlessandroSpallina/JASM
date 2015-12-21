@@ -90,6 +90,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
         if(strcmp("help", buffer)==0) {
                 int ngetter = 0;
+                int nmodule = 0;
 
                 printf("Sending [%s]\n\n", buffer);
                 if(write(fd, "help", strlen("help"))<0) {
@@ -98,7 +99,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
                 //gets getter list
                 if((n = read(fd, &ngetter, sizeof(ngetter)))<0) {
-                        perror("read on fd FAIL");
+                        perror("read on fd FAIL [helper getters]");
                 } else if(n == 0) {
                     #ifdef DEBUG
                         printf("[DEBUG]Errno: %s",strerror(errno));
@@ -119,7 +120,29 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
                         printf("%d# get%s\n", i, temp);
                 }
-                //riceve gli starter dei moduli
+                
+                //gets module list
+                if((n =  read(fd, &nmodule, sizeof(nmodule)))<0) {
+                	perror("read on fd FAIL [helper modules]");
+                } else if(n == 0) {
+                    #ifdef DEBUG
+                        printf("[DEBUG]Errno: %s",strerror(errno));
+                    #endif // DEBUG
+
+                        printf("* Server disconnected\n");
+                        exit(SERVER_DISCONNECTED);
+                
+                }
+                
+                printf("\n* Modules * (start\stop)\n");
+                for(int i=0; i<nmodule; i++) {
+                	memset(temp, 0, BUFSIZ);
+                	read(fd, &counter, sizeof(counter));
+                	read(fd, temp, counter);
+                	
+                	printf("%d# %s\n", i, temp);
+                
+                }
                 //riceve altro
                 return;
         }

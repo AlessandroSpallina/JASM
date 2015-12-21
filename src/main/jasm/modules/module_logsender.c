@@ -47,9 +47,9 @@ static int sendNextLine(FILE *fp)
 
   write(fd, &ret, sizeof(ret));
   write(fd, line, strlen(line));
-  char buf[BUFSIZ];
-  sprintf(buf, "module: @%s@", line);
-  log_string(buf);
+  //char buf[BUFSIZ];
+  //sprintf(buf, "module: @%s@", line);
+  //log_string(buf);
   free(line);
   return 0;
 }

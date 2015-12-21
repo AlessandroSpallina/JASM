@@ -44,8 +44,9 @@ static void excecute_command(int fd, char *command)
 
         // write on fd a list of commands
         if(strcmp("help", command)==0) {
+
                 getGetter(fd);
-                //getModules
+                getModule(fd);
                 //getOther
 
                 log_string("[CMD] help exec");
@@ -87,7 +88,7 @@ static void excecute_command(int fd, char *command)
                                   log_error("pthread_create fail");
                                   write(fd, "error creating thread", strlen("error creating thread"));
                                   return;
-                                  
+
                                 } else {
                                	  write(fd, "success", strlen("success"));
                                 }

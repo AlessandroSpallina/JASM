@@ -1,31 +1,106 @@
-[Mon Dec 21 01:38:34 2015][INFO] =======================================
-[Mon Dec 21 01:38:34 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 01:33
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON] Creating new process...
-[Mon Dec 21 01:38:34 2015][INFO] [PROCESS-SPAWN][fork()] success
-[Mon Dec 21 01:38:34 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][START] PID: 25567 , Parent PID: 1
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][STATUS] Ready!
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][INFO]Using standard values
-[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
-[Mon Dec 21 01:38:34 2015][ERROR] [JASM-DAEMON][bind()]Failed to bind socket!
-[Mon Dec 21 01:38:34 2015][ERROR] [JASM-DAEMON][bind()]Error: Address already in use
+[Mon Dec 21 14:52:34 2015][INFO] =======================================
+[Mon Dec 21 14:52:34 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 14:51
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 14:52:34 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 14:52:34 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON][START] PID: 3827 , Parent PID: 1
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 14:52:34 2015][INFO] [JASM-DAEMON]Server started
+[Mon Dec 21 14:52:36 2015][INFO] [CLIENT-AUTH]Authentication NOT required!
+[Mon Dec 21 14:52:36 2015][INFO] [CLIENT-CONNECT] sockfd: 1, IP Address: 127.0.0.1
+[Mon Dec 21 14:52:39 2015][INFO] [CLIENT-AUTH]Authentication NOT required!
+[Mon Dec 21 14:52:39 2015][INFO] [CLIENT-CONNECT] sockfd: 2, IP Address: 127.0.0.1
+[Mon Dec 21 14:52:39 2015][INFO] [CMD-GET] Got command from 2: <startLogsender>
+[Mon Dec 21 14:52:39 2015][INFO] [Mod: logsender] init success
+[Mon Dec 21 14:52:39 2015][ERROR] Start NOT found :(!
+[Mon Dec 21 14:52:47 2015][INFO] [CLIENT-DISCONNECT] sockfd: 2, IP Address: 127.0.0.1
+[Mon Dec 21 14:52:47 2015][INFO] [CLIENT-DISCONNECT] sockfd: 2, IP Address: 127.0.0.1
+[Mon Dec 21 15:06:46 2015][INFO] =======================================
+[Mon Dec 21 15:06:46 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 15:06
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 15:06:46 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 15:06:46 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON][START] PID: 4152 , Parent PID: 1
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 15:06:46 2015][INFO] [JASM-DAEMON]Server started
+[Mon Dec 21 15:06:48 2015][INFO] [CLIENT-AUTH]Authentication NOT required!
+[Mon Dec 21 15:06:48 2015][INFO] [CLIENT-CONNECT] sockfd: 1, IP Address: 127.0.0.1
+[Mon Dec 21 15:06:51 2015][INFO] [CMD-GET] Got command from 1: <help>
+[Mon Dec 21 15:06:51 2015][INFO] [CMD] help exec
+[Mon Dec 21 15:07:30 2015][INFO] [CMD-GET] Got command from 1: <haly>
+[Mon Dec 21 15:07:30 2015][ERROR] [CMD] Command not found!!
+[Mon Dec 21 15:07:31 2015][INFO] [CMD-GET] Got command from 1: <halt>
+[Mon Dec 21 15:07:31 2015][INFO] [CMD] halt exec
+[Mon Dec 21 15:07:41 2015][INFO] =======================================
+[Mon Dec 21 15:07:41 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 15:06
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 15:07:41 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 15:07:41 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON][START] PID: 4215 , Parent PID: 1
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 15:07:41 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 15:07:41 2015][ERROR] [JASM-DAEMON][bind()]Failed to bind socket!
+[Mon Dec 21 15:07:41 2015][ERROR] [JASM-DAEMON][bind()]Error: Address already in use
 !
-[Mon Dec 21 01:38:34 2015][ERROR] [JASM-DAEMON] Exiting !!
-[Mon Dec 21 01:48:41 2015][INFO] =======================================
-[Mon Dec 21 01:48:41 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 01:48
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON] Creating new process...
-[Mon Dec 21 01:48:41 2015][INFO] [PROCESS-SPAWN][fork()] success
-[Mon Dec 21 01:48:41 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][START] PID: 26018 , Parent PID: 1
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][STATUS] Ready!
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][INFO]Using standard values
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
-[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON]Server started
-[Mon Dec 21 01:48:43 2015][INFO] [CLIENT-AUTH]Authentication NOT required!
-[Mon Dec 21 01:48:43 2015][INFO] [CLIENT-CONNECT] sockfd: 1, IP Address: 127.0.0.1
-[Mon Dec 21 01:49:01 2015][INFO] [CMD-GET] Got command from 1: <halt>
-[Mon Dec 21 01:49:01 2015][INFO] [CMD] halt exec
+[Mon Dec 21 15:07:41 2015][ERROR] [JASM-DAEMON] Exiting !!
+[Mon Dec 21 15:07:48 2015][INFO] =======================================
+[Mon Dec 21 15:07:48 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 15:06
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 15:07:48 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 15:07:48 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON][START] PID: 4218 , Parent PID: 1
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 15:07:48 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 15:07:48 2015][ERROR] [JASM-DAEMON][bind()]Failed to bind socket!
+[Mon Dec 21 15:07:48 2015][ERROR] [JASM-DAEMON][bind()]Error: Address already in use
+!
+[Mon Dec 21 15:07:48 2015][ERROR] [JASM-DAEMON] Exiting !!
+[Mon Dec 21 15:08:06 2015][INFO] =======================================
+[Mon Dec 21 15:08:06 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 15:06
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 15:08:06 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 15:08:06 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON][START] PID: 4358 , Parent PID: 1
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 15:08:06 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 15:08:06 2015][ERROR] [JASM-DAEMON][bind()]Failed to bind socket!
+[Mon Dec 21 15:08:06 2015][ERROR] [JASM-DAEMON][bind()]Error: Address already in use
+!
+[Mon Dec 21 15:08:06 2015][ERROR] [JASM-DAEMON] Exiting !!
+[Mon Dec 21 15:08:41 2015][INFO] =======================================
+[Mon Dec 21 15:08:42 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 15:06
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 15:08:42 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 15:08:42 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON][START] PID: 4368 , Parent PID: 1
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 15:08:42 2015][INFO] [JASM-DAEMON]Server started
+[Mon Dec 21 15:08:54 2015][INFO] [CLIENT-AUTH]Authentication NOT required!
+[Mon Dec 21 15:08:54 2015][INFO] [CLIENT-CONNECT] sockfd: 1, IP Address: 127.0.0.1
+[Mon Dec 21 15:08:56 2015][INFO] [CMD-GET] Got command from 1: <help>
+[Mon Dec 21 15:08:56 2015][INFO] [CMD] help exec
+[Mon Dec 21 15:09:07 2015][INFO] [CMD-GET] Got command from 1: <getMachine>
+[Mon Dec 21 15:09:07 2015][INFO] [JASM-DAEMON][getMachine][write()] sent 6 byte
+[Mon Dec 21 15:09:09 2015][INFO] [CMD-GET] Got command from 1: <halt>
+[Mon Dec 21 15:09:09 2015][INFO] [CMD] halt exec
