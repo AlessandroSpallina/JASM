@@ -20,6 +20,7 @@
 #include <sys/socket.h>
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
 #include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
@@ -31,6 +32,7 @@
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "getter.h"
+#include "modules.h"
 
 char errlog[BUFSIZ];
 
@@ -38,10 +40,7 @@ char errlog[BUFSIZ];
 
 static void excecute_command(int fd, char *command)
 {
-        /*
-         *  if get* -> module get
-         *  if start* -> module of  modules
-         */
+        //static int module_index = 0;
 
         // write on fd a list of commands
         if(strcmp("help", command)==0) {
@@ -61,7 +60,6 @@ static void excecute_command(int fd, char *command)
 
                 for(i=0; i<NGETTER; i++) {
                         if(strcmp(getterName[i], command)==0) { //if getter exists
-                                //log_string("Getter found :)");
                                 getterFunction[i](fd);
                                 return;
                         }
@@ -74,6 +72,50 @@ static void excecute_command(int fd, char *command)
 
         // ************************** starter **************************************
         if(strncmp("start", command, 5)==0) { //recieved start mod
+                int i; //j;
+
+                strcpy(command, &command[5]);
+
+                for(i=0; i<NMODULE; i++) {
+                        if(strcmp(moduleName[i], command)==0) {
+                                //module exists :D
+
+                                moduleInit[i](fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                pthread_t tid;
+
+                                if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
+                                  log_error("pthread_create fail");
+                                  write(fd, "error creating thread", strlen("error creating thread"));
+                                  return;
+                                  
+                                } else {
+                               	  write(fd, "success", strlen("success"));
+                                }
+
+                                /*for(j=0; j<NMODULE; j++) {
+                                      if(strcmp(module_table[j], command) == 0) {
+                                          //if there is the same module in execution
+                                          char temp[BUFSIZ];
+
+                                          sprintf(temp, "Module [%s] already is in execution!", command);
+                                          log_error(temp);
+                                          write(fd, temp, strlen(temp));
+                                          return;
+                                        }
+                                  }
+
+                                  //if there isn't the module in execution -> execute and update module_table
+                                  moduleInit[i](fd, 1) //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                  pthread_t tid;
+
+                                  if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
+                                    log_error("pthread_create fail");
+                                    write(fd, "error creating thread", strlen("error creating thread"));
+                                    exit(1);
+                                  }
+                                  module_table[module_index++] = {};*/
+                          }
+                 }
 
                 log_error("Start NOT found :(");
                 write(fd, "null", strlen("null"));

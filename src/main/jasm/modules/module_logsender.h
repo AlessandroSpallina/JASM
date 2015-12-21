@@ -19,7 +19,7 @@
 #ifndef _LOGSENDER_H
 #define _LOGSENDER_H
 
-extern void init_mod_logsender();
-extern int start_mod_logsender(int thread_sleep, int undefined);
+extern void init_logsender(int filedescr, int seconds);
+extern void start_logsender(void);
 
 #endif

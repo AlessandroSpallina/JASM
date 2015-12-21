@@ -1,0 +1,31 @@
+[Mon Dec 21 01:38:34 2015][INFO] =======================================
+[Mon Dec 21 01:38:34 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 01:33
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 01:38:34 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 01:38:34 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][START] PID: 25567 , Parent PID: 1
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 01:38:34 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 01:38:34 2015][ERROR] [JASM-DAEMON][bind()]Failed to bind socket!
+[Mon Dec 21 01:38:34 2015][ERROR] [JASM-DAEMON][bind()]Error: Address already in use
+!
+[Mon Dec 21 01:38:34 2015][ERROR] [JASM-DAEMON] Exiting !!
+[Mon Dec 21 01:48:41 2015][INFO] =======================================
+[Mon Dec 21 01:48:41 2015][INFO] [START]JASM System Monitor Starting Up... Version: jasm-develstage , Build Date: Mon 21/12/2015 01:48
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON] Creating new process...
+[Mon Dec 21 01:48:41 2015][INFO] [PROCESS-SPAWN][fork()] success
+[Mon Dec 21 01:48:41 2015][INFO] [PROCESS-BACKGROUND][setsid()] success
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][START] PID: 26018 , Parent PID: 1
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][START] Start phase successfully completed!
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][STATUS] Ready!
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][INFO]You need to create a configuration file
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][INFO]Using standard values
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config
+[Mon Dec 21 01:48:41 2015][INFO] [JASM-DAEMON]Server started
+[Mon Dec 21 01:48:43 2015][INFO] [CLIENT-AUTH]Authentication NOT required!
+[Mon Dec 21 01:48:43 2015][INFO] [CLIENT-CONNECT] sockfd: 1, IP Address: 127.0.0.1
+[Mon Dec 21 01:49:01 2015][INFO] [CMD-GET] Got command from 1: <halt>
+[Mon Dec 21 01:49:01 2015][INFO] [CMD] halt exec

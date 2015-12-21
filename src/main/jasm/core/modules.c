@@ -20,22 +20,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <pthread.h>
-
-#include "../modules/module_logsender.h"
 #include "modules.h"
+#include "../modules/module_logsender.h"
 
-char moduleName[NMODULE][BUFSIZ]={"logsender"};
-
-void assign_modules_functions(struct functions *modules_functions[NMODULE])
-{
-								modules_functions = malloc(NMODULE * sizeof(*modules_functions));
-								modules_functions[0]->init=init_mod_logsender;
-								modules_functions[0]->start=start_mod_logsender;
-}
-
-void assign_modules_properties(struct running_module *run_mod_prop[NMODULE])
-{
-								run_mod_prop = malloc(NMODULE * sizeof(*run_mod_prop));
-								run_mod_prop[0]->name[BUFSIZ]=(char*)moduleName[0];
-								//run_mod_prop[0]->sec=0;
-}
+char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
+void (*moduleInit[NMODULE])(int, int) = {init_logsender};
+void (*moduleStart[NMODULE])(void) = {start_logsender};

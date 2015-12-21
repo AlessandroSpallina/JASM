@@ -25,12 +25,29 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "signals.h"
 
 char * server_ip;
+
+//to execute on a new thread: this is logsender specific, to fix
+void async_read_socket(int fd)
+{
+    ssize_t size;
+    char buf[BUFSIZ];
+
+    while(1) {
+      //printf("*thread is born*\n");
+      read(fd, &size, sizeof(size));
+      read(fd, buf, size);
+
+      printf("=> [ %s ]", buf);
+
+    }
+}
 
 void print_welcome(const char* usern, int sockfd,const char* releasetime, const char* debugrel)
 {
@@ -108,14 +125,22 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
         }
 
         if(strncmp("start", buffer, 5)==0) {
-                //starting thread-module -> opening new dedicated socket
-                //so we can get different output from jasm thanks to fd.
+                int fd = start_client(server_ip); //to put into an array @@@@@@@@@@@@@@@@@@@@@@@@@@@@òò
+                write(fd, buffer, strlen(buffer));
+                memset(buffer, 0, BUFSIZ);
+                read(fd, buffer, BUFSIZ);
+                if(strcmp(buffer, "success")==0) {
+                pthread_t tid;
+                  /*if(pthread_create(&tid, NULL, async_read_socket, fd)!=0) {
+                    fprintf(stderr, "[ERROR] Fail to create a new thread\n");
+                    return;
+                  }*/
+                  async_read_socket(fd);
+                } else {
+                  fprintf(stderr, "[ERROR] JASM failed to create its thread\n");
+                  return;
+                }
 
-                /*
-                 *	new socket
-                 *	write()
-                 *	read()
-                 */
                 return;
 
         } else {
@@ -170,7 +195,7 @@ void parse_options(int argc, char *argv[])
         		print_usage();
         		exit(0);
         	}
-        
+
         }
 }
 
