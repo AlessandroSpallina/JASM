@@ -31,20 +31,48 @@
 #include "miscellaneous.h"
 #include "signals.h"
 
+#define NFDTABLE 5
+
+
 char * server_ip;
 
-//to execute on a new thread: this is logsender specific, to fix
-void async_read_socket(int fd)
+int fd_table[NFDTABLE]={-1};
+
+void add_fdtable(int newfd)
+{
+	for(int i=0; i<NFDTABLE; i++) {
+		if(fd_table[i] == -1) {
+			fd_table[i] = newfd;
+			return;
+		}
+	}
+}
+
+
+void async_read_socket(int fd, char *moduleName)
 {
     ssize_t size;
     char buf[BUFSIZ];
+    char filename[BUFSIZ];
+    FILE *fp = NULL;
 
     while(1) {
-      //printf("*thread is born*\n");
-      read(fd, &size, sizeof(size));
-      read(fd, buf, size);
+      if(read(fd, &size, sizeof(size)) == 0) {
+      	fprintf(stderr, "Server Disconnected\n");
+      	return;
+      }
+      memset(buf, 0, BUFSIZ);
+      if(read(fd, buf, size) == 0) {
+      	fprintf(stderr, "Server Disconnected\n");
+      	return;
+      }
+      
+      sprintf(filename, "../data/jasmcli.%s.module.output", moduleName);
+      printf("stringa letta %s\n", buf);
 
-      printf("=> [ %s ]", buf);
+      fp = fopen(filename, "a+");
+      fprintf(fp, "%s\n", buf);
+      fclose(fp);
 
     }
 }
@@ -148,17 +176,19 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
         }
 
         if(strncmp("start", buffer, 5)==0) {
-                int fd = start_client(server_ip); //to put into an array @@@@@@@@@@@@@@@@@@@@@@@@@@@@òò
-                write(fd, buffer, strlen(buffer));
+                int fd_new = start_client(server_ip); //to put into an array @@@@@@@@@@@@@@@@@@@@@@@@@@@@òò
+                write(fd_new, buffer, strlen(buffer));
                 memset(buffer, 0, BUFSIZ);
-                read(fd, buffer, BUFSIZ);
-                if(strcmp(buffer, "success")==0) {
-                pthread_t tid;
-                  /*if(pthread_create(&tid, NULL, async_read_socket, fd)!=0) {
-                    fprintf(stderr, "[ERROR] Fail to create a new thread\n");
-                    return;
-                  }*/
-                  async_read_socket(fd);
+                read(fd_new, buffer, BUFSIZ);
+                printf("leggo da sock: %s\n", buffer);
+                if(strcmp(buffer, "success") == 0) {
+                	pthread_t tid;
+               		
+               		if(pthread_create(&tid, NULL, async_read_socket, fd_new)!=0) {
+                    	fprintf(stderr, "[ERROR] Fail to create a new thread\n");
+                    	return;
+                  	}
+                  
                 } else {
                   fprintf(stderr, "[ERROR] JASM failed to create its thread\n");
                   return;
@@ -236,6 +266,7 @@ int main(int argc, char *argv[])
         parse_options(argc, argv);
 
         fd = start_client(server_ip);
+        add_fdtable(fd);
 
         print_welcome(username, fd, buildtime, debugstr);
 

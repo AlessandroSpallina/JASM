@@ -84,13 +84,19 @@ static void excecute_command(int fd, char *command)
                                 moduleInit[i](fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                                 pthread_t tid;
 
+                                write(fd, "success", strlen("success"));
+
                                 if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
                                   log_error("pthread_create fail");
-                                  write(fd, "error creating thread", strlen("error creating thread"));
+                                  //write(fd, "error creating thread", strlen("error creating thread"));
                                   return;
 
                                 } else {
-                               	  write(fd, "success", strlen("success"));
+                               	  //write(fd, "success", strlen("success"));
+                                  memset(command, 0, BUFSIZ);
+                                  sprintf(command, "module <%s> started correctly", moduleName[i]);
+                                  log_string(command);
+                                  return;
                                 }
 
                                 /*for(j=0; j<NMODULE; j++) {
@@ -136,6 +142,7 @@ static void excecute_command(int fd, char *command)
         log_error("[CMD] Command not found!");
         write(fd, "NotFound", strlen("NotFound"));
 }
+
 
 void start_server()
 {
@@ -363,7 +370,7 @@ void start_server()
                                                 if(write(client_sockfd, not_required, strlen(not_required)) < 0)
                                                         log_error("[not_required][write()] Error");
                                                 log_string("[CLIENT-AUTH]Authentication NOT required!");
-                                                chkfile=check_passwd_file(PASSWD_ENC_FILE);
+                                                chkfile = check_passwd_file(PASSWD_ENC_FILE);
 
                                                 if(chkfile == 0) {
                                                         if(write(client_sockfd, nochkpwd, strlen(nochkpwd)) < 0) {

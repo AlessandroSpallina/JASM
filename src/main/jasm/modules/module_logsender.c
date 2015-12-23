@@ -33,13 +33,15 @@ static int fd = -1;
 static int sec = -1;
 
 //this function is the core of this module
-static int sendNextLine(FILE *fp)
+static int sendNextLine(FILE **fp)
 {
+  /*write(fd, "ciao", strlen("ciao"));
+  return -1;*/
   char *line = NULL;
   size_t len = 0;
   ssize_t ret;
 
-  if((ret = getline(&line, &len, fp)) == -1) {
+  if((ret = getline(&line, &len, (*fp))) == -1) {
     //log_error("[module_logsender] getline fail");
     free(line);
     return -1;
@@ -75,12 +77,12 @@ void start_logsender()
   FILE *fp = fopen(LOGPATH, "r");
 
   //sends all log file
-  while(sendNextLine(fp) != -1);
+  while(sendNextLine(&fp) != -1);
 
   while(1) {
   //and wait n sec before updating :)
   //The sleep() function shall cause the calling thread to be suspended from execution [POSIX Doc]
   sleep(sec);
-  sendNextLine(fp);
+  sendNextLine(&fp);
   }
 }

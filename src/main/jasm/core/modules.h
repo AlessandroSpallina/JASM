@@ -27,7 +27,7 @@ struct module_running {
 };
 
 //this array cointains modules in execution on threads
-//extern struct module_running module_table[NMODULE] = {.tid=-1, .name="null"};
+extern struct module_running module_table[NMODULE];
 
 extern char moduleName[NMODULE][BUFSIZ];
 extern void (*moduleInit[NMODULE])(int, int);

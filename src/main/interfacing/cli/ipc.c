@@ -31,6 +31,8 @@
 
 //NOTE:Error codes defined @ miscellaneous.h
 
+char pass_jasm[BUFSIZ] = "null";
+
 //Connects to the server and returns *** socket
 int start_client(const char* srv_ip)
 {
@@ -42,7 +44,7 @@ int start_client(const char* srv_ip)
         char get_my_pass[256];
         char passauth[10];
 
-        sockfd=socket(AF_INET, SOCK_STREAM, 0); //return code checking
+        sockfd = socket(AF_INET, SOCK_STREAM, 0); //return code checking
         if(sockfd < 0) {
                 perror("* Error while creating new socket\n* Exiting...\n");
           #ifdef DEBUG
@@ -68,8 +70,8 @@ int start_client(const char* srv_ip)
 
         int byte_read, initial_msg_byte_read;
 
-        byte_read=0; // Initializing as 0 Byte integer
-        initial_msg_byte_read=0;
+        byte_read = 0; // Initializing as 0 Byte integer
+        initial_msg_byte_read = 0;
 
         if((initial_msg_byte_read = read(sockfd, get_msg_from_server, sizeof(get_msg_from_server))) < 0)
         {
@@ -77,7 +79,7 @@ int start_client(const char* srv_ip)
                 printf("[DEBUG] Errno result: %s\n",strerror(errno));
           #endif
                 perror("* Reading from socket error\n");
-        } else if(initial_msg_byte_read==0) {
+        } else if (initial_msg_byte_read == 0) {
                 printf("* Server disconnected\n");
                 exit(SERVER_DISCONNECTED);
         }
@@ -97,7 +99,7 @@ int start_client(const char* srv_ip)
                 fgets(get_my_pass, BUFSIZ, stdin);
 
                 #ifdef DEBUG
-                printf("[DEBUG] Password: %s\n",get_my_pass);
+                printf("[DEBUG] Password: %s\n", get_my_pass);
                 #endif
 
                 if(write(sockfd, get_my_pass, strlen(get_my_pass)) < 0) {
@@ -157,9 +159,10 @@ int start_client(const char* srv_ip)
                                         break;
                                 }
                         }
-                } else if(strcmp(passauth,"granted") == 0) {
+                } else if(strcmp(passauth, "granted") == 0) {
                         printf("* Great                       *\n");
                         printf("* Authorized for this session *\n");
+                        strcpy(pass_jasm, passauth);
                 }
 
 
