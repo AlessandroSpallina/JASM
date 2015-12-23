@@ -35,6 +35,7 @@
 
 
 char * server_ip;
+char name_temp[BUFSIZ];
 
 int fd_table[NFDTABLE]={-1};
 
@@ -67,8 +68,7 @@ void async_read_socket(int fd, char *moduleName)
       	return;
       }
       
-      sprintf(filename, "../data/jasmcli.%s.module.output", moduleName);
-      printf("stringa letta %s\n", buf);
+      sprintf(filename, "../data/jasmcli.%s.module.output", name_temp);
 
       fp = fopen(filename, "a+");
       fprintf(fp, "%s\n", buf);
@@ -176,13 +176,15 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
         }
 
         if(strncmp("start", buffer, 5)==0) {
-                int fd_new = start_client(server_ip); //to put into an array @@@@@@@@@@@@@@@@@@@@@@@@@@@@òò
+                int fd_new = start_client(server_ip);
                 write(fd_new, buffer, strlen(buffer));
+                strcpy(name_temp, &buffer[5]);
                 memset(buffer, 0, BUFSIZ);
                 read(fd_new, buffer, BUFSIZ);
-                printf("leggo da sock: %s\n", buffer);
+   
                 if(strcmp(buffer, "success") == 0) {
                 	pthread_t tid;
+                	add_fdtable(fd_new);
                		
                		if(pthread_create(&tid, NULL, async_read_socket, fd_new)!=0) {
                     	fprintf(stderr, "[ERROR] Fail to create a new thread\n");
@@ -191,6 +193,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                   
                 } else {
                   fprintf(stderr, "[ERROR] JASM failed to create its thread\n");
+                  close(fd_new);
                   return;
                 }
 
@@ -277,7 +280,10 @@ int main(int argc, char *argv[])
                 printf("-[%s]-> ", username);
                 scanf("%s", buf);
                 if(strcmp(buf, "quit")==0) {
-                        close(fd);
+                	for(int z=0; z<NFDTABLE; z++)
+                		if(fd_table[z] != 0)
+                        		close(fd_table[z]);
+                        		
                         printf("Bye!\n");
                         exit(_EXIT_SUCCESS);
                 } else {
