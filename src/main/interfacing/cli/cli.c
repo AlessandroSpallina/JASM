@@ -47,7 +47,7 @@ void add_fdtable(int newfd)
 }
 
 
-void async_read_socket(int fd, char *moduleName)
+void * async_read_socket(void *fd)
 {
     ssize_t size;
     char buf[BUFSIZ];
@@ -55,14 +55,14 @@ void async_read_socket(int fd, char *moduleName)
     FILE *fp = NULL;
 
     while(1) {
-      if(read(fd, &size, sizeof(size)) == 0) {
+      if(read(*(int *)fd, &size, sizeof(size)) == 0) {
       	fprintf(stderr, "Server Disconnected\n");
-      	return;
+      	return NULL;
       }
       memset(buf, 0, BUFSIZ);
-      if(read(fd, buf, size) == 0) {
+      if(read(*(int *)fd, buf, size) == 0) {
       	fprintf(stderr, "Server Disconnected\n");
-      	return;
+      	return NULL;
       }
 
       sprintf(filename, "../data/jasmcli.%s.module.output", name_temp);
@@ -71,6 +71,9 @@ void async_read_socket(int fd, char *moduleName)
 			{
 				fprintf(fp, "%s\n", buf);
 				fclose(fp);
+			} else {
+				fprintf(stderr, "Unable to open <%s>\n", filename);
+				return NULL;
 			}
 
     }
@@ -185,7 +188,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                 	pthread_t tid;
                 	add_fdtable(fd_new);
 									//void* new_fd = &fd_new;
-               		if(pthread_create(&tid, NULL, (void*)async_read_socket, fd_new)!=0) {
+               		if(pthread_create(&tid, NULL, async_read_socket, (void *)fd_new)!=0) {
                     	fprintf(stderr, "[ERROR] Fail to create a new thread\n");
                     	return;
                   	}
@@ -195,8 +198,6 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                   close(fd_new);
                   return;
                 }
-
-                return;
 
         } else {
 
