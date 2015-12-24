@@ -52,23 +52,14 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  * Modules: time-functional stats/feature (such as CPU Usage) [src/main/jasm/modules]
  * Getters: non-time-functional stats/features (such as Machine nodename)
 
-*[INFO][DEVEL/STAGE]: module_logsender... development started*
-
-Few days and we will release first module :)
-
 ### Dependencies
 
  * gtk+2
 
- (Not now)
- * libvncserver
- * libcpuid
- ...
-
 ### Platform
 
- * JASM Core: We think 70+% is completed
- * JASM CLI: 100% completed, fully working
+ * JASM Core: Development 
+ * JASM CLI: Development
  * JASM GTK2: Not started yet
  * JASM on Android: Not started yet
  * Getters/Modules: before, the core, after getters/modules
@@ -76,6 +67,17 @@ Few days and we will release first module :)
 ### Files
  * $HOME/.jasm_config: JASM Configuration file *IMPLEMENTING* {*WIP*}
 
+### Branches
+
+ On main repository we are going to create new branch "stable"
+ * master : main-development branch
+ * stable : stable releases (less bugs, more functions)
+ 
+### Slack
+
+ We use Slack platform to communicate 
+ https://jasm-team.slack.com
+ 
 ### Licensing
 
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more!
@@ -83,5 +85,7 @@ Thanks to Free Software! Avoiding proprietary software! See LICENSE to get more 
 
 ### Developers
 
- * Alessandro Spallina: Main founder of this project [github.com/AlessandroSpallina]
- * Stefano Belli: Makefiles, fixes, READMEs (including this :) ) [github.com/StefanoBelli]
+ * Alessandro Spallina: Main founder of this project [https://github.com/AlessandroSpallina]
+ * Stefano Belli: Makefiles, fixes, READMEs (including this :) ) [https://github.com/StefanoBelli]
+ * Emanuele Pirruccio: contributor [https://github.com/etneo90]
+ * Francesco : contributor [https://github.com/piFra]
