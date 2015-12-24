@@ -86,7 +86,7 @@ static void excecute_command(int fd, char *command)
 
                                 write(fd, "success", strlen("success"));
 
-                                if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
+                                if(pthread_create(&tid, NULL, (void*)moduleStart[i], NULL) != 0) {
                                   log_error("pthread_create fail");
                                   //write(fd, "error creating thread", strlen("error creating thread"));
                                   return;
