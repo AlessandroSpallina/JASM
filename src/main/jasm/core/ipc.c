@@ -20,6 +20,7 @@
 #include <sys/socket.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include <pthread.h>
 #include <netinet/in.h>
 #include <sys/time.h>
@@ -87,7 +88,9 @@ static void excecute_command(int fd, char *command)
                                 write(fd, "success", strlen("success"));
 
                                 if(pthread_create(&tid, NULL, (void*)moduleStart[i], NULL) != 0) {
-                                  log_error("pthread_create fail");
+                                  char buf[BUFSIZ];
+                                  sprintf(buf, "pthread_create fail: %s", strerror(errno));
+                                  log_error(buf);
                                   return;
 
                                 } else {

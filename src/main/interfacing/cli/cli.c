@@ -53,21 +53,22 @@ void * async_read_socket(void *fd)
     char buf[BUFSIZ];
     char filename[BUFSIZ];
     FILE *fp = NULL;
+		int filedesc = (int *)fd;
 
     while(1) {
-      if(read(*(int *)fd, &size, sizeof(size)) == 0) {
+      if(read(filedesc, &size, sizeof(size)) == 0) {
       	fprintf(stderr, "Server Disconnected\n");
       	return NULL;
       }
       memset(buf, 0, BUFSIZ);
-      if(read(*(int *)fd, buf, size) == 0) {
+      if(read(filedesc, buf, size) == 0) {
       	fprintf(stderr, "Server Disconnected\n");
       	return NULL;
       }
 
       sprintf(filename, "../data/jasmcli.%s.module.output", name_temp);
 
-      if((fp = fopen(filename, "a+")) != NULL)
+    	if((fp = fopen(filename, "a+")) != NULL)
 			{
 				fprintf(fp, "%s\n", buf);
 				fclose(fp);
@@ -187,9 +188,8 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                 if(strcmp(buffer, "success") == 0) {
                 	pthread_t tid;
                 	add_fdtable(fd_new);
-									//void* new_fd = &fd_new;
-               		if(pthread_create(&tid, NULL, async_read_socket, (void *)fd_new)!=0) {
-                    	fprintf(stderr, "[ERROR] Fail to create a new thread\n");
+               		if(pthread_create(&tid, NULL, async_read_socket, (void *)fd_new) != 0) {
+                    	fprintf(stderr, "[ERROR] Fail to create a new thread: %s\n", strerror(errno));
                     	return;
                   	}
 
