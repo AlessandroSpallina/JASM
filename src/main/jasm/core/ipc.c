@@ -88,16 +88,16 @@ static void excecute_command(int fd, char *command)
                                 write(fd, "success", strlen("success"));
 
                                 if(pthread_create(&tid, NULL, (void*)moduleStart[i], NULL) != 0) {
-                                  char buf[BUFSIZ];
-                                  sprintf(buf, "pthread_create fail: %s", strerror(errno));
-                                  log_error(buf);
-                                  return;
+                                        char buf[BUFSIZ];
+                                        sprintf(buf, "pthread_create fail: %s", strerror(errno));
+                                        log_error(buf);
+                                        return;
 
                                 } else {
-                                  memset(command, 0, BUFSIZ);
-                                  sprintf(command, "module <%s> started correctly", moduleName[i]);
-                                  log_string(command);
-                                  return;
+                                        memset(command, 0, BUFSIZ);
+                                        sprintf(command, "module <%s> started correctly", moduleName[i]);
+                                        log_string(command);
+                                        return;
                                 }
 
                                 /*for(j=0; j<NMODULE; j++) {
@@ -110,20 +110,20 @@ static void excecute_command(int fd, char *command)
                                           write(fd, temp, strlen(temp));
                                           return;
                                         }
-                                  }
+                                   }
 
-                                  //if there isn't the module in execution -> execute and update module_table
-                                  moduleInit[i](fd, 1) //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                                  pthread_t tid;
+                                   //if there isn't the module in execution -> execute and update module_table
+                                   moduleInit[i](fd, 1) //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                   pthread_t tid;
 
-                                  if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
+                                   if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
                                     log_error("pthread_create fail");
                                     write(fd, "error creating thread", strlen("error creating thread"));
                                     exit(1);
-                                  }
-                                  module_table[module_index++] = {};*/
-                          }
-                 }
+                                   }
+                                   module_table[module_index++] = {};*/
+                        }
+                }
 
                 log_error("Start NOT found :(");
                 write(fd, "null", strlen("null"));

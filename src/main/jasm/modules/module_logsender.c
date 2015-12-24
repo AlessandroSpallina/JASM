@@ -35,54 +35,48 @@ static int sec = -1;
 //this function is the core of this module
 static int sendNextLine(FILE **fp)
 {
-  /*write(fd, "ciao", strlen("ciao"));
-  return -1;*/
-  char *line = NULL;
-  size_t len = 0;
-  ssize_t ret;
+        char *line = NULL;
+        size_t len = 0;
+        ssize_t ret;
 
-  if((ret = getline(&line, &len, (*fp))) == -1) {
-    //log_error("[module_logsender] getline fail");
-    free(line);
-    return -1;
-  }
+        if((ret = getline(&line, &len, (*fp))) == -1) {
+                free(line);
+                return -1;
+        }
 
-  write(fd, &ret, sizeof(ret));
-  write(fd, line, strlen(line));
-  //char buf[BUFSIZ];
-  //sprintf(buf, "module: @%s@", line);
-  //log_string(buf);
-  free(line);
-  return 0;
+        write(fd, &ret, sizeof(ret));
+        write(fd, line, strlen(line));
+        free(line);
+        return 0;
 }
 
 //this function should be the first to be call before start the module
 void init_logsender(int filedescr, int seconds)
 {
-  fd = filedescr;
-  sec = seconds;
-  log_string("[Mod: logsender] init success");
+        fd = filedescr;
+        sec = seconds;
+        log_string("[Mod: logsender] init success");
 }
 
 
 //this function will be on a new jasm thread
 void start_logsender()
 {
-  if(sec == -1 || fd == -1) {
-    log_error("module [logsender] hasn't been initialized!");
-    return;
-  }
+        if(sec == -1 || fd == -1) {
+                log_error("module [logsender] hasn't been initialized!");
+                return;
+        }
 
 
-  FILE *fp = fopen(LOGPATH, "r");
+        FILE *fp = fopen(LOGPATH, "r");
 
-  //sends all log file
-  while(sendNextLine(&fp) != -1);
+        //sends all log file
+        while(sendNextLine(&fp) != -1) ;
 
-  while(1) {
-  //and wait n sec before updating :)
-  //The sleep() function shall cause the calling thread to be suspended from execution [POSIX Doc]
-  sleep(sec);
-  sendNextLine(&fp);
-  }
+        while(1) {
+                //and wait n sec before updating :)
+                //The sleep() function shall cause the calling thread to be suspended from execution [POSIX Doc]
+                sleep(sec);
+                sendNextLine(&fp);
+        }
 }

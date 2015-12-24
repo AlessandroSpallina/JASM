@@ -22,8 +22,8 @@
 #define NMODULE 1
 
 struct module_running {
-  pthread_t tid;
-  char name[BUFSIZ];
+        pthread_t tid;
+        char name[BUFSIZ];
 };
 
 //this array cointains modules in execution on threads

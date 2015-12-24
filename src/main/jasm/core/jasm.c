@@ -29,12 +29,12 @@ int main(int argc, char *argv[])
         start_daemon(); //starts background daemon
         set_signals_feel(); //logs a set of signals
 
-        if(set_property_value()==1){
-          log_string("[JASM-DAEMON][INFO]You need to create a configuration file");
-          log_string("[JASM-DAEMON][INFO]Using standard values");
-          log_string("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
+        if(set_property_value()==1) {
+                log_string("[JASM-DAEMON][INFO]You need to create a configuration file");
+                log_string("[JASM-DAEMON][INFO]Using standard values");
+                log_string("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
         } else
-          log_string("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
+                log_string("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
 
         #ifdef DEBUG
         char logval[BUFSIZ];
