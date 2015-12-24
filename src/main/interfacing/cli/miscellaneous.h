@@ -29,6 +29,8 @@
 #define SERVER_DISCONNECTED 190
 #define LOGSENDER_OUTPUTFILE "../data/jasmcli.logsender.log"
 
+#define NFDTABLE 5
+
 extern char color[4][BUFSIZ];
 extern char buildtime[BUFSIZ];
 extern char debugstr[BUFSIZ];
