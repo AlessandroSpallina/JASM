@@ -40,13 +40,3 @@ void signal_catcher(void)
         sigaction(SIGQUIT, &act, 0);
         //sigaction(SIGINT, &act, 0);
 }
-
-
-
-
-
-
-
-
-
-
