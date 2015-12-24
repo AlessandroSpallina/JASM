@@ -24,85 +24,65 @@
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <pthread.h>
-
 #include "../core/modules.h"
 #include "../core/miscellaneous.h"
-#include "../core/queue.h"
 #include "module_logsender.h"
 
-/*
-static void send_next(int fd)
+
+static int fd = -1;
+static int sec = -1;
+
+//this function is the core of this module
+static int sendNextLine(FILE **fp)
 {
-  char string[BUFSIZ];
+  /*write(fd, "ciao", strlen("ciao"));
+  return -1;*/
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t ret;
 
-  static FILE *fp=fopen(LOGPATH, "r");
-  fscanf(fp, "%s", string);
-  fclose(fp);
-
-  send(fd, string, BUFSIZ);
-}
-
-
-
- *  ritorna 0 se tutto è ok, 1 se l'inizializzazione è fallita.
- *  il thread main dovrà comunicare al client che l'inizializzazione è andata
- *  storta :'(
-
-int init_logsender()
-{
-  // ***************** check file exists **************************************
-  FILE *fp=fopen(LOGPATH, "r");
-  if(fp!=NULL) {  //file exists: PERFECT
-    fclose(fp);
-    return 0;
-  } else {
-    log_error("[fail init logsender] unable to locate logfile :(")
-    return 1;
+  if((ret = getline(&line, &len, (*fp))) == -1) {
+    //log_error("[module_logsender] getline fail");
+    free(line);
+    return -1;
   }
+
+  write(fd, &ret, sizeof(ret));
+  write(fd, line, strlen(line));
+  //char buf[BUFSIZ];
+  //sprintf(buf, "module: @%s@", line);
+  //log_string(buf);
+  free(line);
+  return 0;
+}
+
+//this function should be the first to be call before start the module
+void init_logsender(int filedescr, int seconds)
+{
+  fd = filedescr;
+  sec = seconds;
+  log_string("[Mod: logsender] init success");
 }
 
 
-static void thread_routine(void *arg)
+//this function will be on a new jasm thread
+void start_logsender()
 {
-  struct running_module temp = {.name="LogSender", .tid=pthread_self};
+  if(sec == -1 || fd == -1) {
+    log_error("module [logsender] hasn't been initialized!");
+    return;
+  }
 
-  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
-  pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL);
 
-  //aggiunge se stesso alla lista dei thread in esecuzione
-  add((struct thread_arguments) arg.head, temp);
+  FILE *fp = fopen(LOGPATH, "r");
+
+  //sends all log file
+  while(sendNextLine(&fp) != -1);
 
   while(1) {
-    send_next((struct thread_arguments) arg.fd);
-    sleep((struct thread_arguments) arg.sec);
+  //and wait n sec before updating :)
+  //The sleep() function shall cause the calling thread to be suspended from execution [POSIX Doc]
+  sleep(sec);
+  sendNextLine(&fp);
   }
 }
-
-// ritorna 0 se tutto è ok, 1 se lo start è fallito.
-int start_logsender(struct thread_arguments arg) //int sec = intervallo aggiornamento
-{
-
-
-
-
-
-}
-
-void stop_logsender()
-{
-  //dealloca il thread
-  pthread_exit(NULL);
-}
-*/
-
-//
-int start_mod_logsender(int thread_sleep,int undefined)
-{
-    return 130;
-}
-
-void init_mod_logsender(void)
-{
-	return;
-}
-

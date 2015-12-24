@@ -59,13 +59,6 @@ void check_buildate()
 
 void log_string(const char *message)
 {
-        #ifdef LOGPATH
-        //log in LOGPATH
-        #else
-        char LOGPATH[BUFSIZ];
-        sprintf(LOGPATH,"%s/.jasm.log",getenv("HOME"));
-        #endif
-
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {
@@ -78,13 +71,6 @@ void log_string(const char *message)
 
 void log_error(const char *message)
 {
-        #ifdef LOGPATH
-        //log in LOGPATH
-        #else
-        char LOGPATH[BUFSIZ];
-        sprintf(LOGPATH,"%s/.jasm.log",getenv("HOME"));
-        #endif
-
         FILE *fp;
 
         if((fp=fopen(LOGPATH, "a+")) == NULL) {

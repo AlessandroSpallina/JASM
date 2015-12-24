@@ -21,23 +21,18 @@
 
 #define NMODULE 1
 
-struct running_module {
-        char *name[BUFSIZ];
-        pthread_t tid;
-        int *head;
-        int fd;
-        int sec;
-        //struct running_module *next;
+struct module_running {
+  pthread_t tid;
+  char name[BUFSIZ];
 };
 
-struct functions {
-        void (*init) (void); //inizializza l'ambiente del modulo e alloca in heap un elemento running_module (crea thread)
-        void (*start)(int, int); //e starta modulo
-};
+//this array cointains modules in execution on threads
+extern struct module_running module_table[NMODULE];
 
-struct thread_arguments {
-        struct running_module **head;
-        int fd;
-        int sec;
-};
+extern char moduleName[NMODULE][BUFSIZ];
+extern void (*moduleInit[NMODULE])(int, int);
+extern void (*moduleStart[NMODULE])(void);
+
+extern void getModule(int fd);
+
 #endif

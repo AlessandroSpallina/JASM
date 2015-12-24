@@ -20,19 +20,14 @@
 #define _MISCELLANEOUS_H
 
 #define _EXIT_SUCCESS 0
-
 #define ARG_SPECIFY_IPADDR 137
-
 #define PASSWD_REFUSED_ERROR 10
-
 #define NOPASSWD_SET_JASM 20
-
 #define SOCKET_CREATION_FAILED 120
 #define SOCKET_CONNECTION_FAILED 121
-
 #define LOGIN_TOO_MUCH_ATTEMPTS 190
-
 #define SERVER_DISCONNECTED 190
+#define LOGSENDER_OUTPUTFILE "../data/jasmcli.logsender.log"
 
 extern char color[4][BUFSIZ];
 extern char buildtime[BUFSIZ];

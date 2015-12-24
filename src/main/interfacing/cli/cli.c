@@ -25,12 +25,57 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "signals.h"
 
+#define NFDTABLE 5
+
+
 char * server_ip;
+char name_temp[BUFSIZ];
+
+int fd_table[NFDTABLE]={-1};
+
+void add_fdtable(int newfd)
+{
+	for(int i=0; i<NFDTABLE; i++) {
+		if(fd_table[i] == -1) {
+			fd_table[i] = newfd;
+			return;
+		}
+	}
+}
+
+
+void async_read_socket(int fd, char *moduleName)
+{
+    ssize_t size;
+    char buf[BUFSIZ];
+    char filename[BUFSIZ];
+    FILE *fp = NULL;
+
+    while(1) {
+      if(read(fd, &size, sizeof(size)) == 0) {
+      	fprintf(stderr, "Server Disconnected\n");
+      	return;
+      }
+      memset(buf, 0, BUFSIZ);
+      if(read(fd, buf, size) == 0) {
+      	fprintf(stderr, "Server Disconnected\n");
+      	return;
+      }
+      
+      sprintf(filename, "../data/jasmcli.%s.module.output", name_temp);
+
+      fp = fopen(filename, "a+");
+      fprintf(fp, "%s\n", buf);
+      fclose(fp);
+
+    }
+}
 
 void print_welcome(const char* usern, int sockfd,const char* releasetime, const char* debugrel)
 {
@@ -73,6 +118,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
         if(strcmp("help", buffer)==0) {
                 int ngetter = 0;
+                int nmodule = 0;
 
                 printf("Sending [%s]\n\n", buffer);
                 if(write(fd, "help", strlen("help"))<0) {
@@ -81,7 +127,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
                 //gets getter list
                 if((n = read(fd, &ngetter, sizeof(ngetter)))<0) {
-                        perror("read on fd FAIL");
+                        perror("read on fd FAIL [helper getters]");
                 } else if(n == 0) {
                     #ifdef DEBUG
                         printf("[DEBUG]Errno: %s",strerror(errno));
@@ -101,31 +147,56 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
                         read(fd, temp, counter);
 
                         printf("%d# get%s\n", i, temp);
-                        /*if((n = read(fd, temp, sizeof(temp)))<0) {
-                                perror("read on fd FAIL");
-                           #ifdef DEBUG
-                                fprintf(stderr, "[DEBUG] Errno result: %s\n", strerror(errno));
-                           #endif
-                           } else if(n == 0) {
-                            printf("* Server disconnected\n");
-                            exit(SERVER_DISCONNECTED);
-                           }
-                           printf("%d) %s\n", i, temp);*/
                 }
-                //riceve gli starter dei moduli
+                
+                //gets module list
+                if((n =  read(fd, &nmodule, sizeof(nmodule)))<0) {
+                	perror("read on fd FAIL [helper modules]");
+                } else if(n == 0) {
+                    #ifdef DEBUG
+                        printf("[DEBUG]Errno: %s",strerror(errno));
+                    #endif // DEBUG
+
+                        printf("* Server disconnected\n");
+                        exit(SERVER_DISCONNECTED);
+                
+                }
+                
+                printf("\n* Modules * (start\stop)\n");
+                for(int i=0; i<nmodule; i++) {
+                	memset(temp, 0, BUFSIZ);
+                	read(fd, &counter, sizeof(counter));
+                	read(fd, temp, counter);
+                	
+                	printf("%d# %s\n", i, temp);
+                
+                }
                 //riceve altro
                 return;
         }
 
         if(strncmp("start", buffer, 5)==0) {
-                //starting thread-module -> opening new dedicated socket
-                //so we can get different output from jasm thanks to fd.
+                int fd_new = start_client(server_ip);
+                write(fd_new, buffer, strlen(buffer));
+                strcpy(name_temp, &buffer[5]);
+                memset(buffer, 0, BUFSIZ);
+                read(fd_new, buffer, BUFSIZ);
+   
+                if(strcmp(buffer, "success") == 0) {
+                	pthread_t tid;
+                	add_fdtable(fd_new);
+               		
+               		if(pthread_create(&tid, NULL, async_read_socket, fd_new)!=0) {
+                    	fprintf(stderr, "[ERROR] Fail to create a new thread\n");
+                    	return;
+                  	}
+                  
+                } else {
+                  fprintf(stderr, "[ERROR] JASM failed to create its thread\n");
+                  close(fd_new);
+                  return;
+                }
 
-                /*
-                 *	new socket
-                 *	write()
-                 *	read()
-                 */
                 return;
 
         } else {
@@ -152,6 +223,13 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 }
 
+void print_usage()
+{
+	printf("USAGE: jasmcli --connect-server <IP>\n");
+
+
+}
+
 void parse_options(int argc, char *argv[])
 {
         if(argc > 1 && argc <= 3) {
@@ -164,9 +242,17 @@ void parse_options(int argc, char *argv[])
                                 printf("* You must specify an IP address!\n");
                                 exit(ARG_SPECIFY_IPADDR);
                         }
+                } else {
+                	print_usage();
+                	exit(0);
                 }
+        } else {
+        	if(argc > 1) {
+        		print_usage();
+        		exit(0);
+        	}
+
         }
-        //else if ...
 }
 
 int main(int argc, char *argv[])
@@ -183,6 +269,7 @@ int main(int argc, char *argv[])
         parse_options(argc, argv);
 
         fd = start_client(server_ip);
+        add_fdtable(fd);
 
         print_welcome(username, fd, buildtime, debugstr);
 
@@ -193,7 +280,10 @@ int main(int argc, char *argv[])
                 printf("-[%s]-> ", username);
                 scanf("%s", buf);
                 if(strcmp(buf, "quit")==0) {
-                        close(fd);
+                	for(int z=0; z<NFDTABLE; z++)
+                		if(fd_table[z] != 0)
+                        		close(fd_table[z]);
+                        		
                         printf("Bye!\n");
                         exit(_EXIT_SUCCESS);
                 } else {
