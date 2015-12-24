@@ -1,10 +1,6 @@
 #!/usr/bin/make -f
 #Stefano Belli, <stefano9913@gmail.com>
 
-#
-# NEED TO ADD: debugbuild
-#
-
 #Verbose all!
 
 #Using /bin/sh as predef. shell
@@ -30,7 +26,7 @@ JASM_BINOUT_DIR=bin/
 JASM_BINOUT_DIR_DEBUG=bin-debug/
 
 #Data log
-TMP_JASM_DATA_LOG_OUTPUT=data/log/jasm.log
+JASM_DATA_PATTERN=data/jasm*
 
 #Makeflags options (such as j3)
 #From cmdline
@@ -56,7 +52,7 @@ clean:
 	cd $(JASM_CORE_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	cd $(JASM_CLI_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	cd $(JASM_GTK_GUI_DIR) && make clean $(MAKE_FLAGS) || exit 3
-	[ -f $(JASM_DATA_LOG_OUTPUT) ] && rm -fv $(TMP_JASM_DATA_LOG_OUTPUT) || echo ""
+	rm -rfv $(JASM_DATA_PATTERN) || echo ""
 
 cleanbin:
 	cd $(JASM_BINOUT_DIR) && rm -fv jasm* || exit 1
