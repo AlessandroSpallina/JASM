@@ -6,3 +6,5 @@
 *.vim
 *.layout
 *.cbp
+jasm.log
+jasmcli.*
