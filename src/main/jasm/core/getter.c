@@ -54,17 +54,36 @@ void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
 void getGetter (int fd)
 {
     int i;
-    int ngetter = NGETTER;
+    int n_getter = NGETTER;
     int count = 0;
+    //start from an error condition, to make sure we do not miss anything
+    ssize_t ret_val = -1;
 
-    write (fd, &ngetter, sizeof (ngetter) );
+    ret_val = write (fd, &n_getter, sizeof (n_getter) );
+
+    if(ret_val == 0 || ret_val == -1)
+    {
+        log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+        log_error (error);
+    }
 
     for (i = 0; i < NGETTER; i++)
     {
         count = strlen (getterName[i]);
-        //aggiungere check errore nell'invio
-        write (fd, &count, sizeof (count) );
-        write (fd, getterName[i], strlen (getterName[i]) );
+        ret_val = write (fd, &count, sizeof (count) );
+
+        if(ret_val == 0 || ret_val == -1)
+        {
+            log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+            log_error (error);
+        }
+        ret_val = write (fd, getterName[i], strlen (getterName[i]) );
+
+        if(ret_val == 0 || ret_val == -1)
+        {
+            log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+            log_error (error);
+        }
     }
 }
 
