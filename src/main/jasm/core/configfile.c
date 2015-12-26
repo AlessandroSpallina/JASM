@@ -11,14 +11,12 @@ char * get_property_value (char * __prop)
 {
     if(__prop == NULL)
     {
-        // make sure the calling programs checks this value
-
 #ifdef DEBUG
         char logstr_debug[BUFSIZ];
         sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]__prop string is NULL");
         log_string (logstr_debug);
 #endif //DEBUG
-
+        // make sure the calling programs checks this value
         return NULL;
     }
     strtok (__prop, "=");
@@ -36,6 +34,18 @@ void set_default_property_value (int what)
         _config[CONFIG_MAX_CONNECTIONS].config_values = (int*) 5;
     else if (what == CONFIG_MAX_AUTHENTICATION_TRIES)
         _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = (int*) 3;
+    else
+    {
+#ifdef DEBUG
+        char logstr_debug[BUFSIZ];
+        sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]what value is not one of the
+                predefined values, setting CONFIG_ALL");
+        log_string (logstr_debug);
+#endif //DEBUG
+        // this is the equivalent of what == CONFIG_ALL
+        _config[CONFIG_MAX_CONNECTIONS].config_values = (int*) 3;
+        _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = (int*) 5;
+    }
 }
 
 int set_property_value (void)
