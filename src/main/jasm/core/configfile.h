@@ -7,11 +7,12 @@
 #define CONFIG_MAX_CONNECTIONS 0
 #define CONFIG_ALL -1
 
-extern struct config {
-        char * config_name;
-        void * config_values;
+extern struct config
+{
+    char * config_name;
+    void * config_values;
 } _config[NCONFIG_PROPERTIES];
 
-extern int set_property_value(void);
+extern int set_property_value (void);
 
 #endif // CONFIGFILE_H
