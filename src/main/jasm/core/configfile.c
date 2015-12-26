@@ -9,6 +9,18 @@ struct config _config[NCONFIG_PROPERTIES]; //access data through this struct
 
 char * get_property_value (char * __prop)
 {
+    if(__prop == NULL)
+    {
+        // make sure the calling programs checks this value
+
+#ifdef DEBUG
+        char logstr_debug[BUFSIZ];
+        sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]__prop string is NULL");
+        log_string (logstr_debug);
+#endif //DEBUG
+
+        return NULL;
+    }
     strtok (__prop, "=");
     return strtok (NULL, "=");
 }
