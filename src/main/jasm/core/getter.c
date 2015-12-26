@@ -40,26 +40,27 @@ void getKernelVersion (int fd);
 void getMachine (int fd);
 void getGetter (int fd);
 
-char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
+char getterName[n_getter][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion", "Machine"
                                    };
 
-void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
+void (*getterFunction[n_getter]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion, getMachine
                                         };
 
 /*
  *  scrive su fd int numero getter e N stringhe nomiGetter
+ *  write on fd an integer, then read N strings as getter names
  */
 void getGetter (int fd)
 {
-    int i;
-    int ngetter = NGETTER;
+    int i = 0;
+    int n_getter = n_getter;
     int count = 0;
 
-    write (fd, &ngetter, sizeof (ngetter) );
+    write (fd, &n_getter, sizeof (n_getter) );
 
-    for (i = 0; i < NGETTER; i++)
+    for (i = 0; i < n_getter; i++)
     {
         count = strlen (getterName[i]);
         //aggiungere check errore nell'invio
