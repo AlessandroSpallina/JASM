@@ -119,7 +119,13 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 								int n;
 								int counter;
 
-								if(strcmp("help", buffer)==0) {
+								if(strcmp("halt",buffer)==0) {
+									printf("* Killing JASM");
+									if(write(fd,"halt",strlen("halt")) < 0)
+										perror("* Write fail!");
+									shutdown(fd,2);
+									exit(_EXIT_SUCCESS);
+								} else if(strcmp("help", buffer)==0) {
 																int ngetter = 0;
 																int nmodule = 0;
 
@@ -176,11 +182,10 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																}
 																//riceve altro
 																return;
-								}
-
-								if(strncmp("start", buffer, 5)==0) {
+								} else if(strncmp("start", buffer, 5)==0) {
 
 																int fd_new = start_client(server_ip);
+
 																if(write(fd_new, buffer, strlen(buffer)) < 0)
 																{
 																  fprintf(stderr,"* Failed to send start\n");
@@ -191,7 +196,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																}
 
 																strcpy(name_temp, &buffer[5]);
-																memset(buffer, 0, BUFSIZ);
+																memset(buffer, '\0', BUFSIZ);
 
 																if(read(fd_new, buffer, BUFSIZ) < 0)
 																{
@@ -206,7 +211,9 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																printf("[DEBUG] Response: %s\n",buffer);
 																#endif
 
-																if(strcmp(buffer, "success") == 0) {
+																fflush(stdout); //testing
+
+																if(strncmp(buffer, "success",7) == 0) {
 																								pthread_t tid;
 																								add_fdtable(fd_new);
 																								if(pthread_create(&tid, NULL, async_read_socket, (void *)fd_new) != 0) {
@@ -220,7 +227,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																									#endif
 																								}
 
-																} else if (strcmp(buffer,"ModNotFound") == 0){
+																} else if (strncmp(buffer,"ModNotFound",11) == 0){
 																								fprintf(stderr, "*[ERROR] Module Not found! Retry! \n");
 																								close(fd_new);
 																								return;
@@ -286,6 +293,7 @@ void parse_options(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+
 								check_debug();
 								check_release();
 

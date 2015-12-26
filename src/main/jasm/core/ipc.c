@@ -92,7 +92,12 @@ static void excecute_command (int fd, char *command)
                 moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 pthread_t tid;
 
-                write (fd, "success", strlen ("success") );
+                if (write (fd, "success",7 ) < 0) {
+                  #ifdef DEBUG
+                  sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][DEBUG] Caused By: %s",strerror(errno));
+                  log_error(errlog);
+                  #endif
+                }
 
                 if (pthread_create (&tid, NULL, (void*) moduleStart[i], NULL) != 0)
                 {
@@ -142,7 +147,12 @@ static void excecute_command (int fd, char *command)
         }
 
         log_error ("Start NOT found :(");
-        write (fd, "null", strlen ("null") );
+        if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0) {
+          #ifdef DEBUG
+          sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][DEBUG] Caused By: %s",strerror(errno));
+          log_error(errlog);
+          #endif
+        }
         return;
     }
 
@@ -150,15 +160,27 @@ static void excecute_command (int fd, char *command)
     if (strcmp ("halt", command) == 0) //turn off jasm
     {
         log_string ("[CMD] halt exec");
-        write (fd, "Killing JASM...", strlen ("Killing JASM...") );
+        if (write (fd, "jhalt", strlen ("jhalt") ) < 0) {
+          #ifdef DEBUG
+          sprintf(errlog,"[JASM-DAEMON][WRITE]Caused By: %s",strerror(errno));
+          log_error(errlog);
+          #endif
+          log_error("[JASM-DAEMON][WRITE]Error while sending");
+        }
         openlog ("JASM", LOG_PID, LOG_DAEMON);
         syslog (LOG_INFO, "exiting as requested from client...");
         closelog();
+        shutdown(fd,2);
         exit (_EXIT_SUCCESS);
     }
 
     log_error ("[CMD] Command not found!");
-    write (fd, "NotFound", strlen ("NotFound") );
+    if(write (fd, "NotFound", strlen ("NotFound") ) < 0) {
+      #ifdef DEBUG
+      sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][DEBUG] Caused By: %s",strerror(errno));
+      log_error(errlog);
+      #endif
+    }
 }
 
 
