@@ -126,7 +126,9 @@ static void excecute_command(int fd, char *command)
                 }
 
                 log_error("Start NOT found :(");
-                write(fd, "null", strlen("null"));
+                if(write(fd, "ModNotFound", strlen("ModNotFound"))<0) {
+                  log_error("[JASM-DAEMON][STARTMOD]Error while sending ");
+                }
                 return;
         }
 
