@@ -179,6 +179,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 								}
 
 								if(strncmp("start", buffer, 5)==0) {
+
 																int fd_new = start_client(server_ip);
 																if(write(fd_new, buffer, strlen(buffer)) < 0)
 																{
@@ -191,6 +192,7 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 																strcpy(name_temp, &buffer[5]);
 																memset(buffer, 0, BUFSIZ);
+
 																if(read(fd_new, buffer, BUFSIZ) < 0)
 																{
 																	fprintf(stderr,"* Failed to read from server\n");
@@ -211,13 +213,22 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																																fprintf(stderr, "[ERROR] Fail to create a new thread: %s\n", strerror(errno));
 																																return;
 																								}
+																								else
+																								{
+																									#ifdef DEBUG
+																									printf("* Creating new thread success!\n");
+																									#endif
+																								}
 
+																} else if (strcmp(buffer,"ModNotFound") == 0){
+																								fprintf(stderr, "*[ERROR] Module Not found! Retry! \n");
+																								close(fd_new);
+																								return;
 																} else {
-																								fprintf(stderr, "[ERROR] JASM failed to create its thread\n");
+																	              fprintf(stderr,"* Non-valid answer from server\n");
 																								close(fd_new);
 																								return;
 																}
-
 								} else {
 
 																printf("sending [%s - %d byte]\n", buffer, (int) write(fd, buffer, strlen(buffer)));
