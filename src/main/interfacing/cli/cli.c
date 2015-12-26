@@ -53,7 +53,7 @@ void * async_read_socket(void *fd)
 								char buf[BUFSIZ];
 								char filename[BUFSIZ];
 								FILE *fp = NULL;
-								int filedesc = (int *)fd;
+								int filedesc=(int *)fd;
 
 								while(1) {
 																if(read(filedesc, &size, sizeof(size)) == 0) {
@@ -179,11 +179,32 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 								}
 
 								if(strncmp("start", buffer, 5)==0) {
+
 																int fd_new = start_client(server_ip);
-																write(fd_new, buffer, strlen(buffer));
+																if(write(fd_new, buffer, strlen(buffer)) < 0)
+																{
+																  fprintf(stderr,"* Failed to send start\n");
+																	#ifdef DEBUG
+																	fprintf(stderr,"[DEBUG]* Caused by: %s",strerror(errno));
+																	#endif
+																	exit(SOCKET_WRITE_FAILED);
+																}
+
 																strcpy(name_temp, &buffer[5]);
 																memset(buffer, 0, BUFSIZ);
-																read(fd_new, buffer, BUFSIZ);
+
+																if(read(fd_new, buffer, BUFSIZ) < 0)
+																{
+																	fprintf(stderr,"* Failed to read from server\n");
+																	#ifdef DEBUG
+																	fprintf(stderr,"[DEBUG]* Caused by: %s",strerror(errno));
+																	#endif
+																	exit(SOCKET_READ_FAILED);
+																}
+
+																#ifdef DEBUG
+																printf("[DEBUG] Response: %s\n",buffer);
+																#endif
 
 																if(strcmp(buffer, "success") == 0) {
 																								pthread_t tid;
@@ -192,13 +213,22 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																																fprintf(stderr, "[ERROR] Fail to create a new thread: %s\n", strerror(errno));
 																																return;
 																								}
+																								else
+																								{
+																									#ifdef DEBUG
+																									printf("* Creating new thread success!\n");
+																									#endif
+																								}
 
+																} else if (strcmp(buffer,"ModNotFound") == 0){
+																								fprintf(stderr, "*[ERROR] Module Not found! Retry! \n");
+																								close(fd_new);
+																								return;
 																} else {
-																								fprintf(stderr, "[ERROR] JASM failed to create its thread\n");
+																	              fprintf(stderr,"* Non-valid answer from server\n");
 																								close(fd_new);
 																								return;
 																}
-
 								} else {
 
 																printf("sending [%s - %d byte]\n", buffer, (int) write(fd, buffer, strlen(buffer)));
@@ -278,9 +308,8 @@ int main(int argc, char *argv[])
 																scanf("%s", buf);
 																if(strcmp(buf, "quit")==0) {
 																								for(int z=0; z<NFDTABLE; z++)
-																																if(fd_table[z] != 0)
-																																								close(fd_table[z]);
-
+																									if(fd_table[z] != 0)
+																										close(fd_table[z]);
 																								printf("Bye!\n");
 																								exit(_EXIT_SUCCESS);
 																} else {

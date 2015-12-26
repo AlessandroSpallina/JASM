@@ -86,6 +86,6 @@ Thanks to Free Software! Avoiding proprietary software! See LICENSE to get more 
 ### Developers
 
  * Alessandro Spallina: Main founder of this project [https://github.com/AlessandroSpallina]
- * Stefano Belli: Makefiles, fixes, READMEs (including this :) ) [https://github.com/StefanoBelli]
+ * Stefano Belli: main contributor [https://github.com/StefanoBelli]
  * Emanuele Pirruccio: contributor [https://github.com/etneo90]
- * Francesco : contributor [https://github.com/piFra]
+ * Francesco Pistritto : contributor [https://github.com/piFra]

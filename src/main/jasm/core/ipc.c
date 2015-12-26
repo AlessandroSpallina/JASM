@@ -110,10 +110,19 @@ static void excecute_command (int fd, char *command)
                     return;
                 }
 
+<<<<<<< HEAD
                 /*for(j=0; j<NMODULE; j++) {
                       if(strcmp(module_table[j], command) == 0) {
                           //if there is the same module in execution
                           char temp[BUFSIZ];
+=======
+                log_error("Start NOT found :(");
+                if(write(fd, "ModNotFound", strlen("ModNotFound"))<0) {
+                  log_error("[JASM-DAEMON][STARTMOD]Error while sending ");
+                }
+                return;
+        }
+>>>>>>> 5e8a2091617f97ca18f5008ce5d906afaf4b6213
 
                           sprintf(temp, "Module [%s] already is in execution!", command);
                           log_error(temp);
