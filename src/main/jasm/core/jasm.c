@@ -24,23 +24,25 @@
 #include "signals.h"
 #include "configfile.h"
 
-int main(int argc, char *argv[])
+int main (int argc, char *argv[])
 {
-        start_daemon(); //starts background daemon
-        set_signals_feel(); //logs a set of signals
+    start_daemon(); //starts background daemon
+    set_signals_feel(); //logs a set of signals
 
-        if(set_property_value()==1) {
-                log_string("[JASM-DAEMON][INFO]You need to create a configuration file");
-                log_string("[JASM-DAEMON][INFO]Using standard values");
-                log_string("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
-        } else
-                log_string("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
+    if (set_property_value() == 1)
+    {
+        log_string ("[JASM-DAEMON][INFO]You need to create a configuration file");
+        log_string ("[JASM-DAEMON][INFO]Using standard values");
+        log_string ("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
+    }
+    else
+        log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
 
-        #ifdef DEBUG
-        char logval[BUFSIZ];
-        sprintf(logval,"[JASM-DAEMON][DEBUG][EXTERNAL-CHECK]Reading value: %d ,%d",*(int*)_config[0].config_values,*(int*)_config[1].config_values);
-        log_string(logval);
-        #endif
+#ifdef DEBUG
+    char logval[BUFSIZ];
+    sprintf (logval, "[JASM-DAEMON][DEBUG][EXTERNAL-CHECK]Reading value: %d ,%d", * (int*) _config[0].config_values, * (int*) _config[1].config_values);
+    log_string (logval);
+#endif
 
-        start_server(); //starts server after the daemon (ready to get commands)
+    start_server(); //starts server after the daemon (ready to get commands)
 }
