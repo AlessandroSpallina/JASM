@@ -9,7 +9,7 @@ struct config _config[NCONFIG_PROPERTIES]; //access data through this struct
 
 char * get_property_value (char * __prop)
 {
-    if (__prop == NULL)
+    if(__prop == NULL)
     {
 #ifdef DEBUG
         char logstr_debug[BUFSIZ];
@@ -54,7 +54,7 @@ int set_property_value (void)
 #else
     char CONFIGFILE[BUFSIZ];
     // use the bounded version now
-    strncpy (CONFIGFILE, getenv ("HOME"), strlen (getenv ("HOME") ) );
+    strncpy (CONFIGFILE, getenv ("HOME"), strlen(getenv("HOME")));
     strcat (CONFIGFILE, "/.jasm_config");
 #endif
 
@@ -85,7 +85,7 @@ int set_property_value (void)
 
             get_val = get_property_value (get_buffer_from_file);
 
-            if (get_val == NULL)
+            if(get_val == NULL)
             {
 #ifdef DEBUG
                 sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]get_val is NULL. config set to CONFIG_ALL");
@@ -102,14 +102,14 @@ int set_property_value (void)
 #endif //DEBUG
 
             // add bounded check for string comparison, to prevent buffer overflow
-            if (strncmp (get_buffer_from_file, "MaxAuthTries", strlen (get_buffer_from_file) ) == 0)
+            if (strncmp (get_buffer_from_file, "MaxAuthTries", strlen(get_buffer_from_file)) == 0)
             {
                 // make a promise to change atoi to strtol to ease the error checking phase
                 int auth_cast_integer_value = atoi (get_val);
                 _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = &auth_cast_integer_value;
             }
             // add bounded check for string comparison, to prevent buffer overflow
-            if (strncmp (get_buffer_from_file, "MaxConnections", strlen (get_buffer_from_file) ) == 0)
+            if (strncmp (get_buffer_from_file, "MaxConnections", strlen(get_buffer_from_file)) == 0)
             {
                 int conn_cast_integer_value = atoi (get_val);
                 _config[CONFIG_MAX_CONNECTIONS].config_values = &conn_cast_integer_value;
