@@ -38,8 +38,7 @@ void set_default_property_value (int what)
     {
 #ifdef DEBUG
         char logstr_debug[BUFSIZ];
-        sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]what value is not one of the
-                predefined values, setting CONFIG_ALL");
+        sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]what value is not one of the predefined values, setting CONFIG_ALL");
         log_string (logstr_debug);
 #endif //DEBUG
         // this is the equivalent of what == CONFIG_ALL
@@ -54,11 +53,11 @@ int set_property_value (void)
     //use it
 #else
     char CONFIGFILE[BUFSIZ];
-    strcpy (CONFIGFILE, getenv ("HOME") );
+    strncpy (CONFIGFILE, getenv ("HOME"), strlen(getenv("HOME")));
     strcat (CONFIGFILE, "/.jasm_config");
 #endif
 
-    FILE * fconfig;
+    FILE *fconfig;
     char get_buffer_from_file[BUFSIZ];
     int index;
     //long test_fsz;
@@ -74,7 +73,7 @@ int set_property_value (void)
 
     for (index = 0; index <= NCONFIG_PROPERTIES; index++)
     {
-        char * get_val;
+        char *get_val;
         if (fgets (get_buffer_from_file, BUFSIZ, fconfig) != NULL)
         {
 #ifdef DEBUG
@@ -89,8 +88,8 @@ int set_property_value (void)
             sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]Buffer: %s ,Prop: %s", get_buffer_from_file, get_val);
             log_string (logstr_debug);
 #endif //DEBUG
-
-            if (strcmp (get_buffer_from_file, "MaxAuthTries") == 0)
+            // add bounded check for string comparison, to prevent buffer overflow
+            if (strncmp (get_buffer_from_file, "MaxAuthTries", strlen(get_buffer_from_file)) == 0)
             {
                 int auth_cast_integer_value = atoi (get_val);
                 _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = &auth_cast_integer_value;
