@@ -63,8 +63,8 @@ int set_property_value (void)
     int index;
     //long test_fsz;
 
-    _config[CONFIG_MAX_CONNECTIONS].config_name = "MaxConnections";
-    _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_name = "MaxAuthTries";
+    strcpy (_config[CONFIG_MAX_CONNECTIONS].config_name,"MaxConnections");
+    strcpy (_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_name,"MaxAuthTries");
 
     if ( (fconfig = fopen (CONFIGFILE, "r") ) == NULL)
     {
@@ -116,7 +116,11 @@ int set_property_value (void)
             }
 
         }
-        else log_string ("[JASM-DAEMON][CONFIG]Configuration file END!");
+        else
+        {
+          log_string ("[JASM-DAEMON][CONFIG]Configuration file END!");
+          break;
+        }
     }
 
     fclose (fconfig);
