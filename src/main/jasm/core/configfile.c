@@ -54,7 +54,7 @@ int set_property_value (void)
 #else
     char CONFIGFILE[BUFSIZ];
     // use the bounded version now
-    strncpy (CONFIGFILE, getenv ("HOME"), strlen (getenv ("HOME") ) );
+    strcpy (CONFIGFILE, getenv ("HOME"));
     strcat (CONFIGFILE, "/.jasm_config");
 #endif
 

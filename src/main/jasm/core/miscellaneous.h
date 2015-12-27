@@ -31,6 +31,7 @@
 #define LOCALHOST "127.0.0.1"
 #define LOGFILENAME "jasm.log"
 #define LOGPATH "../data/jasm.log"
+
 #define VERSION "jasm-develstage" //<-- CHANGE IT!
 #define COPYRIGHT "GNU Public License (GPL) v3" //<-- GPLv3
 
