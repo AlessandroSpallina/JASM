@@ -76,8 +76,10 @@ static void excecute_command (int fd, char *command)
         ret_val = write (fd, "null", strlen ("null") );
         if (ret_val == 0 || ret_val == -1)
         {
-            log_error ("write on fd failed. ret_val is 0 or -1");
-            return;
+          #ifdef DEBUG
+          sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error for write : %s",strerror(errno));
+          log_error(errlog);
+          #endif
         }
         return;
     }

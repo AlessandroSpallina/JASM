@@ -24,10 +24,13 @@
 #include <sys/utsname.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <errno.h>
+
 #include "../core/modules.h"
 #include "../core/miscellaneous.h"
 #include "module_logsender.h"
 
+char errlog[BUFSIZ];
 
 static int fd = -1;
 static int sec = -1;
@@ -44,8 +47,20 @@ static int sendNextLine(FILE **fp)
                 return -1;
         }
 
-        write(fd, &ret, sizeof(ret));
-        write(fd, line, strlen(line));
+        if(write(fd, &ret, sizeof(ret)) < 0){
+          #ifdef DEBUG
+          sprintf(errlog,"[MODULE][Logsender] Error in first write : %s",strerror(errno));
+          log_error(errlog);
+          #endif
+          log_error("[MODULE][Logsender] Error while sending!");
+        }
+        if(write(fd, line, strlen(line)) < 0){
+          #ifdef DEBUG
+          sprintf(errlog,"[MODULE][Logsender] Error in second write : %s",strerror(errno));
+          log_error(errlog);
+          #endif 
+          log_error("[MODULE][Logsender] Error while sending lines!");
+        }
         free(line);
         return 0;
 }
@@ -55,7 +70,7 @@ void init_logsender(int filedescr, int seconds)
 {
         fd = filedescr;
         sec = seconds;
-        log_string("[Mod: logsender] init success");
+        log_string("[MODULE][Logsender] Successfully initialized!");
 }
 
 
@@ -63,12 +78,15 @@ void init_logsender(int filedescr, int seconds)
 void start_logsender()
 {
         if(sec == -1 || fd == -1) {
-                log_error("module [logsender] hasn't been initialized!");
+                log_error("[MODULE][Logsender] Hasn't been initialized!");
                 return;
         }
 
 
-        FILE *fp = fopen(LOGPATH, "r");
+        FILE *fp;
+        if((fp = fopen(LOGPATH, "r")) != NULL){
+          /*NONE, JUST CHECK*/
+        }
 
         //sends all log file
         while(sendNextLine(&fp) != -1) ;
