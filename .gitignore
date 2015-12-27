@@ -8,4 +8,4 @@
 *.cbp
 jasm.log
 jasmcli.*
-*.ghc
+*.gch
