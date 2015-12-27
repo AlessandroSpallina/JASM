@@ -21,9 +21,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
+
+#include "miscellaneous.h"
 #include "modules.h"
 #include "../modules/module_logsender.h"
 
+char errlog[BUFSIZ];
 char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
 void (*moduleInit[NMODULE]) (int, int) = {init_logsender};
 void (*moduleStart[NMODULE]) (void) = {start_logsender};
@@ -33,15 +37,34 @@ void getModule (int fd)
     int count = 0;
     int nmodule = NMODULE;
 
-    write (fd, &nmodule, sizeof (nmodule) );
+    if(write (fd, &nmodule, sizeof (nmodule) ) < 0){
+      #ifdef DEBUG
+      sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error: %s",strerror(errno));
+      log_error(errlog);
+      #endif
+      log_error("[JASM-DAEMON][ERROR][write()] Error while sending module list");
+    }
 
     for (int i = 0; i < NMODULE; i++)
     {
         count = strlen (moduleName[i]);
 
         //aggiungere check errore nell'invio
-        write (fd, &count, sizeof (count) );
-        write (fd, moduleName[i], strlen (moduleName[i]) );
+        if (write (fd, &count, sizeof (count) ) <0){
+          #ifdef DEBUG
+          sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error: %s",strerror(errno));
+          log_error(errlog);
+          #endif
+          log_error("[JASM-DAEMON][ERROR][write()] Error while sending module list");
+        }
+
+        if(write (fd, moduleName[i], strlen (moduleName[i]) ) <0){
+          #ifdef DEBUG
+          sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error: %s",strerror(errno));
+          log_error(errlog);
+          #endif
+          log_error("[JASM-DAEMON][ERROR][write()] Error while sending module list");
+        }
     }
 
 }
