@@ -35,9 +35,9 @@ void getModule (int fd)
     ssize_t ret_val = 0;
 
     ret_val = write (fd, &nmodule, sizeof (nmodule) );
-    if(ret_val == 0 || ret_val == -1)
+    if (ret_val == 0 || ret_val == -1)
     {
-        fprintf(stderr, "Error in the write() operation on fd");
+        fprintf (stderr, "Error in the write() operation on fd");
     }
 
     for (int i = 0; i < NMODULE; i++)
@@ -46,14 +46,14 @@ void getModule (int fd)
 
         //aggiungere check errore nell'invio
         ret_val = write (fd, &count, sizeof (count) );
-        if(ret_val == 0 || ret_val == -1)
+        if (ret_val == 0 || ret_val == -1)
         {
-            fprintf(stderr, "Error in the write() operation on fd");
+            fprintf (stderr, "Error in the write() operation on fd");
         }
         ret_val = write (fd, moduleName[i], strlen (moduleName[i]) );
-        if(ret_val == 0 || ret_val == -1)
+        if (ret_val == 0 || ret_val == -1)
         {
-            fprintf(stderr, "Error in the write() operation on fd");
+            fprintf (stderr, "Error in the write() operation on fd");
         }
     }
 

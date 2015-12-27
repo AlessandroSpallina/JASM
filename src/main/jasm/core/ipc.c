@@ -45,7 +45,7 @@ static void excecute_command (int fd, char *command)
     //static int module_index = 0;
 
     // write on fd a list of commands
-    if (strncmp ("help", command, strlen("help")) == 0)
+    if (strncmp ("help", command, strlen ("help") ) == 0)
     {
 
         getGetter (fd);
@@ -57,7 +57,7 @@ static void excecute_command (int fd, char *command)
     }
 
     // ************************** getter ***************************************
-    if (strncmp ("get", command, strlen("get")) == 0) //if recv get command
+    if (strncmp ("get", command, strlen ("get") ) == 0) //if recv get command
     {
         int i;
 
@@ -65,7 +65,7 @@ static void excecute_command (int fd, char *command)
 
         for (i = 0; i < NGETTER; i++)
         {
-            if (strncmp (getterName[i], command, strlen(getterName[i])) == 0) //if getter exists
+            if (strncmp (getterName[i], command, strlen (getterName[i]) ) == 0) //if getter exists
             {
                 getterFunction[i] (fd);
                 return;
@@ -74,9 +74,9 @@ static void excecute_command (int fd, char *command)
 
         log_error ("Getter NOT found :(");
         ret_val = write (fd, "null", strlen ("null") );
-        if(ret_val == 0 || ret_val == -1)
+        if (ret_val == 0 || ret_val == -1)
         {
-            log_error("write on fd failed. ret_val is 0 or -1");
+            log_error ("write on fd failed. ret_val is 0 or -1");
             return;
         }
         return;
@@ -98,11 +98,12 @@ static void excecute_command (int fd, char *command)
                 moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 pthread_t tid;
 
-                if (write (fd, "success",7 ) < 0) {
-                  #ifdef DEBUG 
-                  sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s",strerror(errno));
-                  log_error(errlog);
-                  #endif
+                if (write (fd, "success", 7 ) < 0)
+                {
+#ifdef DEBUG
+                    sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                    log_error (errlog);
+#endif
                 }
 
                 if (pthread_create (&tid, NULL, (void*) moduleStart[i], NULL) != 0)
@@ -130,7 +131,7 @@ static void excecute_command (int fd, char *command)
                   log_error("[JASM-DAEMON][STARTMOD]Error while sending ");
                 }
                 return;
-        }
+                }
 
                           sprintf(temp, "Module [%s] already is in execution!", command);
                           log_error(temp);
@@ -153,11 +154,12 @@ static void excecute_command (int fd, char *command)
         }
 
         log_error ("Start NOT found :(");
-        if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0) {
-          #ifdef DEBUG 
-          sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s",strerror(errno));
-          log_error(errlog);
-          #endif
+        if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0)
+        {
+#ifdef DEBUG
+            sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+            log_error (errlog);
+#endif
         }
         return;
     }
@@ -166,26 +168,28 @@ static void excecute_command (int fd, char *command)
     if (strcmp ("halt", command) == 0) //turn off jasm
     {
         log_string ("[CMD] halt exec");
-        if (write (fd, "jhalt", strlen ("jhalt") ) < 0) {
-          #ifdef DEBUG 
-          sprintf(errlog,"[JASM-DAEMON][WRITE]Caused By: %s",strerror(errno));
-          log_error(errlog);
-          #endif
-          log_error("[JASM-DAEMON][WRITE]Error while sending");
+        if (write (fd, "jhalt", strlen ("jhalt") ) < 0)
+        {
+#ifdef DEBUG
+            sprintf (errlog, "[JASM-DAEMON][WRITE]Caused By: %s", strerror (errno) );
+            log_error (errlog);
+#endif
+            log_error ("[JASM-DAEMON][WRITE]Error while sending");
         }
         openlog ("JASM", LOG_PID, LOG_DAEMON);
         syslog (LOG_INFO, "exiting as requested from client...");
         closelog();
-        shutdown(fd,2);
+        shutdown (fd, 2);
         exit (_EXIT_SUCCESS);
     }
 
     log_error ("[CMD] Command not found!");
-    if(write (fd, "NotFound", strlen ("NotFound") ) < 0) {
-      #ifdef DEBUG
-      sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s",strerror(errno));
-      log_error(errlog);
-      #endif
+    if (write (fd, "NotFound", strlen ("NotFound") ) < 0)
+    {
+#ifdef DEBUG
+        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+        log_error (errlog);
+#endif
     }
 }
 
@@ -344,9 +348,9 @@ void start_server()
                         if ( (source_passwd = fopen (PASSWD_ENC_FILE, "r") ) != NULL)
                         {
                             ret_value = fgets (passwd_from_client, BUFSIZ, source_passwd);
-                            if(ret_value == NULL)
+                            if (ret_value == NULL)
                             {
-                                log_error("fgets in PASSWD_ENC_FILE failed. returned NULL value");
+                                log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value");
                             }
                             fclose (source_passwd);
                         }
@@ -522,9 +526,9 @@ void start_server()
                     {
                         memset (received, 0, sizeof (received) );
                         return_value = read (fd, received, sizeof (received) );
-                        if(return_value == -1)
+                        if (return_value == -1)
                         {
-                            log_error("read on fd failed. -1 was returned");
+                            log_error ("read on fd failed. -1 was returned");
                         }
                         sprintf (buf, "[CMD-GET] Got command from %d: <%s>", fd, received);
                         log_string (buf);
