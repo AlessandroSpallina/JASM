@@ -61,7 +61,7 @@ void getGetter (int fd)
 
     ret_val = write (fd, &n_getter, sizeof (n_getter) );
 
-    if(ret_val == 0 || ret_val == -1)
+    if (ret_val == 0 || ret_val == -1)
     {
         log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
         log_error (error);
@@ -72,14 +72,14 @@ void getGetter (int fd)
         count = strlen (getterName[i]);
         ret_val = write (fd, &count, sizeof (count) );
 
-        if(ret_val == 0 || ret_val == -1)
+        if (ret_val == 0 || ret_val == -1)
         {
             log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
             log_error (error);
         }
         ret_val = write (fd, getterName[i], strlen (getterName[i]) );
 
-        if(ret_val == 0 || ret_val == -1)
+        if (ret_val == 0 || ret_val == -1)
         {
             log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
             log_error (error);

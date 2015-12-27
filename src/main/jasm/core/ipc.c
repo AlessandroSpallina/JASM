@@ -41,10 +41,11 @@ char errlog[BUFSIZ];
 
 static void excecute_command (int fd, char *command)
 {
+    ssize_t ret_val = 0;
     //static int module_index = 0;
 
     // write on fd a list of commands
-    if (strcmp ("help", command) == 0)
+    if (strncmp ("help", command, strlen ("help") ) == 0)
     {
 
         getGetter (fd);
@@ -56,7 +57,7 @@ static void excecute_command (int fd, char *command)
     }
 
     // ************************** getter ***************************************
-    if (strncmp ("get", command, 3) == 0) //if recv get command
+    if (strncmp ("get", command, strlen ("get") ) == 0) //if recv get command
     {
         int i;
 
@@ -64,7 +65,7 @@ static void excecute_command (int fd, char *command)
 
         for (i = 0; i < NGETTER; i++)
         {
-            if (strcmp (getterName[i], command) == 0) //if getter exists
+            if (strncmp (getterName[i], command, strlen (getterName[i]) ) == 0) //if getter exists
             {
                 getterFunction[i] (fd);
                 return;
@@ -72,12 +73,13 @@ static void excecute_command (int fd, char *command)
         }
 
         log_error ("Getter NOT found :(");
-        if(write (fd, "null", strlen ("null") ) < 0){
+        ret_val = write (fd, "null", strlen ("null") );
+        if (ret_val == 0 || ret_val == -1)
+        {
           #ifdef DEBUG
           sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error for write : %s",strerror(errno));
           log_error(errlog);
           #endif
-
         }
         return;
     }
@@ -98,11 +100,12 @@ static void excecute_command (int fd, char *command)
                 moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 pthread_t tid;
 
-                if (write (fd, "success",7 ) < 0) {
-                  #ifdef DEBUG
-                  sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][DEBUG] Caused By: %s",strerror(errno));
-                  log_error(errlog);
-                  #endif
+                if (write (fd, "success", 7 ) < 0)
+                {
+#ifdef DEBUG
+                    sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                    log_error (errlog);
+#endif
                 }
 
                 if (pthread_create (&tid, NULL, (void*) moduleStart[i], NULL) != 0)
@@ -130,7 +133,7 @@ static void excecute_command (int fd, char *command)
                   log_error("[JASM-DAEMON][STARTMOD]Error while sending ");
                 }
                 return;
-        }
+                }
 
                           sprintf(temp, "Module [%s] already is in execution!", command);
                           log_error(temp);
@@ -153,11 +156,12 @@ static void excecute_command (int fd, char *command)
         }
 
         log_error ("Start NOT found :(");
-        if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0) {
-          #ifdef DEBUG
-          sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][DEBUG] Caused By: %s",strerror(errno));
-          log_error(errlog);
-          #endif
+        if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0)
+        {
+#ifdef DEBUG
+            sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+            log_error (errlog);
+#endif
         }
         return;
     }
@@ -166,26 +170,28 @@ static void excecute_command (int fd, char *command)
     if (strcmp ("halt", command) == 0) //turn off jasm
     {
         log_string ("[CMD] halt exec");
-        if (write (fd, "jhalt", strlen ("jhalt") ) < 0) {
-          #ifdef DEBUG
-          sprintf(errlog,"[JASM-DAEMON][WRITE]Caused By: %s",strerror(errno));
-          log_error(errlog);
-          #endif
-          log_error("[JASM-DAEMON][WRITE]Error while sending");
+        if (write (fd, "jhalt", strlen ("jhalt") ) < 0)
+        {
+#ifdef DEBUG
+            sprintf (errlog, "[JASM-DAEMON][WRITE]Caused By: %s", strerror (errno) );
+            log_error (errlog);
+#endif
+            log_error ("[JASM-DAEMON][WRITE]Error while sending");
         }
         openlog ("JASM", LOG_PID, LOG_DAEMON);
         syslog (LOG_INFO, "exiting as requested from client...");
         closelog();
-        shutdown(fd,2);
+        shutdown (fd, 2);
         exit (_EXIT_SUCCESS);
     }
 
     log_error ("[CMD] Command not found!");
-    if(write (fd, "NotFound", strlen ("NotFound") ) < 0) {
-      #ifdef DEBUG
-      sprintf(errlog,"[ERROR][ÐEBUG] write() failed\n[ERROR][DEBUG] Caused By: %s",strerror(errno));
-      log_error(errlog);
-      #endif
+    if (write (fd, "NotFound", strlen ("NotFound") ) < 0)
+    {
+#ifdef DEBUG
+        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+        log_error (errlog);
+#endif
     }
 }
 
@@ -266,10 +272,12 @@ void start_server()
 
     while (1)
     {
+        char *ret_value = NULL;
         char buf[BUFSIZ];
         char received[BUFSIZ];
         int fd;
         int nread;
+        ssize_t return_value = 0;
 
         testfds = readfds;
 
@@ -311,7 +319,9 @@ void start_server()
                         const char auth[] = "auth-required";
                         const char granted[] = "granted";
                         const char denied[] = "denied";
-                        char passwd_from_client[256];
+                        // was 256 bytes, but the relative fgets was called with
+                        // the BUFSIZ parameter. Now it's fixed
+                        char passwd_from_client[BUFSIZ];
 
                         FILE* source_passwd;
 
@@ -339,7 +349,11 @@ void start_server()
 
                         if ( (source_passwd = fopen (PASSWD_ENC_FILE, "r") ) != NULL)
                         {
-                            fgets (passwd_from_client, BUFSIZ, source_passwd);
+                            ret_value = fgets (passwd_from_client, BUFSIZ, source_passwd);
+                            if (ret_value == NULL)
+                            {
+                                log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value");
+                            }
                             fclose (source_passwd);
                         }
                         else
@@ -513,7 +527,11 @@ void start_server()
                     else
                     {
                         memset (received, 0, sizeof (received) );
-                        read (fd, received, sizeof (received) );
+                        return_value = read (fd, received, sizeof (received) );
+                        if (return_value == -1)
+                        {
+                            log_error ("read on fd failed. -1 was returned");
+                        }
                         sprintf (buf, "[CMD-GET] Got command from %d: <%s>", fd, received);
                         log_string (buf);
                         excecute_command (fd, received);
