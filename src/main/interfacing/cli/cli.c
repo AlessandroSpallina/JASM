@@ -57,12 +57,12 @@ void * async_read_socket(void *fd)
 
 								while(1) {
 																if(read(filedesc, &size, sizeof(size)) == 0) {
-																								fprintf(stderr, "Server Disconnected\n");
+																								fprintf(stderr, "* Server Disconnected\n");
 																								return NULL;
 																}
 																memset(buf, 0, BUFSIZ);
 																if(read(filedesc, buf, size) == 0) {
-																								fprintf(stderr, "Server Disconnected\n");
+																								fprintf(stderr, "* Server Disconnected\n");
 																								return NULL;
 																}
 

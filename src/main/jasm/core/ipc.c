@@ -72,7 +72,13 @@ static void excecute_command (int fd, char *command)
         }
 
         log_error ("Getter NOT found :(");
-        write (fd, "null", strlen ("null") );
+        if(write (fd, "null", strlen ("null") ) < 0){
+          #ifdef DEBUG
+          sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error for write : %s",strerror(errno));
+          log_error(errlog);
+          #endif
+
+        }
         return;
     }
 
