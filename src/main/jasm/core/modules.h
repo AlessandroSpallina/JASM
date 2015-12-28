@@ -21,9 +21,17 @@
 
 #define NMODULE 1
 
+/*
+ *  this struct is the atomic element of a ordered list allocated in heap.
+ *  the list is ordered by client_ip. this help us to maintain and allow
+ *  only one instance of any module for client_ip and correctly close
+ *  all sockets when jasm ends.
+ */
 struct module_running {
+    char client_ip[BUFSIZ];
     pthread_t tid;
     char name[BUFSIZ];
+    struct module_running *next;
 };
 
 //this array cointains modules in execution on threads
