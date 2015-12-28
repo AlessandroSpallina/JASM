@@ -19,11 +19,31 @@
 
 /*
  *  This file cointains heap management functions of atomic element
- *  [struct module_running] defined in modules.h
- *  Abstract Data Type: Ordered List by client_ip.
+ *  [struct module_running] defined in modules_list.h
+ *  Abstract Data Type: Ordered list [client_ip] of ordered list [module_running].
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "modules.h"
+#include "modules_list.h"
+
+/*
+ *  Return values:
+ *    -1) malloc fail
+ *     0) element added with success
+ */
+int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid) {
+
+  struct module_running *aus = NULL;
+
+  aus = (struct module_thread *) malloc (sizeof (struct module_thread));
+  if(aus == NULL)
+    return -1;
+
+  strcpy(aus->client_ip, ip);
+  strcpy(aus->name, name);
+  aus->tid = tid;
+
+
+}

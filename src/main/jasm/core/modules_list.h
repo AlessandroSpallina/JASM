@@ -16,8 +16,28 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
-#ifnded _MODULES_LIST_H
+#ifndef _MODULES_LIST_H
 #define _MODULES_LIST_H
 
+/*
+ *  These structs are atomic elements of an ordered list allocated in heap.
+ *  The list is ordered by client_ip, every ip_node have a pointer to an ordered
+ *  list of module_running.
+ *  This help us to maintain and allow only one instance of any module for
+ *  client_ip and correctly close all sockets when jasm ends.
+ */
+struct module_running {
+    pthread_t tid;
+    char name[BUFSIZ];
+    struct module_running *next;
+};
+
+struct ip_nome {
+    char client_ip[BUFSIZ];
+    struct ip_node *next;
+    struct module_running *modules_list;
+};
+
+extern int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid);
 
 #endif
