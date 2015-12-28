@@ -9,7 +9,7 @@
 
 extern struct config
 {
-    char * config_name;
+    char config_name[BUFSIZ];
     void * config_values;
 } _config[NCONFIG_PROPERTIES];
 
