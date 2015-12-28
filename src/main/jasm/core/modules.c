@@ -28,7 +28,7 @@
 #include "../modules/module_logsender.h"
 
 char errlog[BUFSIZ];
-char moduleName[NMODULE][BUFSIZ] = {"0123456789"};
+char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
 void (*moduleInit[NMODULE]) (int, int) = {init_logsender};
 void (*moduleStart[NMODULE]) (void) = {start_logsender};
 
