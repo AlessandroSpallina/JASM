@@ -77,7 +77,7 @@ void getGetter (int fd)
             log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
             log_error (error);
         }
-        ret_val = write (fd, getterName[i], strlen (getterName[i]) );
+        ret_val = write (fd, getterName[i], count);
 
         if (ret_val == 0 || ret_val == -1)
         {

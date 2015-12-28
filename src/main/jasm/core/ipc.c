@@ -115,9 +115,7 @@ static void excecute_command (int fd, char *command)
                     log_error (buf);
                     return;
 
-                }
-                else
-                {
+                } else {
                     memset (command, 0, BUFSIZ);
                     sprintf (command, "module <%s> started correctly", moduleName[i]);
                     log_string (command);
