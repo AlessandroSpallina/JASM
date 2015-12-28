@@ -122,8 +122,13 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 								if(strcmp("halt",buffer)==0) {
 																printf("* Killing JASM");
 																if(write(fd,"halt",strlen("halt")) < 0)
-																								perror("* Write fail!");
-																shutdown(fd,2);
+																					perror("* Write fail!");
+
+																for(int z=0; z<NFDTABLE; z++)
+																					if(fd_table[z] != 0)
+																								shutdown(fd_table[z], 2);
+
+																printf("\n");
 																exit(_EXIT_SUCCESS);
 								} else if(strcmp("help", buffer)==0) {
 																int ngetter = 0;
