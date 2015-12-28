@@ -38,4 +38,5 @@ int main (int argc, char *argv[])
                 log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
         }
         start_server(); //starts server after the daemon (ready to get commands)
+
 }

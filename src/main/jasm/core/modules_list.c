@@ -69,6 +69,7 @@ int add_clientIp(struct ip_node **head, char *ip)
       return (add_clientIp(&((*head)->next), ip));
     }
   }
+  return 0;
 }
 
 void print_ipList (struct ip_node *head)
@@ -81,24 +82,72 @@ void print_ipList (struct ip_node *head)
   }
 }
 
+static int alloc_module_running(struct module_running **head, char *name, pthread_t tid)
+{
+  struct module_running *aus = NULL;
+
+  aus = (struct module_running *) malloc (sizeof (struct module_running));
+  if(aus == NULL)
+    return -1;
+
+  strcpy(aus->name, name);
+  aus->tid = tid;
+
+  aus->next = (*head);
+  (*head) = aus;
+
+  return 0;
+}
+
 /*  BE CAREFUL: incomplete function, don't touch it!
  *
  *  Return values:
  *    -1) malloc fail
  *     0) element added with success
  */
-/*int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid)
+int add_module_running(struct module_running **head, char *name, pthread_t tid)
 {
 
-  struct module_running *aus = NULL;
+  if ((*head) == NULL) {
+    return (alloc_module_running(head, name, tid));
+  }
 
-  aus = (struct module_thread *) malloc (sizeof (struct module_running));
-  if(aus == NULL)
-    return -1;
+  if (strcmp (name, (*head)->name) < 0) {
+    return (alloc_module_running(head, name, tid));
+  }
 
-  strcpy(aus->client_ip, ip);
-  strcpy(aus->name, name);
-  aus->tid = tid;
+  if (strcmp (name, (*head)->name) == 0) {
+    return -2;
+  } else {
+    if (strcmp (name, (*head)->name) > 0) {
+      return (alloc_module_running(&((*head)->next), name, tid));
+    }
+  }
+}
 
+void print_moduleList(struct module_running *head)
+{
+  char i = 'a';
 
-}*/
+  while(head != NULL) {
+    printf("    %c) %s\n", i++, head->name);
+    head = head->next;
+  }
+}
+
+void print_all(struct ip_node *head)
+{
+  int i = 0;
+
+  while(head != NULL) {
+    struct module_running *aus = head->modules_list;
+
+    printf("%d# %s\n", i++, head->client_ip);
+    if (aus != NULL) {
+        print_moduleList(aus);
+    } else {
+      printf("    a) null\n");
+    }
+    head = head->next;
+  }
+}

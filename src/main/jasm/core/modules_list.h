@@ -40,7 +40,8 @@ struct ip_node {
 
 extern int add_clientIp(struct ip_node **head, char *ip);
 extern void print_ipList (struct ip_node *head);
-
-//extern int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid);
+extern int add_module_running(struct module_running **head, char *name, pthread_t tid);
+extern void print_moduleList(struct module_running *head);
+extern void print_all(struct ip_node *head);
 
 #endif
