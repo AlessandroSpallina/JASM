@@ -21,8 +21,7 @@
 
 #define NMODULE 1
 
-struct module_running
-{
+struct module_running {
     pthread_t tid;
     char name[BUFSIZ];
 };
