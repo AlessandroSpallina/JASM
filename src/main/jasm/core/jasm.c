@@ -23,6 +23,7 @@
 #include "ipc.h"
 #include "signals.h"
 #include "configfile.h"
+#include "modules_list.h"
 
 int main (int argc, char *argv[])
 {

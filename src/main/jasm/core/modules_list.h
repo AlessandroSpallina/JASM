@@ -32,12 +32,15 @@ struct module_running {
     struct module_running *next;
 };
 
-struct ip_nome {
+struct ip_node {
     char client_ip[BUFSIZ];
-    struct ip_node *next;
     struct module_running *modules_list;
+    struct ip_node *next;
 };
 
-extern int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid);
+extern int add_clientIp(struct ip_node **head, char *ip);
+extern void print_ipList (struct ip_node *head);
+
+//extern int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid);
 
 #endif

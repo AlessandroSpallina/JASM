@@ -28,16 +28,71 @@
 #include <string.h>
 #include "modules_list.h"
 
+static int alloc_clientIp(struct ip_node **head, char *ip)
+{
+  struct ip_node *aus = NULL;
+
+  aus = (struct ip_node *) malloc (sizeof (struct ip_node));
+  if (aus == NULL)
+    return -1;
+
+  strcpy(aus->client_ip, ip);
+  aus->modules_list = NULL;
+
+  aus->next = (*head);
+  (*head) = aus;
+
+  return 0;
+}
+
 /*
+ *  Return values:
+ *    -1) malloc fails
+ *    -2) element not added because it already exists
+ *     0) element added with success
+ */
+int add_clientIp(struct ip_node **head, char *ip)
+{
+
+  if((*head) == NULL) {
+    return (alloc_clientIp(head, ip));
+  }
+
+  if (strcmp(ip, (*head)->client_ip) < 0) {
+    return (alloc_clientIp(head, ip));
+  }
+
+  if (strcmp(ip, (*head)->client_ip) == 0) {
+    return -2;
+  } else {
+    if (strcmp(ip, (*head)->client_ip) > 0) {
+      return (add_clientIp(&((*head)->next), ip));
+    }
+  }
+}
+
+void print_ipList (struct ip_node *head)
+{
+  int i = 0;
+
+  while (head != NULL) {
+    printf("%d# %s\n", i++, head->client_ip);
+    head = head->next;
+  }
+}
+
+/*  BE CAREFUL: incomplete function, don't touch it!
+ *
  *  Return values:
  *    -1) malloc fail
  *     0) element added with success
  */
-int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid) {
+/*int add_module_running(struct module_running **head, char *ip, char *name, pthread_t tid)
+{
 
   struct module_running *aus = NULL;
 
-  aus = (struct module_thread *) malloc (sizeof (struct module_thread));
+  aus = (struct module_thread *) malloc (sizeof (struct module_running));
   if(aus == NULL)
     return -1;
 
@@ -46,4 +101,4 @@ int add_module_running(struct module_running **head, char *ip, char *name, pthre
   aus->tid = tid;
 
 
-}
+}*/
