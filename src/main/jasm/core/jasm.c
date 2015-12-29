@@ -39,14 +39,4 @@ int main (int argc, char *argv[])
         }
         start_server(); //starts server after the daemon (ready to get commands)
 
-        /*struct module_running *genesi = NULL;
-        printf("%d value\n", add_module_running(&genesi, "ciao", 1111));
-        printf("%d value\n", add_module_running(&genesi, "alessandro", 1111));
-        print_moduleList(genesi);
-        printf("%d value\n", add_module_running(&genesi, "bau", 1111));
-        print_moduleList(genesi);
-        printf("%d value\n", add_module_running(&genesi, "zio", 1111));
-
-        print_moduleList(genesi);*/
-
 }
