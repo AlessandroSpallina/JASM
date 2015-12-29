@@ -34,6 +34,9 @@
 #include "miscellaneous.h"
 #include "getter.h"
 #include "modules.h"
+#include "modules_list.h"
+
+struct ip_node *client_list = NULL;
 
 char errlog[BUFSIZ];
 
@@ -42,7 +45,6 @@ char errlog[BUFSIZ];
 static void excecute_command (int fd, char *command)
 {
         ssize_t ret_val = 0;
-        //static int module_index = 0;
 
         // write on fd a list of commands
         if (strncmp ("help", command, strlen ("help") ) == 0) {
@@ -84,7 +86,7 @@ static void excecute_command (int fd, char *command)
 
         // ************************** starter **************************************
         if (strncmp ("start", command, 5) == 0) { //recieved start mod
-                int i; //j;
+                int i;
 
                 strcpy (command, &command[5]);
 
@@ -97,12 +99,12 @@ static void excecute_command (int fd, char *command)
 
                                 if (write (fd, "success", 7 ) < 0) {
 #ifdef DEBUG
-                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                        sprintf (errlog, "[ERROR][DEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno));
                                         log_error (errlog);
 #endif
                                 }
 
-                                if (pthread_create (&tid, NULL, (void*) moduleStart[i], NULL) != 0) {
+                                if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
                                         char buf[BUFSIZ];
                                         sprintf (buf, "pthread_create fail: %s", strerror (errno) );
                                         log_error (buf);
@@ -115,34 +117,7 @@ static void excecute_command (int fd, char *command)
                                         return;
                                 }
 
-                                /*for(j=0; j<NMODULE; j++) {
-                                      if(strcmp(module_table[j], command) == 0) {
-                                          //if there is the same module in execution
-                                          char temp[BUFSIZ];
-                                   log_error("Start NOT found :(");
-                                   if(write(fd, "ModNotFound", strlen("ModNotFound"))<0) {
-                                   log_error("[JASM-DAEMON][STARTMOD]Error while sending ");
-                                   }
-                                   return;
-                                   }
 
-                                          sprintf(temp, "Module [%s] already is in execution!", command);
-                                          log_error(temp);
-                                          write(fd, temp, strlen(temp));
-                                          return;
-                                        }
-                                   }
-
-                                   //if there isn't the module in execution -> execute and update module_table
-                                   moduleInit[i](fd, 1) //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                                   pthread_t tid;
-
-                                   if(pthread_create(&tid, NULL, moduleStart[i], NULL) != 0) {
-                                    log_error("pthread_create fail");
-                                    write(fd, "error creating thread", strlen("error creating thread"));
-                                    exit(1);
-                                   }
-                                   module_table[module_index++] = {};*/
                         }
                 }
 
@@ -459,9 +434,9 @@ void start_server() {
                                         }
 
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
-
-                                        //Using the client struct
                                         log_string (buf);
+                                        add_clientIp(&client_list, client_ipaddr);
+
                                 } else {
                                         ioctl (fd, FIONREAD, &nread);
 

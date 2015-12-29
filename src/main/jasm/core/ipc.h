@@ -24,4 +24,6 @@
 
 extern void start_server (void);
 
+extern struct ip_node *client_list;
+
 #endif
