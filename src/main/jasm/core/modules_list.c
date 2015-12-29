@@ -99,10 +99,10 @@ static int alloc_module_running(struct module_running **head, char *name, pthrea
   return 0;
 }
 
-/*  BE CAREFUL: incomplete function, don't touch it!
- *
+/*
  *  Return values:
  *    -1) malloc fail
+ *    -2) module already exists
  *     0) element added with success
  */
 int add_module_running(struct module_running **head, char *name, pthread_t tid)
@@ -112,16 +112,18 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
     return (alloc_module_running(head, name, tid));
   }
 
-  if (strcmp (name, (*head)->name) < 0) {
+  int ret = strcmp (name, (*head)->name);
+
+  if (ret < 0) {
     return (alloc_module_running(head, name, tid));
   }
 
-  if (strcmp (name, (*head)->name) == 0) {
+  if (ret == 0) {
     return -2;
-  } else {
-    if (strcmp (name, (*head)->name) > 0) {
-      return (alloc_module_running(&((*head)->next), name, tid));
-    }
+  }
+
+  if(ret > 0) {
+    return (add_module_running((&((*head)->next)), name, tid));
   }
 }
 
