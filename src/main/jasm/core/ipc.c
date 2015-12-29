@@ -94,6 +94,8 @@ static void excecute_command (int fd, char *command)
                         if (strcmp (moduleName[i], command) == 0) {
                                 //module exists :D
 
+                                
+
                                 moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                                 pthread_t tid;
 

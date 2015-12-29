@@ -91,6 +91,28 @@ int add_clientIp(struct ip_node **head, char *ip)
   return 0;
 }
 
+/*
+ *  Return values:
+ *     0) client removed with success
+ *    -1) client not found: error
+ */
+int rem_clientIp(struct ip_node **head, char *ip)
+{
+  struct client_ip *toremove = NULL;
+
+  if (toremove = find_clientIp((*head), ip) != NULL) {
+    struct client_ip *aus = (*head);
+    while(aus->next != toremove)
+      aus = aus->next;
+    aus->next = toremove->next;
+    free(toremove);
+    return 0;
+
+  } else {
+    return -1;
+  }
+}
+
 void print_ipList (struct ip_node *head)
 {
   int i = 0;
@@ -144,6 +166,16 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
   if(ret > 0) {
     return (add_module_running((&((*head)->next)), name, tid));
   }
+}
+
+/*  @@@@@@@@@@@@@@@@@@ NOT FINISHED!
+ *  Return values:
+ *    -1) module not found
+ *     0) module found and deleted with success
+ */
+int rem_module_running(struct module_running **head, char *name)
+{
+
 }
 
 void print_moduleList(struct module_running *head)

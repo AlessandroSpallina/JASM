@@ -42,6 +42,9 @@ extern int add_clientIp(struct ip_node **head, char *ip);
 extern struct ip_node * find_clientIp(struct ip_node *head, char *ip);
 extern int add_module_running(struct module_running **head, char *name, pthread_t tid);
 
+extern int rem_clientIp(struct ip_node **head, char *ip);
+int rem_module_running(struct module_running **head, char *name);
+
 extern void print_ipList (struct ip_node *head);
 extern void print_moduleList(struct module_running *head);
 extern void print_all(struct ip_node *head);
