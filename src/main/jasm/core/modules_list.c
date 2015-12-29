@@ -28,6 +28,24 @@
 #include <string.h>
 #include "modules_list.h"
 
+static struct ip_node * find_clientIp(struct ip_node *head, char *ip)
+{
+  int n;
+
+  while (head != NULL) {
+    n = strcmp (ip, head->name);
+
+    if (n == 0) {
+      return head;
+    }
+    if (n > 0) {
+      return NULL;
+    }
+
+    head = head->next;
+  }
+}
+
 static int alloc_clientIp(struct ip_node **head, char *ip)
 {
   struct ip_node *aus = NULL;
