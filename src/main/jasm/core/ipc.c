@@ -42,7 +42,7 @@ char errlog[BUFSIZ];
 
 //NOTE: Error codes defined @ miscellaneous.h
 
-static void excecute_command (int fd, char *command)
+static void excecute_command (int fd, char *ip, char *command)
 {
         ssize_t ret_val = 0;
 
@@ -94,30 +94,52 @@ static void excecute_command (int fd, char *command)
                         if (strcmp (moduleName[i], command) == 0) {
                                 //module exists :D
 
-                                
+                                struct ip_node *client = find_clientIp(client_list, ip);
+                                if(client != NULL) {
+                                  struct module_running *module = find_module_running(client->modules_list, command);
+                                  if(module == NULL) {
 
-                                moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                                pthread_t tid;
+                                    moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                    pthread_t tid;
 
-                                if (write (fd, "success", 7 ) < 0) {
+                                    if (write (fd, "success", 7 ) < 0) {
 #ifdef DEBUG
-                                        sprintf (errlog, "[ERROR][DEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno));
-                                        log_error (errlog);
+                                            sprintf (errlog, "[ERROR][DEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno));
+                                            log_error (errlog);
 #endif
-                                }
+                                    }
 
-                                if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
-                                        char buf[BUFSIZ];
-                                        sprintf (buf, "pthread_create fail: %s", strerror (errno) );
-                                        log_error (buf);
-                                        return;
+                                    if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
+                                            char buf[BUFSIZ];
+                                            sprintf (buf, "pthread_create fail: %s", strerror (errno) );
+                                            log_error (buf);
+                                            return;
 
+                                    } else {
+                                            memset (command, 0, BUFSIZ);
+                                            sprintf (command, "module <%s> started correctly", moduleName[i]);
+                                            log_string (command);
+                                            add_module_running(&module, command, tid);
+                                            return;
+                                    }
+
+
+
+
+                                  } else {
+                                    sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
+                                    log_string(errlog);
+                                    write (fd, "fail", strlen("fail")); //to this string to client
+                                    return;
+                                  }
                                 } else {
-                                        memset (command, 0, BUFSIZ);
-                                        sprintf (command, "module <%s> started correctly", moduleName[i]);
-                                        log_string (command);
-                                        return;
+                                  sprintf(errlog, "[ERROR] client ip not found in client_list");
+                                  log_error(errlog);
+                                  return;
                                 }
+
+
+
 
 
                         }
@@ -160,7 +182,8 @@ static void excecute_command (int fd, char *command)
 }
 
 
-void start_server() {
+void start_server()
+{
 #ifdef PASSWD_ENC_FILE
         //use it
 #else
@@ -446,8 +469,8 @@ void start_server() {
                                                 close (fd);
                                                 FD_CLR (fd, &readfds);
                                                 sprintf (buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
-                                                //Using the client struct
                                                 log_string (buf);
+                                                rem_clientIp(&client_list, client_ipaddr);
                                         } else {
                                                 memset (received, 0, sizeof (received) );
                                                 return_value = read (fd, received, sizeof (received) );
@@ -456,7 +479,7 @@ void start_server() {
                                                 }
                                                 sprintf (buf, "[CMD-GET] Got command from %d: <%s>", fd, received);
                                                 log_string (buf);
-                                                excecute_command (fd, received);
+                                                excecute_command (fd, client_ipaddr, received);
                                         }
                                 }
                         }
