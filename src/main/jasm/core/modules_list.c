@@ -47,18 +47,6 @@ struct ip_node * find_clientIp(struct ip_node *head, char *ip)
   return NULL;
 }
 
-struct module_running * find_module_running(struct module_running *head, char *name)
-{
-  while (head != NULL) {
-    if(strcmp (name, head->name) == 0)
-      return head;
-
-    head = head->next;
-  }
-
-  return NULL;
-}
-
 static int alloc_clientIp(struct ip_node **head, char *ip)
 {
   struct ip_node *aus = NULL;
@@ -135,6 +123,18 @@ void print_ipList (struct ip_node *head)
   }
 }
 
+struct module_running * find_module_running(struct module_running *head, char *name)
+{
+  while (head != NULL) {
+    if(strcmp (name, head->name) == 0)
+      return head;
+
+    head = head->next;
+  }
+
+  return NULL;
+}
+
 static int alloc_module_running(struct module_running **head, char *name, pthread_t tid)
 {
   struct module_running *aus = NULL;
@@ -178,28 +178,28 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
   }
 }
 
-/*  @@@@@@@@@@@@@@@@@@ NOT FINISHED!
+/*
  *  Return values:
  *    -1) module not found
  *     0) module found and deleted with success
  */
 int rem_module_running(struct module_running **head, char *name)
 {
-  struct module_running *aus = (*head);
-  struct module_running *prev = (*head);
-  int count = 0;
+  struct module_running *toremove = NULL;
 
-  while (aus != NULL) {
-    if (strcmp(name, aus->name) == 0) {
-      for(int i=0; i<count; i++) {
-        prev = prev->next;
-      }
-    } else {
-      count++;
-    }
+  if ((toremove = find_module_running((*head), name)) != NULL) {
+    struct module_running *aus = (*head);
+    while(aus->next != toremove)
+      aus = aus->next;
+    aus->next = toremove->next;
+    free(toremove);
+    return 0;
+
+  } else {
+    return -1;
   }
 
-  return 0;
+
 }
 
 void print_moduleList(struct module_running *head)
