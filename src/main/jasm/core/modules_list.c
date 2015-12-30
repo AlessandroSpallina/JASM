@@ -47,6 +47,18 @@ struct ip_node * find_clientIp(struct ip_node *head, char *ip)
   return NULL;
 }
 
+struct module_running * find_module_running(struct module_running *head, char *name)
+{
+  while (head != NULL) {
+    if(strcmp (name, head->name) == 0)
+      return head;
+
+    head = head->next;
+  }
+
+  return NULL;
+}
+
 static int alloc_clientIp(struct ip_node **head, char *ip)
 {
   struct ip_node *aus = NULL;
@@ -173,6 +185,20 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
  */
 int rem_module_running(struct module_running **head, char *name)
 {
+  struct module_running *aus = (*head);
+  struct module_running *prev = (*head);
+  int count = 0;
+
+  while (aus != NULL) {
+    if (strcmp(name, aus->name) == 0) {
+      for(int i=0; i<count; i++) {
+        prev = prev->next;
+      }
+    } else {
+      count++;
+    }
+  }
+
   return 0;
 }
 
