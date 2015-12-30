@@ -98,10 +98,10 @@ int add_clientIp(struct ip_node **head, char *ip)
  */
 int rem_clientIp(struct ip_node **head, char *ip)
 {
-  struct client_ip *toremove = NULL;
+  struct ip_node *toremove = NULL;
 
-  if (toremove = find_clientIp((*head), ip) != NULL) {
-    struct client_ip *aus = (*head);
+  if ((toremove = find_clientIp((*head), ip)) != NULL) {
+    struct ip_node *aus = (*head);
     while(aus->next != toremove)
       aus = aus->next;
     aus->next = toremove->next;
@@ -161,9 +161,7 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
 
   if (ret == 0) {
     return -2;
-  }
-
-  if(ret > 0) {
+  } else {
     return (add_module_running((&((*head)->next)), name, tid));
   }
 }
@@ -175,7 +173,7 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
  */
 int rem_module_running(struct module_running **head, char *name)
 {
-
+  return 0;
 }
 
 void print_moduleList(struct module_running *head)
