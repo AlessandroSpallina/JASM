@@ -41,7 +41,7 @@ int main (int argc, char *argv[])
                 log_string ("[JASM-DAEMON][INFO]You need to create a configuration file");
                 log_string ("[JASM-DAEMON][INFO]Using standard values");
                 log_string ("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
-        } else if (propretval == -1) log_string ("[JASM-DAEMON][INFO]Property value is NULL! Open an issue @ github.com/AlessandroSpallina/JASM!");
+        } else if (propretval == -1) log_string ("[JASM-DAEMON][INFO]Property value is NULL!");
         else {
                 log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
 #ifdef DEBUG

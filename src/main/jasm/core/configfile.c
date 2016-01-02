@@ -74,7 +74,7 @@ int set_property_value (void)
         return 1;
     }
 
-    for (index = 0; index <= NCONFIG_PROPERTIES; index++)
+    for (index = 0; index <= NCONFIG_PROPERTIES_COUNTER; index++)
     {
         char *get_val = NULL;
         if (fgets (get_buffer_from_file, BUFSIZ, fconfig) != NULL)
@@ -84,6 +84,12 @@ int set_property_value (void)
             log_string (logstr_debug);
 #endif //DEBUG
 
+            if (get_buffer_from_file[0] == '#') {
+#ifdef DEBUG
+                log_string("[JASM-DAEMON][INFO][CONFIG][DEBUG]Comment detected, ignoring");
+#endif //DEBUG
+                continue;
+            }
             get_val = get_property_value (get_buffer_from_file);
 
             if (get_val == NULL)
@@ -92,6 +98,7 @@ int set_property_value (void)
                 sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]get_val is NULL. config set to CONFIG_ALL");
                 log_string (logstr_debug);
 #endif //DEBUG
+                log_string("[JASM-DAEMON][WARN]Check your config file! Something is wrong!! Setting default values...");
                 set_default_property_value (CONFIG_ALL);
                 fclose (fconfig);
                 return -1;
