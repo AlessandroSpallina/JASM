@@ -21,15 +21,6 @@
 
 #define NMODULE 1
 
-struct module_running
-{
-    pthread_t tid;
-    char name[BUFSIZ];
-};
-
-//this array cointains modules in execution on threads
-extern struct module_running module_table[NMODULE];
-
 extern char moduleName[NMODULE][BUFSIZ];
 extern void (*moduleInit[NMODULE]) (int, int);
 extern void (*moduleStart[NMODULE]) (void);

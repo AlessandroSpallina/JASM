@@ -120,11 +120,16 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 								int counter;
 
 								if(strcmp("halt",buffer)==0) {
-									printf("* Killing JASM");
-									if(write(fd,"halt",strlen("halt")) < 0)
-										perror("* Write fail!");
-									shutdown(fd,2);
-									exit(_EXIT_SUCCESS);
+																printf("* Killing JASM");
+																if(write(fd,"halt",strlen("halt")) < 0)
+																					perror("* Write fail!");
+
+																for(int z=0; z<NFDTABLE; z++)
+																					if(fd_table[z] != 0)
+																								shutdown(fd_table[z], 2);
+
+																printf("\n");
+																exit(_EXIT_SUCCESS);
 								} else if(strcmp("help", buffer)==0) {
 																int ngetter = 0;
 																int nmodule = 0;
@@ -188,11 +193,11 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 																if(write(fd_new, buffer, strlen(buffer)) < 0)
 																{
-																  fprintf(stderr,"* Failed to send start\n");
+																								fprintf(stderr,"* Failed to send start\n");
 																	#ifdef DEBUG
-																	fprintf(stderr,"[DEBUG]* Caused by: %s",strerror(errno));
+																								fprintf(stderr,"[DEBUG]* Caused by: %s",strerror(errno));
 																	#endif
-																	exit(SOCKET_WRITE_FAILED);
+																								exit(SOCKET_WRITE_FAILED);
 																}
 
 																strcpy(name_temp, &buffer[5]);
@@ -200,11 +205,11 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 
 																if(read(fd_new, buffer, BUFSIZ) < 0)
 																{
-																	fprintf(stderr,"* Failed to read from server\n");
+																								fprintf(stderr,"* Failed to read from server\n");
 																	#ifdef DEBUG
-																	fprintf(stderr,"[DEBUG]* Caused by: %s",strerror(errno));
+																								fprintf(stderr,"[DEBUG]* Caused by: %s",strerror(errno));
 																	#endif
-																	exit(SOCKET_READ_FAILED);
+																								exit(SOCKET_READ_FAILED);
 																}
 
 																#ifdef DEBUG
@@ -223,16 +228,16 @@ void secureJasmCommunication(char buffer[BUFSIZ], int fd)
 																								else
 																								{
 																									#ifdef DEBUG
-																									printf("* Creating new thread success!\n");
+																																printf("* Creating new thread success!\n");
 																									#endif
 																								}
 
-																} else if (strncmp(buffer,"ModNotFound",11) == 0){
+																} else if (strncmp(buffer,"ModNotFound",11) == 0) {
 																								fprintf(stderr, "*[ERROR] Module Not found! Retry! \n");
 																								close(fd_new);
 																								return;
 																} else {
-																	              fprintf(stderr,"* Non-valid answer from server\n");
+																								fprintf(stderr,"* Non-valid answer from server\n");
 																								close(fd_new);
 																								return;
 																}
@@ -316,8 +321,8 @@ int main(int argc, char *argv[])
 																scanf("%s", buf);
 																if(strcmp(buf, "quit")==0) {
 																								for(int z=0; z<NFDTABLE; z++)
-																									if(fd_table[z] != 0)
-																										close(fd_table[z]);
+																																if(fd_table[z] != 0)
+																																								close(fd_table[z]);
 																								printf("Bye!\n");
 																								exit(_EXIT_SUCCESS);
 																} else {
