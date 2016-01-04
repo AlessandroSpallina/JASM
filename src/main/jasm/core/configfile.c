@@ -31,9 +31,9 @@ void set_default_property_value (int what)
         _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = (int*) 5;
     }
     else if (what == CONFIG_MAX_CONNECTIONS)
-        _config[CONFIG_MAX_CONNECTIONS].config_values = (int*) 5;
+        _config[CONFIG_MAX_CONNECTIONS].config_values = (int*) 3;
     else if (what == CONFIG_MAX_AUTHENTICATION_TRIES)
-        _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = (int*) 3;
+        _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = (int*) 5;
     else
     {
 #ifdef DEBUG
@@ -61,7 +61,9 @@ int set_property_value (void)
     FILE *fconfig;
     char get_buffer_from_file[BUFSIZ];
     int index;
-    //long test_fsz;
+#ifdef DEBUG
+    char logstr_debug[BUFSIZ];
+#endif
 
     strcpy (_config[CONFIG_MAX_CONNECTIONS].config_name,"MaxConnections");
     strcpy (_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_name,"MaxAuthTries");
@@ -72,17 +74,22 @@ int set_property_value (void)
         return 1;
     }
 
-    for (index = 0; index <= NCONFIG_PROPERTIES; index++)
+    for (index = 0; index <= NCONFIG_PROPERTIES_COUNTER; index++)
     {
         char *get_val = NULL;
         if (fgets (get_buffer_from_file, BUFSIZ, fconfig) != NULL)
         {
 #ifdef DEBUG
-            char logstr_debug[BUFSIZ];
             sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]Buffer: get_buffer_from_file=%s", get_buffer_from_file);
             log_string (logstr_debug);
 #endif //DEBUG
 
+            if (get_buffer_from_file[0] == '#') {
+#ifdef DEBUG
+                log_string("[JASM-DAEMON][INFO][CONFIG][DEBUG]Comment detected, ignoring");
+#endif //DEBUG
+                continue;
+            }
             get_val = get_property_value (get_buffer_from_file);
 
             if (get_val == NULL)
@@ -91,6 +98,7 @@ int set_property_value (void)
                 sprintf (logstr_debug, "[JASM-DAEMON][DEBUG]get_val is NULL. config set to CONFIG_ALL");
                 log_string (logstr_debug);
 #endif //DEBUG
+                log_string("[JASM-DAEMON][WARN]Check your config file! Something is wrong!! Setting default values...");
                 set_default_property_value (CONFIG_ALL);
                 fclose (fconfig);
                 return -1;
@@ -106,15 +114,15 @@ int set_property_value (void)
             {
                 // make a promise to change atoi to strtol to ease the error checking phase
                 int auth_cast_integer_value = atoi (get_val);
-                _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = &auth_cast_integer_value;
+                _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values = (int*)auth_cast_integer_value;
             }
+
             // add bounded check for string comparison, to prevent buffer overflow
             if (strncmp (get_buffer_from_file, "MaxConnections", strlen (get_buffer_from_file) ) == 0)
             {
                 int conn_cast_integer_value = atoi (get_val);
-                _config[CONFIG_MAX_CONNECTIONS].config_values = &conn_cast_integer_value;
-            }
-
+                _config[CONFIG_MAX_CONNECTIONS].config_values = (int*)conn_cast_integer_value;
+            } 
         }
         else
         {
@@ -125,5 +133,19 @@ int set_property_value (void)
 
     fclose (fconfig);
 
+    //test entries 
+    for (int ind=0;ind<=NCONFIG_PROPERTIES_COUNTER;ind++) {
+#ifdef DEBUG
+        sprintf(logstr_debug,"[JASM-DAEMON][CONFIG][DEBUG] Cycle Index: %d",ind);
+        log_string(logstr_debug);
+#endif //DEBUG
+        if (_config[ind].config_values == NULL) {
+            set_default_property_value(ind);
+#ifdef DEBUG
+            sprintf(logstr_debug,"[JASM-DAEMON][CONFIG][DEBUG] Predef - Key: %s, Value: %d",_config[ind].config_name,_config[ind].config_values);
+            log_string(logstr_debug);
+#endif //DEBUG
+        }
+    }
     return 0;
 }
