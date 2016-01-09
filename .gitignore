@@ -9,3 +9,7 @@
 jasm.log
 jasmcli.*
 *.gch
+GTAGS
+GRTAGS
+GPATH
+
