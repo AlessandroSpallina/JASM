@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <syslog.h>
 
+#include "configfile.h"
 #include "ipc.h"
 #include "miscellaneous.h"
 #include "getter.h"
@@ -38,6 +39,7 @@
 
 struct ip_node *client_list = NULL;
 
+unsigned int connection_counter = 0;
 char errlog[BUFSIZ];
 
 //NOTE: Error codes defined @ miscellaneous.h
@@ -137,11 +139,6 @@ static void excecute_command (int fd, char *ip, char *command)
                                   log_error(errlog);
                                   return;
                                 }
-
-
-
-
-
                         }
                 }
 
@@ -285,8 +282,14 @@ void start_server()
                                                 syslog (LOG_ERR, "FATAL! Failed to accept client incoming connection! Exiting...");
                                                 closelog();
                                                 exit (SOCKET_CLIENT_CONNECTION_FAILED);
+                                        } else if (client_sockfd > 0) {
+                                            if (connection_counter <= _config[CONFIG_MAX_CONNECTIONS].config_values) 
+                                                connection_counter++;
+                                            else if (connection_counter > _config[CONFIG_MAX_CONNECTIONS].config_values) {
+                                                shutdown(client_sockfd,2);
+                                                continue;
+                                            }
                                         }
-
                                         FD_SET (client_sockfd, &readfds);
                                         sprintf (client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr & 0xFF, (client_address.sin_addr.s_addr & 0xFF00) >> 8, (client_address.sin_addr.s_addr & 0xFF0000) >> 16, (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
                                         if (login_required (client_ipaddr) == 1) {
@@ -357,7 +360,7 @@ void start_server()
                                                                 log_error (errlog);
                                                         }
 
-                                                        for (int i = 1; i <= 4; i++) {
+                                                        for (int i = 1; i <= _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values + 1; i++) {
                                                                 FILE * chkfile;
                                                                 char passwd[256];
                                                                 char attstr[BUFSIZ];
@@ -407,7 +410,7 @@ void start_server()
                                                                                 log_error (errlog);
                                                                         }
 
-                                                                        if (i == 3) {
+                                                                        if (i == _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
                                                                                 shutdown (client_sockfd, 2);
                                                                                 log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
                                                                                 log_string ("[JASM-DAEMON][ALERT]More than 3 tries failed!");
@@ -471,6 +474,7 @@ void start_server()
                                                 sprintf (buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                                 log_string (buf);
                                                 rem_clientIp(&client_list, client_ipaddr);
+                                                connection_counter--;
                                         } else {
                                                 memset (received, 0, sizeof (received) );
                                                 return_value = read (fd, received, sizeof (received) );
