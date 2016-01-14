@@ -39,7 +39,7 @@
 
 struct ip_node *client_list = NULL;
 
-unsigned int connection_counter = 0;
+int connection_counter = 0;
 char errlog[BUFSIZ];
 
 //NOTE: Error codes defined @ miscellaneous.h
@@ -283,9 +283,9 @@ void start_server()
                                                 closelog();
                                                 exit (SOCKET_CLIENT_CONNECTION_FAILED);
                                         } else if (client_sockfd > 0) {
-                                            if (connection_counter <= _config[CONFIG_MAX_CONNECTIONS].config_values) 
+                                            if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) 
                                                 connection_counter++;
-                                            else if (connection_counter > _config[CONFIG_MAX_CONNECTIONS].config_values) {
+                                            else if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                                                 shutdown(client_sockfd,2);
                                                 continue;
                                             }
@@ -360,7 +360,7 @@ void start_server()
                                                                 log_error (errlog);
                                                         }
 
-                                                        for (int i = 1; i <= _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values + 1; i++) {
+                                                        for (int i = 1; i <= *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values + 1; i++) {
                                                                 FILE * chkfile;
                                                                 char passwd[256];
                                                                 char attstr[BUFSIZ];
@@ -410,7 +410,7 @@ void start_server()
                                                                                 log_error (errlog);
                                                                         }
 
-                                                                        if (i == _config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
+                                                                        if (i == *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
                                                                                 shutdown (client_sockfd, 2);
                                                                                 log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
                                                                                 log_string ("[JASM-DAEMON][ALERT]More than 3 tries failed!");

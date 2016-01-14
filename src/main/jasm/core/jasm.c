@@ -47,7 +47,7 @@ int main (int argc, char *argv[])
 #ifdef DEBUG
                 log_string ("[JASM-DAEMON][INFO][DEBUG] Accessing struct...");
                 for(int ind=0; ind<=NCONFIG_PROPERTIES_COUNTER; ind++) {
-                        sprintf(logstr_debug,"[JASM-DAEMON][INFO][DEBUG] Key: %s , Value: %d",_config[ind].config_name, _config[ind].config_values);
+                        sprintf(logstr_debug,"[JASM-DAEMON][INFO][DEBUG] Key: %s , Value: %d",_config[ind].config_name, *(int*)_config[ind].config_values);
                         log_string(logstr_debug);
                 }
 #endif //DEBUG
