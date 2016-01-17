@@ -20,7 +20,8 @@ char * get_property_value (char * __prop)
         return NULL;
     }
     strtok (__prop, "=");
-    return strtok (NULL, "=");
+    
+    return strtok(NULL,"=");
 }
 
 void set_default_property_value (int what)

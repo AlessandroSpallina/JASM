@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
                 log_string ("[JASM-DAEMON][INFO]Using standard values");
                 log_string ("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
         } else if (propretval == -1) log_string ("[JASM-DAEMON][INFO]Property value is NULL!");
-        else {
+        else
                 log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
 #ifdef DEBUG
                 log_string ("[JASM-DAEMON][INFO][DEBUG] Accessing struct...");
@@ -51,6 +51,5 @@ int main (int argc, char *argv[])
                         log_string(logstr_debug);
                 }
 #endif //DEBUG
-        }
         start_server(); //starts server after the daemon (ready to get commands)
 }
