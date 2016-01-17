@@ -282,14 +282,7 @@ void start_server()
                                                 syslog (LOG_ERR, "FATAL! Failed to accept client incoming connection! Exiting...");
                                                 closelog();
                                                 exit (SOCKET_CLIENT_CONNECTION_FAILED);
-                                        } else if (client_sockfd > 0) {
-                                            if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) 
-                                                connection_counter++;
-                                            else if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
-                                                shutdown(client_sockfd,2);
-                                                continue;
-                                            }
-                                        }
+                                        } 
                                         FD_SET (client_sockfd, &readfds);
                                         sprintf (client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr & 0xFF, (client_address.sin_addr.s_addr & 0xFF00) >> 8, (client_address.sin_addr.s_addr & 0xFF0000) >> 16, (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
                                         if (login_required (client_ipaddr) == 1) {
@@ -413,7 +406,6 @@ void start_server()
                                                                         if (i == *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
                                                                                 shutdown (client_sockfd, 2);
                                                                                 log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
-                                                                                log_string ("[JASM-DAEMON][ALERT]More than 3 tries failed!");
                                                                                 break;
                                                                         }
                                                                 }
@@ -464,6 +456,16 @@ void start_server()
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);
+                                        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) 
+                                             connection_counter++;
+                                        else if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
+                                            shutdown(client_sockfd,2);
+                                            break;
+                                        }
+#ifdef DEBUG
+                                        sprintf(errlog,"Client: %d",connection_counter);
+                                        log_string(errlog);
+#endif 
 
                                 } else {
                                         ioctl (fd, FIONREAD, &nread);
