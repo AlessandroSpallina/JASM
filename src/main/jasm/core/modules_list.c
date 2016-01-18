@@ -102,56 +102,20 @@ int add_clientIp(struct ip_node **head, char *ip)
  *     0) client removed with success
  *    -1) client not found: error
  */
-
-//TO DEBUG
-//BUGGY
 int rem_clientIp(struct ip_node **head, char *ip)
 {
-#ifdef DEBUG
-  log_string("Reached funct");
-#endif
-
   struct ip_node *toremove = NULL;
 
-#ifdef DEBUG
-  log_string("Reached to_remove struct");
-#endif
   if ((toremove = find_clientIp((*head), ip)) != NULL) {
-#ifdef DEBUG
-  log_string("Reached if ... ");
-#endif
     struct ip_node *aus = (*head);
-#ifdef DEBUG
-  log_string("Reached aus struct");
-#endif
     while(aus != toremove && aus->next != NULL) {
-#ifdef DEBUG
-  log_string("Reached while ...");
-#endif
       aus = aus->next; //CHECK HERE
-#ifdef DEBUG
-  sprintf(deblog, "Errno: %s",strerror(errno));
-  log_string(deblog);
-  log_string("Reached aus = aus->next");
-#endif
     }
     aus->next = toremove->next;
-#ifdef DEBUG
-  log_string("Reached aus->next = toremove->next");
-#endif
     free(toremove);
-#ifdef DEBUG
-  log_string("Reached free(...)");
-#endif
-#ifdef DEBUG
-    log_string("[JASM-DAEMON][REM_CLIENTIP][DEBUG] Removing ip success!");
-#endif //DEBUG
     return 0;
 
   } else {
-#ifdef DEBUG
-    log_string("[JASM-DAEMON][REM_CLIENTIP][DEBUG] Error while removing ip!");
-#endif
     return -1;
   }
 }
