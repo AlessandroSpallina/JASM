@@ -124,7 +124,7 @@ int rem_clientIp(struct ip_node **head, char *ip)
 #ifdef DEBUG
   log_string("Reached aus struct");
 #endif
-    while(aus->next != toremove) {
+    while(aus != toremove && aus->next != NULL) {
 #ifdef DEBUG
   log_string("Reached while ...");
 #endif
