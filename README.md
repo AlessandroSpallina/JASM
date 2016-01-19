@@ -22,6 +22,7 @@ Just type make, the output directory is bin/ :)
 
  - clean (cleans object files and other things)
  - cleanbin (cleans bin/ directory except placeholder to avoid bin directory gets deleted from git when staging)
+ - debug [builds a *debug* release(debug symbols,no optimization,preproc opts...)]
 
 *Compiler*
 

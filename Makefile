@@ -16,10 +16,10 @@ JASM_CLI_DIR=src/main/interfacing/cli
 JASM_CLI_BINOUT=src/main/interfacing/cli/jasmcli
 JASM_CLI_BINOUT_DEBUG=src/main/interfacing/cli/jasmcli-debug
 
-#Jasm GTK+3 graphical interfacing
-#JASM_GTK_GUI_DIR=src/main/interfacing/gui
-#JASM_GTK_GUI_BINOUT=src/main/interfacing/gui/jasmgtk
-#JASM_GTK_GUI_BINOUT_DEBUG=src/main/interfacing/gui/jasmgtk-debug
+#Jasm Shared Objects
+JASM_LIB_SOUT=src/main/jasm/core/libjasm.so
+JASM_SOUT_DIR=lib/
+JASM_SO_NM=libjasm.so
 
 #(all) target destination for binaries
 JASM_BINOUT_DIR=bin/
@@ -35,24 +35,22 @@ MAKE_FLAGS=$@
 install:
 	cd $(JASM_CORE_DIR) && make $(MAKE_FLAGS) || exit 2
 	cd $(JASM_CLI_DIR) && make $(MAKE_FLAGS) || exit 2
-#	cd $(JASM_GTK_GUI_DIR) && make $(MAKE_FLAGS) || exit 2
 	[ -f $(JASM_CORE_BINOUT) ] && mv $(JASM_CORE_BINOUT) $(JASM_BINOUT_DIR) || exit 4
 	[ -f $(JASM_CLI_BINOUT) ] && mv $(JASM_CLI_BINOUT) $(JASM_BINOUT_DIR) || exit 4
-#	[ -f $(JASM_GTK_GUI_BINOUT) ] && mv $(JASM_GTK_GUI_BINOUT) $(JASM_BINOUT_DIR) || exit 4
+	[ -f $(JASM_LIB_SOUT) ] && mv $(JASM_LIB_SOUT) $(JASM_SOUT_DIR) || exit 4
 
 debug:
 	cd $(JASM_CORE_DIR) && make debug $(MAKE_FLAGS) || exit 2
 	cd $(JASM_CLI_DIR) && make debug $(MAKE_FLAGS) || exit 2
-#	cd $(JASM_GTK_GUI_DIR) && make debug $(MAKE_FLAGS) || exit 2
 	[ -f $(JASM_CORE_BINOUT_DEBUG) ] && mv $(JASM_CORE_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
 	[ -f $(JASM_CLI_BINOUT_DEBUG) ] && mv $(JASM_CLI_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
-#	[ -f $(JASM_GTK_GUI_BINOUT_DEBUG) ] && mv $(JASM_GTK_GUI_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
+	[ -f $(JASM_LIB_SOUT) ] && mv $(JASM_LIB_SOUT) $(JASM_SOUT_DIR) || exit 4
 
 clean:
 	cd $(JASM_CORE_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	cd $(JASM_CLI_DIR) && make clean $(MAKE_FLAGS) || exit 3
-#	cd $(JASM_GTK_GUI_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	rm -rfv $(JASM_DATA_PATTERN) || echo ""
+	cd $(JASM_SOUT_DIR) && rm -fv $(JASM_SO_NM) || echo ""
 
 cleanbin:
 	cd $(JASM_BINOUT_DIR) && rm -fv jasm* || exit 1

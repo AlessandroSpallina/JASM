@@ -404,8 +404,10 @@ void start_server()
                                                                         }
 
                                                                         if (i == *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
+																				char intalert[BUFSIZ];
                                                                                 shutdown (client_sockfd, 2);
                                                                                 log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
+																				sprintf(intalert,"[JASM-DAEMON][ALERT]More than %d tries failed",*(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values);
                                                                                 break;
                                                                         }
                                                                 }
