@@ -26,7 +26,7 @@
 #include "configfile.h"
 #include "logger.h"
 
-int main (int argc, char *argv[])
+int main (void)
 {
 
 #ifdef DEBUG
