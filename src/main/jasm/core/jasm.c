@@ -28,13 +28,14 @@
 
 int main (void)
 {
-
+		char logstr[BUFSIZ];
 #ifdef DEBUG
         char logstr_debug[BUFSIZ];
 #endif //DEBUG
 
         int propretval;
 
+		set_logpath(); //sets path where to log...
         start_daemon(); //starts background daemon
         set_signals_feel(); //logs a set of signals
         propretval = set_property_value();
@@ -42,7 +43,8 @@ int main (void)
         if (propretval == 1) {
                 log_string ("[JASM-DAEMON][INFO]You need to create a configuration file");
                 log_string ("[JASM-DAEMON][INFO]Using standard values");
-                log_string ("[JASM-DAEMON][INFO]Server's config source: $HOME/.jasm_config");
+                sprintf (logstr,"[JASM-DAEMON][INFO]Server's config source: %s/.jasm_config",homedir);
+				log_string (logstr);
         } else if (propretval == -1) log_string ("[JASM-DAEMON][INFO]Property value is NULL!");
         else
                 log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");

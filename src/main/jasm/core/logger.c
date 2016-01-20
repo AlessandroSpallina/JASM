@@ -5,15 +5,19 @@
 #include "logger.h"
 #include "miscellaneous.h"
 
+char homedir[BUFSIZ];
 char LOGPATH[BUFSIZ];
 
+void set_logpath(void) 
+{
+		strcpy(homedir,getenv("HOME"));
 #ifdef DEBUG
-strcpy(LOGPATH,"../data/jasm.log");
+		strcpy(LOGPATH,"../data/jasm.log");
 #else
-strcpy(LOGPATH,getenv("HOME"));
-strcat(LOGPATH,"/.jasm.log");
+		strcpy(LOGPATH,homedir);
+		strcat(LOGPATH,"/.jasm.log");
 #endif //DEBUG
-
+}
 
 void log_string (const char *message)
 {
