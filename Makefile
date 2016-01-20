@@ -16,11 +16,6 @@ JASM_CLI_DIR=src/main/interfacing/cli
 JASM_CLI_BINOUT=src/main/interfacing/cli/jasmcli
 JASM_CLI_BINOUT_DEBUG=src/main/interfacing/cli/jasmcli-debug
 
-#Jasm Shared Objects
-JASM_LIB_SOUT=src/main/jasm/core/libjasm.so
-JASM_SOUT_DIR=lib/
-JASM_SO_NM=libjasm.so
-
 #(all) target destination for binaries
 JASM_BINOUT_DIR=bin/
 JASM_BINOUT_DIR_DEBUG=bin-debug/
@@ -37,20 +32,17 @@ install:
 	cd $(JASM_CLI_DIR) && make $(MAKE_FLAGS) || exit 2
 	[ -f $(JASM_CORE_BINOUT) ] && mv $(JASM_CORE_BINOUT) $(JASM_BINOUT_DIR) || exit 4
 	[ -f $(JASM_CLI_BINOUT) ] && mv $(JASM_CLI_BINOUT) $(JASM_BINOUT_DIR) || exit 4
-	[ -f $(JASM_LIB_SOUT) ] && mv $(JASM_LIB_SOUT) $(JASM_SOUT_DIR) || exit 4
 
 debug:
 	cd $(JASM_CORE_DIR) && make debug $(MAKE_FLAGS) || exit 2
 	cd $(JASM_CLI_DIR) && make debug $(MAKE_FLAGS) || exit 2
 	[ -f $(JASM_CORE_BINOUT_DEBUG) ] && mv $(JASM_CORE_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
 	[ -f $(JASM_CLI_BINOUT_DEBUG) ] && mv $(JASM_CLI_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
-	[ -f $(JASM_LIB_SOUT) ] && mv $(JASM_LIB_SOUT) $(JASM_SOUT_DIR) || exit 4
 
 clean:
 	cd $(JASM_CORE_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	cd $(JASM_CLI_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	rm -rfv $(JASM_DATA_PATTERN) || echo ""
-	cd $(JASM_SOUT_DIR) && rm -fv $(JASM_SO_NM) || echo ""
 
 cleanbin:
 	cd $(JASM_BINOUT_DIR) && rm -fv jasm* || exit 1

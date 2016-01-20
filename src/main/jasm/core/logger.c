@@ -7,13 +7,14 @@
 
 char LOGPATH[BUFSIZ];
 
+void set_logpath(void) {
 #ifdef DEBUG
 strcpy(LOGPATH,"../data/jasm.log");
 #else
-strcpy(LOGPATH,getenv("HOME"));
+strcpy(LOGPATH,"home");
 strcat(LOGPATH,"/.jasm.log");
 #endif //DEBUG
-
+}
 
 void log_string (const char *message)
 {
