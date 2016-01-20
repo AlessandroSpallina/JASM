@@ -35,7 +35,7 @@ int main (void)
 
         int propretval;
 
-		set_logpath();
+		set_logpath(); //sets path where to log...
         start_daemon(); //starts background daemon
         set_signals_feel(); //logs a set of signals
         propretval = set_property_value();

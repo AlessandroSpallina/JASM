@@ -2,6 +2,7 @@
 #define LOGGER_H
 
 extern char LOGPATH[BUFSIZ];
+extern char homedir[BUFSIZ];
 
 extern void log_string(const char * message);
 extern void log_error(const char * message);
