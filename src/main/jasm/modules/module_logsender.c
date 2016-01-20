@@ -27,7 +27,7 @@
 #include <errno.h>
 
 #include "../core/modules.h"
-#include "../core/miscellaneous.h"
+#include "../core/logger.h"
 #include "module_logsender.h"
 
 char errlog[BUFSIZ];

@@ -29,8 +29,6 @@
 #define ERR_SET_PROCESS_BACKGROUND 140
 #define ERR_SET_PROCESS_SPAWN 141
 #define LOCALHOST "127.0.0.1"
-#define LOGFILENAME "jasm.log"
-#define LOGPATH "../data/jasm.log"
 
 #define VERSION "jasm-develstage" //<-- CHANGE IT!
 #define COPYRIGHT "GNU Public License (GPL) v3" //<-- GPLv3
@@ -38,8 +36,6 @@
 extern char buildate[256];
 
 extern char *getTime (void);
-extern void log_string (const char *message);
-extern void log_error (const char *message);
 extern void start_daemon (void);
 extern int login_required (const char *clientaddr);
 extern int check_passwd_file (const char* __pwdf);

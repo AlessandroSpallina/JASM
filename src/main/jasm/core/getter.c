@@ -26,6 +26,7 @@
 
 #include "getter.h"
 #include "miscellaneous.h"
+#include "logger.h"
 
 char error[BUFSIZ];
 

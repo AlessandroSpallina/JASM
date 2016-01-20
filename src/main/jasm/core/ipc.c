@@ -36,6 +36,7 @@
 #include "getter.h"
 #include "modules.h"
 #include "modules_list.h"
+#include "logger.h"
 
 struct ip_node *client_list = NULL;
 
