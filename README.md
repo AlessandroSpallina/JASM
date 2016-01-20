@@ -59,12 +59,16 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
 ### Shared obj , headers [system-wide]
 
- shared object -> lib/libjasm.so
+ - shared object -> lib/libjasm.so
+ 
  which contains -> modules.o , logger.o 
+ 
  copied to -> /usr/lib/libjasm.so
  
- header -> src/main/jasm/core/modules.h , src/main/jasm/core/logger.h
+ - header -> src/main/jasm/core/modules.h , src/main/jasm/core/logger.h
+
  which contains -> modules arrays / funct , logging functions 
+
  copied to -> /usr/include/jasm
  
  Those libs/headers are useful to create external modules, as soon as possible we will write how on the wiki
