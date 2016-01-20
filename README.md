@@ -72,10 +72,11 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  copied to -> /usr/include/jasm
  
  
- Those libs/headers are useful to create external modules, as soon as possible we will write how on the wiki
+ *Those libs/headers are useful to create external modules, as soon as possible we will write how on the wiki*
 
 ### Install
  Just execute install.sh, this will copy binaries, libs,service and headers, to your system
+ 
  *remember to copy data/jconfig to /home/username/.jasm_config*
  
  
@@ -84,6 +85,7 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  * JASM Core: Development 
  * JASM CLI: Development
  * JASM GTK2: Not started yet
+ * JASM Swing: Starting...
  * JASM on Android: Not started yet
  * Getters/Modules: before, the core, after getters/modules
 
