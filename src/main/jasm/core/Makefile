@@ -8,7 +8,7 @@ SHELL=/bin/sh
 CC=gcc
 DEBUG=-g -DDEBUG
 #-DLOGPATH=/var/log/jasm.log
-LIBS=l
+LIBS=
 BUILD_DATE_CORE="$(shell LANG="en_US.UTF-8" date "+%a %d/%m/%Y %H:%M")"
 CFLAGS=-fPIC -O2 -pipe -DBUILD_DATE_CORE=\"$(BUILD_DATE_CORE)\" -Wall -std=c11 -pthread -D_XOPEN_SOURCE=700 $(LIBS)
 CFLAGS_DEBUG=-fPIC -Wall -pthread -std=c11 -DBUILD_DATE_CORE=\"$(BUILD_DATE_CORE)\" -D_XOPEN_SOURCE=700 $(DEBUG) $(LIBS)
