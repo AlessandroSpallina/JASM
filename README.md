@@ -55,8 +55,25 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
 ### Dependencies
 
- * gtk+2
+ * Nothing
 
+### Shared obj , headers [system-wide]
+
+ shared object -> lib/libjasm.so
+ which contains -> modules.o , logger.o 
+ copied to -> /usr/lib/libjasm.so
+ 
+ header -> src/main/jasm/core/modules.h , src/main/jasm/core/logger.h
+ which contains -> modules arrays / funct , logging functions 
+ copied to -> /usr/include/jasm
+ 
+ Those libs/headers are useful to create external modules, as soon as possible we will write how on the wiki
+
+### Install
+ Just execute install.sh, this will copy binaries, libs,service and headers, to your system
+ *remember to copy data/jconfig to /home/username/.jasm_config*
+ 
+ 
 ### Platform
 
  * JASM Core: Development 
