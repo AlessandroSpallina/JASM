@@ -463,7 +463,7 @@ void start_server()
                                              connection_counter++;
                                         else if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                                             shutdown(client_sockfd,2);
-                                            break;
+                                            continue;
                                         }
 #ifdef DEBUG
                                         sprintf(errlog,"Client: %d",connection_counter);
