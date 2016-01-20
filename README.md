@@ -61,7 +61,7 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
  - shared object -> lib/libjasm.so
  
- which contains -> modules.o , logger.o 
+ which contains -> modules.o , logger.o , miscellaneous.o
  
  copied to -> /usr/lib/libjasm.so
  
