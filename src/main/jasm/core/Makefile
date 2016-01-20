@@ -14,7 +14,7 @@ CFLAGS=-fPIC -O2 -pipe -DBUILD_DATE_CORE=\"$(BUILD_DATE_CORE)\" -Wall -std=c11 -
 CFLAGS_DEBUG=-fPIC -Wall -pthread -std=c11 -DBUILD_DATE_CORE=\"$(BUILD_DATE_CORE)\" -D_XOPEN_SOURCE=700 $(DEBUG) $(LIBS)
 SHARED_OBJECTS_FLAGS=-shared
 SHARED_OBJECT=libjasm.so
-OBJECTS=modules_list.o modules.o logger.o
+OBJECTS=modules.o logger.o
 MODULES_SRC_DIRECTORY=../modules
 BINOUT=jasm
 BINOUT_DEBUG=jasm-debug
