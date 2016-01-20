@@ -1,6 +1,6 @@
 #!/bin/sh
 
-JASM_HEADERS="src/main/jasm/core/modules.h src/main/jasm/core/modules_list.h src/main/jasm/core/miscellaneous.h"
+JASM_HEADERS="src/main/jasm/core/modules.h src/main/jasm/core/modules_list.h src/main/jasm/core/logger.h"
 SYSTEMD_TARGET_DIR=/etc/systemd/system/
 JASM_SYSTEMD_SERVICE=jasm.service
 
