@@ -4,6 +4,7 @@
 
 #include "miscellaneous.h"
 #include "configfile.h"
+#include "logger.h"
 
 struct config _config[NCONFIG_PROPERTIES]; //access data through this struct
 

@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "miscellaneous.h"
+#include "logger.h"
 #include "signals.h"
 
 static void generic_signal_log (int sig)

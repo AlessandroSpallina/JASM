@@ -19,10 +19,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "miscellaneous.h"
 #include "ipc.h"
 #include "signals.h"
 #include "configfile.h"
+#include "logger.h"
 
 int main (int argc, char *argv[])
 {

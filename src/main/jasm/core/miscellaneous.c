@@ -30,6 +30,7 @@
 
 #include "configfile.h"
 #include "miscellaneous.h"
+#include "logger.h"
 
 char errlog[BUFSIZ]; // pattern to follow: [SECTION][ERROR]Errno: %s ...
 
@@ -56,36 +57,6 @@ void check_buildate()
 #else
     strcpy (buildate, "not availible");
 #endif
-}
-
-void log_string (const char *message)
-{
-    FILE *fp;
-
-    if ( (fp = fopen (LOGPATH, "a+") ) == NULL)
-    {
-        fprintf (fp, "[%s][INFO]This file is created now.", getTime() );
-    }
-    else
-    {
-        fprintf (fp, "[%s][INFO] %s\n", getTime(), message);
-        fclose (fp);
-    }
-}
-
-void log_error (const char *message)
-{
-    FILE *fp;
-
-    if ( (fp = fopen (LOGPATH, "a+") ) == NULL)
-    {
-        fprintf (fp, "[%s][INFO] This file is created now.", getTime() );
-    }
-    else
-    {
-        fprintf (fp, "[%s][ERROR] %s!\n", getTime(), message);
-        fclose (fp);
-    }
 }
 
 void start_daemon()

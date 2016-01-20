@@ -25,6 +25,7 @@
 
 #include "miscellaneous.h"
 #include "modules.h"
+#include "logger.h"
 #include "../modules/module_logsender.h"
 
 char errlog[BUFSIZ];

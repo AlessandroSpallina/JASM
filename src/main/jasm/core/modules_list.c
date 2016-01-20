@@ -27,10 +27,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+
 #include "modules_list.h"
 
 #ifdef DEBUG
-#include "miscellaneous.h"
+#include "logger.h"
 char deblog[BUFSIZ];
 #endif //DEBUG
 
