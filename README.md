@@ -1,5 +1,7 @@
 ### JASM
 
+*URGENT: JASMCLI marked as deprecated, will be replaced soon*
+
 JustAnotherSystemMonitor
 
 *What is this?*
@@ -66,8 +68,8 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 ### Platform
 
  * JASM Core: Development 
- * JASM CLI: Development
- * JASM GTK2: Not started yet
+ * JASM CLI: Current release marked as deprecated! Will be replaced soon...
+ * JASM Qt: Development
  * JASM Swing: Starting...
  * JASM on Android: Not started yet
  * Getters/Modules: before, the core, after getters/modules
