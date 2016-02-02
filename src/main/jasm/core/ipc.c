@@ -442,6 +442,7 @@ void start_server()
                                                                 log_error (errlog);
                                                         }
 
+							//ToFix: read() must check if recvs 0 Byte!
                                                         if (read (client_sockfd, buf_in_passwd, sizeof (buf_in_passwd) ) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][read()] error");

@@ -3,6 +3,8 @@
 
 #Verbose all!
 
+#JASM CLI marked as *deprecated*
+
 #Using /bin/sh as predef. shell
 SHELL=/bin/sh
 
@@ -11,10 +13,11 @@ JASM_CORE_DIR=src/main/jasm/core/
 JASM_CORE_BINOUT=src/main/jasm/core/jasm
 JASM_CORE_BINOUT_DEBUG=src/main/jasm/core/jasm-debug
 
+##DEPRECATED##
 #Jasm Command line interfacing
-JASM_CLI_DIR=src/main/interfacing/cli
-JASM_CLI_BINOUT=src/main/interfacing/cli/jasmcli
-JASM_CLI_BINOUT_DEBUG=src/main/interfacing/cli/jasmcli-debug
+#JASM_CLI_DIR=src/main/interfacing/cli
+#JASM_CLI_BINOUT=src/main/interfacing/cli/jasmcli
+#JASM_CLI_BINOUT_DEBUG=src/main/interfacing/cli/jasmcli-debug
 
 #(all) target destination for binaries
 JASM_BINOUT_DIR=bin/
@@ -29,19 +32,19 @@ MAKE_FLAGS=$@
 
 install:
 	cd $(JASM_CORE_DIR) && make $(MAKE_FLAGS) || exit 2
-	cd $(JASM_CLI_DIR) && make $(MAKE_FLAGS) || exit 2
+#	cd $(JASM_CLI_DIR) && make $(MAKE_FLAGS) || exit 2
 	[ -f $(JASM_CORE_BINOUT) ] && mv $(JASM_CORE_BINOUT) $(JASM_BINOUT_DIR) || exit 4
-	[ -f $(JASM_CLI_BINOUT) ] && mv $(JASM_CLI_BINOUT) $(JASM_BINOUT_DIR) || exit 4
+#       [ -f $(JASM_CLI_BINOUT) ] && mv $(JASM_CLI_BINOUT) $(JASM_BINOUT_DIR) || exit 4
 
 debug:
 	cd $(JASM_CORE_DIR) && make debug $(MAKE_FLAGS) || exit 2
-	cd $(JASM_CLI_DIR) && make debug $(MAKE_FLAGS) || exit 2
+#	cd $(JASM_CLI_DIR) && make debug $(MAKE_FLAGS) || exit 2
 	[ -f $(JASM_CORE_BINOUT_DEBUG) ] && mv $(JASM_CORE_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
-	[ -f $(JASM_CLI_BINOUT_DEBUG) ] && mv $(JASM_CLI_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
+#	[ -f $(JASM_CLI_BINOUT_DEBUG) ] && mv $(JASM_CLI_BINOUT_DEBUG) $(JASM_BINOUT_DIR_DEBUG) || exit 4
 
 clean:
 	cd $(JASM_CORE_DIR) && make clean $(MAKE_FLAGS) || exit 3
-	cd $(JASM_CLI_DIR) && make clean $(MAKE_FLAGS) || exit 3
+#	cd $(JASM_CLI_DIR) && make clean $(MAKE_FLAGS) || exit 3
 	rm -rfv $(JASM_DATA_PATTERN) || echo ""
 
 cleanbin:
