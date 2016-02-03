@@ -21,7 +21,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+#include <sys/wait.h> // remove
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
@@ -41,7 +41,7 @@ char *getTime()
     time_t curtime;
     struct tm *loctime;
     static char *ret;
-
+   
     curtime = time (NULL);
     loctime = localtime (&curtime);
     ret = asctime (loctime);

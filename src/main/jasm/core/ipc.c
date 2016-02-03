@@ -295,7 +295,8 @@ void start_server()
                                                 // was 256 bytes, but the relative fgets was called with
                                                 // the BUFSIZ parameter. Now it's fixed
                                                 char passwd_from_client[BUFSIZ];
-
+						char getit[BUFSIZ];
+						
                                                 FILE* source_passwd;
 
                                                 log_string ("[CLIENT-AUTH]Authentication required!");
@@ -346,9 +347,16 @@ void start_server()
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[JASM-DAEMON][write()] Error!");
                                                                 log_error (errlog);
+								
                                                         }
 
-                                                        if (write (client_sockfd, "retry\0", 6) < 0) {
+							if(read (client_sockfd,getit,strlen(getit)) < 0) {
+								sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+								log_error("[JASM-DAEMON][read()] Error!");
+								log_error(errlog);
+							}
+
+                                                        if (write (client_sockfd, "retry", 5) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[JASM-DAEMON][write()] Error");
                                                                 log_error (errlog);
@@ -391,8 +399,7 @@ void start_server()
                                                                 }
                                                                 else if (strcmp (passwd, passwd_from_client) != 0) {
                                                                         if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL) {
-                                                                                /*Ciao sono Rosario Muniz, moroso di Stefano Belli :D*/
-                                                                        }
+									}
                                                                         fprintf (chkfile, "true");
                                                                         fclose (chkfile);
                                                                         sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d FAILED!", i);
@@ -435,27 +442,29 @@ void start_server()
                                                 else if (chkfile == 1) {
                                                         FILE *pswfp;
                                                         char buf_in_passwd[256];
-
+							int bytes;
+							
                                                         if (write (client_sockfd, chkpwd, strlen (chkpwd) ) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][write()] error");
                                                                 log_error (errlog);
                                                         }
 
-                                                        if (read (client_sockfd, buf_in_passwd, sizeof (buf_in_passwd) ) < 0) {
+						        bytes = read (client_sockfd, buf_in_passwd, sizeof (buf_in_passwd));
+						        if(bytes < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][read()] error");
                                                                 log_error (errlog);
-                                                        }
-
-                                                        //log_string(buf_in_passwd);
-                                                        if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
+                                                        }else if (bytes == 0) {
+							    /* Do nothing*/
+							} else if(bytes > 0) {
+							    if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
                                                                 fputs (buf_in_passwd, pswfp);
                                                                 fclose (pswfp);
-                                                        }
-                                                }
-                                        }
-
+							    }
+							}
+						}
+					}
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);
