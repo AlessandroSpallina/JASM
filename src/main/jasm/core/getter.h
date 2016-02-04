@@ -19,7 +19,8 @@
 #ifndef _GETTER_H
 #define _GETTER_H
 
-#define NGETTER 8
+#define MAX_CORE 16
+#define NGETTER 11
 
 extern char getterName[NGETTER][BUFSIZ];
 extern void (*getterFunction[NGETTER]) (int);
@@ -33,5 +34,7 @@ extern void getKernelVersion (int fd);
 extern void getMachine (int fd);
 extern void getGetter (int fd);
 extern void getCpuName (int fd);
-
+extern void getCacheSize (int fd);
+extern void getCoreNum (int fd);
+extern void getCoreSpeeds (int fd);
 #endif

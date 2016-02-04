@@ -43,15 +43,18 @@ void getKernelVersion (int fd);
 void getMachine (int fd);
 void getGetter (int fd);
 void getCpuName (int fd);
+void getCacheSize (int fd);
+void getCoreNum (int fd);
+void getCoreSpeeds (int fd);
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion", "Machine",
-                                    "CpuName"
+                                    "CpuName", "CacheSize", "CoreNum", "CoreSpeeds"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion, getMachine,
-                                         getCpuName
+                                         getCpuName, getCacheSize, getCoreNum, getCoreSpeeds
                                         };
 
 /*
@@ -334,7 +337,7 @@ void getCpuName (int fd)
 		int n;
 		
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		read(cpu_fd, buf, 200); //TODO controllo errore
+		read(cpu_fd, buf, 200);
 		string = &strstr(buf, "model name	: ")[strlen("model name	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
@@ -360,3 +363,137 @@ void getCpuName (int fd)
         }
     }
 }
+
+void getCacheSize (int fd)
+{
+		int cpu_fd;
+		char buf[BUFSIZ];
+		char *string;
+		int i = 0;
+		int n;
+		
+		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
+		read(cpu_fd, buf, 200); //TODO controllo errore
+		string = &strstr(buf, "cache size	: ")[strlen("cache size	: ")];
+		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
+		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
+		n = write (fd, buf, strlen(buf));
+		close(cpu_fd);
+		if (n < 0)
+    {
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCacheSize][write()] Error!");
+        log_error (error);
+    }
+    else
+    {
+        if (n < strlen (buf) )
+        {
+            sprintf (error, "[JASM-DAEMON][getCacheSize][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);
+        }
+        else
+        {
+            sprintf (error, "[JASM-DAEMON][getCacheSize][write()] sent %d byte", n);
+            log_string (error);
+        }
+    }
+}
+
+void getCoreNum (int fd)
+{
+		int cpu_fd;
+		char info[20] = "cpu cores	: ";
+		char buf[BUFSIZ];
+		char *string;
+		int i = 0;
+		int n;
+	
+		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
+		read(cpu_fd, buf, BUFSIZ); //legge tutto il file
+		string = &strstr(buf, info)[strlen(info)];
+		while(string[i] != '\n') ++i; //conta i caratteri
+		sprintf(buf, "%.*s", i, string); //ora buf contiene il numero di core
+		n = write (fd, buf, strlen(buf));
+		close(cpu_fd);
+		if (n < 0)
+    {
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCoreNum][write()] Error!");
+        log_error (error);
+    }
+    else
+    {
+        if (n < strlen (buf) )
+        {
+            sprintf (error, "[JASM-DAEMON][getCoreNum][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);
+        }
+        else
+        {
+            sprintf (error, "[JASM-DAEMON][getCoreNum][write()] sent %d byte", n);
+            log_string (error);
+        }
+    }
+}
+
+void getCoreSpeeds (int fd)
+{
+	int count = 0;
+	int cpu_fd;
+	char info[20] = "cpu MHz		: ";
+	char buf[BUFSIZ];
+	char final_string[BUFSIZ];
+	char speeds[MAX_CORE][BUFSIZ];
+	char *tmp;
+	int n;
+	int i;
+	int j = 0;
+	
+	cpu_fd = open("/proc/cpuinfo", O_RDONLY);
+	read(cpu_fd, buf, BUFSIZ); //legge tutto il file
+	tmp = &strstr(buf, info)[strlen(info)];
+	while(tmp[0] != EOF){
+		i = 0;
+		while(tmp[i] != '\n') ++i;
+		sprintf(speeds[j], "%.*s", i, tmp); 
+		if(strstr(tmp, info) == NULL) break; //Se è uguale a NULL, era l'ultimo processore
+		else{
+			tmp = &strstr(tmp, info)[strlen(info)];
+		}
+		++j;
+	}
+	
+	for (i = 0; i < j+1; i += 1)
+	{
+			sprintf(final_string + strlen(final_string), "%d: %s Mhz", i, speeds[i]); 
+			if(i != j){
+				sprintf(final_string + strlen(final_string), " | ");
+			}
+	}
+	
+	close(cpu_fd);
+	n = write (fd, final_string, strlen(final_string));
+	
+	if (n < 0)
+  	{
+  	     sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+  	     log_error ("[JASM-DAEMON][getCoreSpeeds][write()] Error!");
+  	     log_error (error);
+    }
+    else
+    {
+       if (n < strlen (buf) )
+       {
+          sprintf (error, "[JASM-DAEMON][getCoreSpeeds][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+          log_error (error);
+       }
+       else
+       {
+          sprintf (error, "[JASM-DAEMON][getCoreSpeeds][write()] sent %d byte", n);
+          log_string (error);
+       }
+   }
+}
+
+
