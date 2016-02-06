@@ -337,7 +337,7 @@ void getCpuName (int fd)
 		int n;
 		
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		if(read(cpu_fd, buf, 200) <= 0){
+		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
         log_error ("[JASM-DAEMON][getCpuName][read()] Error!");
         log_error (error);
@@ -377,7 +377,7 @@ void getCacheSize (int fd)
 		int n;
 		
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		if(read(cpu_fd, buf, 200) <= 0){
+		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
         log_error ("[JASM-DAEMON][getCacheSize][read()] Error!");
         log_error (error);
@@ -418,7 +418,7 @@ void getCoreNum (int fd)
 		int n;
 	
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		if(read(cpu_fd, buf, 200) <= 0){
+		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
         log_error ("[JASM-DAEMON][getCoreNum][read()] Error!");
         log_error (error);
@@ -449,7 +449,7 @@ void getCoreNum (int fd)
     }
 }
 
-void getCoreSpeeds (int fd)
+void getCoreSpeeds (int fd) //TODO fix a non det. error; read a large dimension file
 {
 	int count = 0;
 	int cpu_fd;
