@@ -31,8 +31,8 @@
 #include "modules_list.h"
 
 #ifdef DEBUG
-#include "logger.h"
-char deblog[BUFSIZ];
+  #include "logger.h"
+  char deblog[BUFSIZ];
 #endif //DEBUG
 
 /*
@@ -206,7 +206,6 @@ int rem_module_running(struct module_running **head, char *name)
   } else {
     return -1;
   }
-
 
 }
 

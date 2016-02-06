@@ -1,0 +1,4 @@
+Here a list of bug:
+
+1) Jasm crash when try to reconnect more than two times.
+2) Login not works fine

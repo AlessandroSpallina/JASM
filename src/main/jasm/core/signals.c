@@ -27,20 +27,20 @@
 
 static void generic_signal_log (int sig)
 {
-    char buf[BUFSIZ];
+        char buf[BUFSIZ];
 
-    sprintf (buf, "Received signal number %d", sig);
-    log_string (buf);
+        sprintf (buf, "Received signal number %d", sig);
+        log_string (buf);
 }
 
 void set_signals_feel()
 {
-    struct sigaction act;
+        struct sigaction act;
 
-    act.sa_handler = generic_signal_log;
-    act.sa_flags = 0;
-    sigaction (SIGINT, &act, 0);
-    sigaction (SIGQUIT, &act, 0);
-    sigaction (SIGCONT, &act, 0);
-    sigaction (SIGSTOP, &act, 0);
+        act.sa_handler = generic_signal_log;
+        act.sa_flags = 0;
+        sigaction (SIGINT, &act, 0);
+        sigaction (SIGQUIT, &act, 0);
+        sigaction (SIGCONT, &act, 0);
+        sigaction (SIGSTOP, &act, 0);
 }
