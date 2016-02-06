@@ -337,7 +337,11 @@ void getCpuName (int fd)
 		int n;
 		
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		read(cpu_fd, buf, 200);
+		if(read(cpu_fd, buf, 200) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCpuName][read()] Error!");
+        log_error (error);
+		}
 		string = &strstr(buf, "model name	: ")[strlen("model name	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
@@ -373,7 +377,11 @@ void getCacheSize (int fd)
 		int n;
 		
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		read(cpu_fd, buf, 200); //TODO controllo errore
+		if(read(cpu_fd, buf, 200) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCacheSize][read()] Error!");
+        log_error (error);
+		}
 		string = &strstr(buf, "cache size	: ")[strlen("cache size	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
@@ -410,7 +418,11 @@ void getCoreNum (int fd)
 		int n;
 	
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		read(cpu_fd, buf, BUFSIZ); //legge tutto il file
+		if(read(cpu_fd, buf, 200) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCoreNum][read()] Error!");
+        log_error (error);
+		}
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i; //conta i caratteri
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il numero di core
