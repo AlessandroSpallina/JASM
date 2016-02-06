@@ -44,18 +44,21 @@ void getKernelVersion (int fd);
 void getMachine (int fd);
 void getGetter (int fd);
 void getCpuName (int fd);
+void getCpuProcessor (int fd);
 void getUpTime (int fd);
 void getTotalRAM (int fd);
 void getFreeRAM (int fd);
+void getProcesses (int fd);
+
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion", "Machine",
-                                    "CpuName","UpTime","TotalRAM","FreeRAM"
+                                    "CpuName","CpuProcessor","UpTime","TotalRAM","FreeRAM","Processes"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion, getMachine,
-                                         getCpuName, getUpTime, getTotalRAM, getFreeRAM
+                                         getCpuName,getCpuProcessor, getUpTime, getTotalRAM, getFreeRAM, getProcesses 
                                         };
 
 /*
@@ -476,4 +479,68 @@ void getFreeRAM (int fd)
             }
       }
 
+}
+
+void getProcesses (int fd)
+{
+      int n;
+      char buf[BUFSIZ];
+      struct sysinfo sys_info;
+      if( sysinfo(&sys_info) != 0)
+      {
+            log_error("getProcesses() Failed");
+            return;
+      }
+      else
+      {
+            sprintf(buf,"%u",sys_info.procs);
+            n = write(fd,buf,strlen(buf));
+            if (n < 0)
+            {
+                  sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
+                  log_error ("[JASM-DEAMON][getProceses][write()] Error!");
+                  log_error (error);
+            }
+            if (n < strlen(buf) )
+            {
+                  sprintf (error, "[JASM-DAEMON][getProcesses][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+                  log_error (error);  
+            }
+            else
+            {
+                  sprintf (error, "[JASM-DAEMON][getProcesses][write()] sent %d byte", n);
+                  log_string (error);
+            }
+      }
+}
+
+void getCpuProcessor (int fd)
+{
+      int n;
+      int numCPU,onCPU;
+      char buf[BUFSIZ];
+      //TODO error checking
+      if( (numCPU=sysconf(_SC_NPROCESSORS_CONF))==-1 || (onCPU=sysconf(_SC_NPROCESSORS_ONLN))==-1)
+      {
+            log_error("getCpuProcessor() Failed");
+            return;
+      }
+      sprintf(buf,"Number of CPU configured: %d Online: %d",numCPU,onCPU);
+      n = write(fd,buf,strlen(buf));
+      if (n < 0)
+      {
+            sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
+            log_error ("[JASM-DEAMON][getCpuProcessor][write()] Error!");
+            log_error (error);
+      }
+      if (n < strlen(buf) )
+      {
+            sprintf (error, "[JASM-DAEMON][getCpuProcessor][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);  
+      }
+      else
+      {
+            sprintf (error, "[JASM-DAEMON][getCpuProcessor][write()] sent %d byte", n);
+            log_string (error);
+      }
 }

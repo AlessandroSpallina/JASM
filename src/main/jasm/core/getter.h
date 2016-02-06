@@ -19,7 +19,7 @@
 #ifndef _GETTER_H
 #define _GETTER_H
 
-#define NGETTER 11
+#define NGETTER 13
 
 extern char getterName[NGETTER][BUFSIZ];
 extern void (*getterFunction[NGETTER]) (int);
@@ -33,8 +33,11 @@ extern void getKernelVersion (int fd);
 extern void getMachine (int fd);
 extern void getGetter (int fd);
 extern void getCpuName (int fd);
+extern void getCpuProcessor (int fd);
 extern void getUpTime (int fd);
 extern void getTotalRAM (int fd);
 extern void getFreeRAM (int fd);
+extern void getProcesses (int fd);
+
 
 #endif
