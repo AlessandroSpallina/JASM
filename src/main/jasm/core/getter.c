@@ -301,7 +301,6 @@ void getMachine (int fd)
 {
         struct utsname info;
         char buf[BUFSIZ];
-
         if (uname (&info) == -1)
         {
                 log_error ("getMachine() [uname]  failed");
