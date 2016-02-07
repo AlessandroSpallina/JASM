@@ -40,7 +40,7 @@
 
 struct ip_node *client_list = NULL;
 
-int connection_counter = 0;
+unsigned int connection_counter = 0;
 char errlog[BUFSIZ];
 
 //NOTE: Error codes defined @ miscellaneous.h
@@ -468,12 +468,21 @@ void start_server()
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);
-                                        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values)
+                                        log_client(client_list);
+                                        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                                                 connection_counter++;
-                                        else if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
+                                                #ifdef DEBUG
+                                                  log_string("client connection is ok");
+                                                #endif
+                                        } else {
+                                                if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                                                 shutdown(client_sockfd,2);
-                                                continue;
+                                                #ifdef DEBUG
+                                                  log_string("client connection refused: max connection limit hit!");
+                                                #endif
+                                                //continue;
                                         }
+                                      }
 #ifdef DEBUG
                                         sprintf(errlog,"Client: %d",connection_counter);
                                         log_string(errlog);
@@ -487,8 +496,17 @@ void start_server()
                                                 FD_CLR (fd, &readfds);
                                                 sprintf (buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                                 log_string (buf);
-                                                rem_clientIp(&client_list, client_ipaddr);
+                                                int retu = rem_clientIp(&client_list, client_ipaddr);
                                                 connection_counter--;
+                                                //todelete
+                                                char aa[BUFSIZ];
+                                                sprintf(aa,"%d return rem_clientIp :S", retu);
+                                                log_string(aa);
+                                                //endelete
+
+                                                #ifdef DEBUG
+                                                  log_client(client_list);
+                                                #endif
                                         } else {
                                                 memset (received, 0, sizeof (received) );
                                                 return_value = read (fd, received, sizeof (received) );

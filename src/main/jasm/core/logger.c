@@ -67,9 +67,9 @@ void log_error (const char *message)
 void log_client (struct ip_node *clist)
 {
 
-								FILE *fp = fopen(CLIENTLOGPATH, "w");
+								FILE *fp = fopen(CLIENTLOGPATH, "a+");
 								struct module_running *mlist = NULL;
-
+								fprintf(fp, "=========\n[%s]\n", getTime());
 								while(clist != NULL) {
 																fprintf(fp, "* %s\n", clist->client_ip);
 																mlist = clist->modules_list;
@@ -80,5 +80,6 @@ void log_client (struct ip_node *clist)
 																clist = clist->next;
 								}
 								fclose(fp);
+								fprintf(fp, "=========\n");
 }
 #endif

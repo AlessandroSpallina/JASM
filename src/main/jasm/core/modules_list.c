@@ -32,7 +32,7 @@
 
 #ifdef DEBUG
   #include "logger.h"
-  char deblog[BUFSIZ];
+char deblog[BUFSIZ];
 #endif //DEBUG
 
 /*
@@ -43,32 +43,32 @@
 struct ip_node * find_clientIp(struct ip_node *head, char *ip)
 {
 
-  while (head != NULL) {
+        while (head != NULL) {
 
-    if (strcmp (ip, head->client_ip) == 0)
-      return head;
+                if (strcmp (ip, head->client_ip) == 0)
+                        return head;
 
-    head = head->next;
-  }
+                head = head->next;
+        }
 
-  return NULL;
+        return NULL;
 }
 
 static int alloc_clientIp(struct ip_node **head, char *ip)
 {
-  struct ip_node *aus = NULL;
+        struct ip_node *aus = NULL;
 
-  aus = (struct ip_node *) malloc (sizeof (struct ip_node));
-  if (aus == NULL)
-    return -1;
+        aus = (struct ip_node *) malloc (sizeof (struct ip_node));
+        if (aus == NULL)
+                return -1;
 
-  strcpy(aus->client_ip, ip);
-  aus->modules_list = NULL;
+        strcpy(aus->client_ip, ip);
+        aus->modules_list = NULL;
 
-  aus->next = (*head);
-  (*head) = aus;
+        aus->next = (*head);
+        (*head) = aus;
 
-  return 0;
+        return 0;
 }
 
 /*
@@ -80,22 +80,22 @@ static int alloc_clientIp(struct ip_node **head, char *ip)
 int add_clientIp(struct ip_node **head, char *ip)
 {
 
-  if((*head) == NULL) {
-    return (alloc_clientIp(head, ip));
-  }
+        if((*head) == NULL) {
+                return (alloc_clientIp(head, ip));
+        }
 
-  if (strcmp(ip, (*head)->client_ip) < 0) {
-    return (alloc_clientIp(head, ip));
-  }
+        if (strcmp(ip, (*head)->client_ip) < 0) {
+                return (alloc_clientIp(head, ip));
+        }
 
-  if (strcmp(ip, (*head)->client_ip) == 0) {
-    return -2;
-  } else {
-    if (strcmp(ip, (*head)->client_ip) > 0) {
-      return (add_clientIp(&((*head)->next), ip));
-    }
-  }
-  return 0;
+        if (strcmp(ip, (*head)->client_ip) == 0) {
+                return -2;
+        } else {
+                if (strcmp(ip, (*head)->client_ip) > 0) {
+                        return (add_clientIp(&((*head)->next), ip));
+                }
+        }
+        return 0;
 }
 
 /*
@@ -103,61 +103,69 @@ int add_clientIp(struct ip_node **head, char *ip)
  *     0) client removed with success
  *    -1) client not found: error
  */
-int rem_clientIp(struct ip_node **head, char *ip)
+int rem_clientIp(struct ip_node **listP, char *ip)
 {
-  struct ip_node *toremove = NULL;
+  struct ip_node *currP, *prevP;
 
-  if ((toremove = find_clientIp((*head), ip)) != NULL) {
-    struct ip_node *aus = (*head);
-    while(aus != toremove && aus->next != NULL) {
-      aus = aus->next; //CHECK HERE
+  prevP = NULL;
+
+  for (currP = (*listP); currP != NULL; prevP = currP, currP = currP->next) {
+
+    if (strcmp(currP->client_ip, ip) == 0) {
+      if (prevP == NULL) {
+        *listP = currP->next;
+      } else {
+        prevP->next = currP->next;
+      }
+      free(currP);
+      return 0;
     }
-    aus->next = toremove->next;
-    free(toremove);
-    return 0;
-
-  } else {
-    return -1;
   }
+
+  return -1;
 }
 
 void print_ipList (struct ip_node *head)
 {
-  int i = 0;
+        int i = 0;
 
-  while (head != NULL) {
-    printf("%d# %s\n", i++, head->client_ip);
-    head = head->next;
-  }
+        if(head == NULL) {
+                printf("0# NULL!");
+        } else {
+                while (head != NULL) {
+                        printf("%d# %s\n", i++, head->client_ip);
+                        head = head->next;
+                }
+        }
 }
 
 struct module_running * find_module_running(struct module_running *head, char *name)
 {
-  while (head != NULL) {
-    if(strcmp (name, head->name) == 0)
-      return head;
+        while (head != NULL) {
+                if(strcmp (name, head->name) == 0)
+                        return head;
 
-    head = head->next;
-  }
+                head = head->next;
+        }
 
-  return NULL;
+        return NULL;
 }
 
 static int alloc_module_running(struct module_running **head, char *name, pthread_t tid)
 {
-  struct module_running *aus = NULL;
+        struct module_running *aus = NULL;
 
-  aus = (struct module_running *) malloc (sizeof (struct module_running));
-  if(aus == NULL)
-    return -1;
+        aus = (struct module_running *) malloc (sizeof (struct module_running));
+        if(aus == NULL)
+                return -1;
 
-  strcpy(aus->name, name);
-  aus->tid = tid;
+        strcpy(aus->name, name);
+        aus->tid = tid;
 
-  aus->next = (*head);
-  (*head) = aus;
+        aus->next = (*head);
+        (*head) = aus;
 
-  return 0;
+        return 0;
 }
 
 /*
@@ -169,21 +177,21 @@ static int alloc_module_running(struct module_running **head, char *name, pthrea
 int add_module_running(struct module_running **head, char *name, pthread_t tid)
 {
 
-  if ((*head) == NULL) {
-    return (alloc_module_running(head, name, tid));
-  }
+        if ((*head) == NULL) {
+                return (alloc_module_running(head, name, tid));
+        }
 
-  int ret = strcmp (name, (*head)->name);
+        int ret = strcmp (name, (*head)->name);
 
-  if (ret < 0) {
-    return (alloc_module_running(head, name, tid));
-  }
+        if (ret < 0) {
+                return (alloc_module_running(head, name, tid));
+        }
 
-  if (ret == 0) {
-    return -2;
-  } else {
-    return (add_module_running((&((*head)->next)), name, tid));
-  }
+        if (ret == 0) {
+                return -2;
+        } else {
+                return (add_module_running((&((*head)->next)), name, tid));
+        }
 }
 
 /*
@@ -193,45 +201,45 @@ int add_module_running(struct module_running **head, char *name, pthread_t tid)
  */
 int rem_module_running(struct module_running **head, char *name)
 {
-  struct module_running *toremove = NULL;
+        struct module_running *toremove = NULL;
 
-  if ((toremove = find_module_running((*head), name)) != NULL) {
-    struct module_running *aus = (*head);
-    while(aus->next != toremove)
-      aus = aus->next;
-    aus->next = toremove->next;
-    free(toremove);
-    return 0;
+        if ((toremove = find_module_running((*head), name)) != NULL) {
+                struct module_running *aus = (*head);
+                while(aus->next != toremove)
+                        aus = aus->next;
+                aus->next = toremove->next;
+                free(toremove);
+                return 0;
 
-  } else {
-    return -1;
-  }
+        } else {
+                return -1;
+        }
 
 }
 
 void print_moduleList(struct module_running *head)
 {
-  char i = 'a';
+        char i = 'a';
 
-  while(head != NULL) {
-    printf("    %c) %s\n", i++, head->name);
-    head = head->next;
-  }
+        while(head != NULL) {
+                printf("    %c) %s\n", i++, head->name);
+                head = head->next;
+        }
 }
 
 void print_all(struct ip_node *head)
 {
-  int i = 0;
+        int i = 0;
 
-  while(head != NULL) {
-    struct module_running *aus = head->modules_list;
+        while(head != NULL) {
+                struct module_running *aus = head->modules_list;
 
-    printf("%d# %s\n", i++, head->client_ip);
-    if (aus != NULL) {
-        print_moduleList(aus);
-    } else {
-      printf("    a) null\n");
-    }
-    head = head->next;
-  }
+                printf("%d# %s\n", i++, head->client_ip);
+                if (aus != NULL) {
+                        print_moduleList(aus);
+                } else {
+                        printf("    a) null\n");
+                }
+                head = head->next;
+        }
 }
