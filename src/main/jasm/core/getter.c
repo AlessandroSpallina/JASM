@@ -41,6 +41,7 @@ void getHostname (int fd);
 void getKernelName (int fd);
 void getKernelRelease (int fd);
 void getKernelVersion (int fd);
+void getPosixVersion (int fd);
 void getMachine (int fd);
 void getGetter (int fd);
 void getCpuName (int fd);
@@ -52,12 +53,12 @@ void getProcesses (int fd);
 
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
-                                    "KernelRelease", "KernelVersion", "Machine",
+                                    "KernelRelease", "KernelVersion","PosixVersion", "Machine",
                                     "CpuName","CpuProcessor","UpTime","TotalRAM","FreeRAM","Processes"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
-                                         getKernelName, getKernelRelease, getKernelVersion, getMachine,
+                                         getKernelName, getKernelRelease, getKernelVersion,getPosixVersion, getMachine,
                                          getCpuName,getCpuProcessor, getUpTime, getTotalRAM, getFreeRAM, getProcesses 
                                         };
 
@@ -544,3 +545,36 @@ void getCpuProcessor (int fd)
             log_string (error);
       }
 }
+
+void getPosixVersion (int fd)
+{
+      int n;
+      long version;
+      char buf[BUFSIZ];
+      if( (version=sysconf(_SC_2_VERSION))==-1)
+      {
+            log_error("getPosixVersion() Failed");
+            return;
+      }
+      else
+      {
+            sprintf(buf,"Version: %d (YYYYMML)",version);
+            n = write(fd, buf, strlen(buf));
+            if(n < 0)
+            {
+                sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
+                  log_error ("[JASM-DEAMON][getPosixVersion][write()] Error!");
+                  log_error (error);  
+            }
+            if (n < strlen(buf) )
+            {
+                  sprintf (error, "[JASM-DAEMON][getPosixVersion][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
+                  log_error (error);  
+            }
+            else
+            {
+                  sprintf (error, "[JASM-DAEMON][getPosixVersion][write()] sent %d byte", n);
+                  log_string (error);
+            }
+      }
+}     
