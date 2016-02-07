@@ -7,6 +7,7 @@
 *.layout
 *.cbp
 jasm.log
+jasm-debug
 client.log
 jasmcli.*
 *.gch

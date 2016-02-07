@@ -468,7 +468,9 @@ void start_server()
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);
-                                        log_client(client_list);
+                                        #ifdef DEBUG
+                                          log_client(client_list);
+                                        #endif
                                         if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                                                 connection_counter++;
                                                 #ifdef DEBUG
@@ -496,13 +498,8 @@ void start_server()
                                                 FD_CLR (fd, &readfds);
                                                 sprintf (buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                                 log_string (buf);
-                                                int retu = rem_clientIp(&client_list, client_ipaddr);
+                                                rem_clientIp(&client_list, client_ipaddr);
                                                 connection_counter--;
-                                                //todelete
-                                                char aa[BUFSIZ];
-                                                sprintf(aa,"%d return rem_clientIp :S", retu);
-                                                log_string(aa);
-                                                //endelete
 
                                                 #ifdef DEBUG
                                                   log_client(client_list);
