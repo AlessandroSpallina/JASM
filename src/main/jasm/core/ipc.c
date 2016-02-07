@@ -79,10 +79,8 @@ static void excecute_command (int fd, char *ip, char *command)
                 ret_val = write (fd, "null", strlen ("null") );
                 if (ret_val == 0 || ret_val == -1)
                 {
-          #ifdef DEBUG
                         sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error for write : %s",strerror(errno));
                         log_error(errlog);
-          #endif
                 }
                 return;
         }
@@ -106,10 +104,8 @@ static void excecute_command (int fd, char *ip, char *command)
                                                 pthread_t tid;
 
                                                 if (write (fd, "success", 7 ) < 0) {
-#ifdef DEBUG
                                                         sprintf (errlog, "[ERROR][DEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno));
                                                         log_error (errlog);
-#endif
                                                 }
 
                                                 if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
@@ -126,13 +122,10 @@ static void excecute_command (int fd, char *ip, char *command)
                                                         return;
                                                 }
 
-
-
-
                                         } else {
                                                 sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
                                                 log_string(errlog);
-                                                write (fd, "fail", strlen("fail")); //to this string to client
+                                                write (fd, "fail", 4); //to this string to client
                                                 return;
                                         }
                                 } else {
@@ -145,10 +138,8 @@ static void excecute_command (int fd, char *ip, char *command)
 
                 log_error ("Start NOT found :(");
                 if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0) {
-#ifdef DEBUG
                         sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
                         log_error (errlog);
-#endif
                 }
                 return;
         }
@@ -157,11 +148,8 @@ static void excecute_command (int fd, char *ip, char *command)
         if (strcmp ("halt", command) == 0) { //turn off jasm
                 log_string ("[CMD] halt exec");
                 if (write (fd, "jhalt", strlen ("jhalt") ) < 0) {
-#ifdef DEBUG
                         sprintf (errlog, "[JASM-DAEMON][WRITE]Caused By: %s", strerror (errno) );
                         log_error (errlog);
-#endif
-                        log_error ("[JASM-DAEMON][WRITE]Error while sending");
                 }
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_INFO, "exiting as requested from client...");
@@ -172,10 +160,8 @@ static void excecute_command (int fd, char *ip, char *command)
 
         log_error ("[CMD] Command not found!");
         if (write (fd, "NotFound", strlen ("NotFound") ) < 0) {
-#ifdef DEBUG
                 sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
                 log_error (errlog);
-#endif
         }
 }
 
@@ -469,22 +455,22 @@ void start_server()
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);
                                         #ifdef DEBUG
-                                          log_client(client_list);
+                                        log_client(client_list);
                                         #endif
                                         if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                                                 connection_counter++;
                                                 #ifdef DEBUG
-                                                  log_string("client connection is ok");
+                                                log_string("client connection is ok");
                                                 #endif
                                         } else {
                                                 if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
-                                                shutdown(client_sockfd,2);
+                                                        shutdown(client_sockfd,2);
                                                 #ifdef DEBUG
-                                                  log_string("client connection refused: max connection limit hit!");
+                                                        log_string("client connection refused: max connection limit hit!");
                                                 #endif
-                                                //continue;
+                                                        //continue;
+                                                }
                                         }
-                                      }
 #ifdef DEBUG
                                         sprintf(errlog,"Client: %d",connection_counter);
                                         log_string(errlog);
@@ -502,7 +488,7 @@ void start_server()
                                                 connection_counter--;
 
                                                 #ifdef DEBUG
-                                                  log_client(client_list);
+                                                log_client(client_list);
                                                 #endif
                                         } else {
                                                 memset (received, 0, sizeof (received) );
