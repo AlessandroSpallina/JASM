@@ -42,7 +42,7 @@ extern int add_clientIp(struct ip_node **head, char *ip);
 extern struct ip_node * find_clientIp(struct ip_node *head, char *ip);
 extern int add_module_running(struct module_running **head, char *name, pthread_t tid);
 
-extern int rem_clientIp(struct ip_node **head, char *ip);
+extern int rem_clientIp(struct ip_node **listP, char *ip);
 extern int rem_module_running(struct module_running **head, char *name);
 
 extern struct ip_node * find_clientIp(struct ip_node *head, char *ip);

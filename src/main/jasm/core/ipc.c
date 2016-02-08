@@ -40,7 +40,7 @@
 
 struct ip_node *client_list = NULL;
 
-int connection_counter = 0;
+unsigned int connection_counter = 0;
 char errlog[BUFSIZ];
 
 //NOTE: Error codes defined @ miscellaneous.h
@@ -79,10 +79,8 @@ static void excecute_command (int fd, char *ip, char *command)
                 ret_val = write (fd, "null", strlen ("null") );
                 if (ret_val == 0 || ret_val == -1)
                 {
-          #ifdef DEBUG
                         sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error for write : %s",strerror(errno));
                         log_error(errlog);
-          #endif
                 }
                 return;
         }
@@ -99,56 +97,49 @@ static void excecute_command (int fd, char *ip, char *command)
 
                                 struct ip_node *client = find_clientIp(client_list, ip);
                                 if(client != NULL) {
-                                  struct module_running *module = find_module_running(client->modules_list, command);
-                                  if(module == NULL) {
+                                        struct module_running *module = find_module_running(client->modules_list, command);
+                                        if(module == NULL) {
 
-                                    moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-                                    pthread_t tid;
+                                                moduleInit[i] (fd, 1); //to fix sec IMPORTANTE@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+                                                pthread_t tid;
 
-                                    if (write (fd, "success", 7 ) < 0) {
-#ifdef DEBUG
-                                            sprintf (errlog, "[ERROR][DEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno));
-                                            log_error (errlog);
-#endif
-                                    }
+                                                if (write (fd, "success", 7 ) < 0) {
+                                                        sprintf (errlog, "[ERROR][DEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno));
+                                                        log_error (errlog);
+                                                }
 
-                                    if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
-                                            char buf[BUFSIZ];
-                                            sprintf (buf, "pthread_create fail: %s", strerror (errno) );
-                                            log_error (buf);
-                                            return;
+                                                if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
+                                                        char buf[BUFSIZ];
+                                                        sprintf (buf, "pthread_create fail: %s", strerror (errno) );
+                                                        log_error (buf);
+                                                        return;
 
-                                    } else {
-                                            memset (command, 0, BUFSIZ);
-                                            sprintf (command, "module <%s> started correctly", moduleName[i]);
-                                            log_string (command);
-                                            add_module_running(&module, command, tid);
-                                            return;
-                                    }
+                                                } else {
+                                                        memset (command, 0, BUFSIZ);
+                                                        sprintf (command, "module <%s> started correctly", moduleName[i]);
+                                                        log_string (command);
+                                                        add_module_running(&module, command, tid);
+                                                        return;
+                                                }
 
-
-
-
-                                  } else {
-                                    sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
-                                    log_string(errlog);
-                                    write (fd, "fail", strlen("fail")); //to this string to client
-                                    return;
-                                  }
+                                        } else {
+                                                sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
+                                                log_string(errlog);
+                                                write (fd, "fail", 4); //to this string to client
+                                                return;
+                                        }
                                 } else {
-                                  sprintf(errlog, "[ERROR] client ip not found in client_list");
-                                  log_error(errlog);
-                                  return;
+                                        sprintf(errlog, "[ERROR] client ip not found in client_list");
+                                        log_error(errlog);
+                                        return;
                                 }
                         }
                 }
 
                 log_error ("Start NOT found :(");
                 if (write (fd, "ModNotFound", strlen ("ModNotFound") ) < 0) {
-#ifdef DEBUG
                         sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
                         log_error (errlog);
-#endif
                 }
                 return;
         }
@@ -157,11 +148,8 @@ static void excecute_command (int fd, char *ip, char *command)
         if (strcmp ("halt", command) == 0) { //turn off jasm
                 log_string ("[CMD] halt exec");
                 if (write (fd, "jhalt", strlen ("jhalt") ) < 0) {
-#ifdef DEBUG
                         sprintf (errlog, "[JASM-DAEMON][WRITE]Caused By: %s", strerror (errno) );
                         log_error (errlog);
-#endif
-                        log_error ("[JASM-DAEMON][WRITE]Error while sending");
                 }
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_INFO, "exiting as requested from client...");
@@ -172,10 +160,8 @@ static void excecute_command (int fd, char *ip, char *command)
 
         log_error ("[CMD] Command not found!");
         if (write (fd, "NotFound", strlen ("NotFound") ) < 0) {
-#ifdef DEBUG
                 sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
                 log_error (errlog);
-#endif
         }
 }
 
@@ -283,7 +269,7 @@ void start_server()
                                                 syslog (LOG_ERR, "FATAL! Failed to accept client incoming connection! Exiting...");
                                                 closelog();
                                                 exit (SOCKET_CLIENT_CONNECTION_FAILED);
-                                        } 
+                                        }
                                         FD_SET (client_sockfd, &readfds);
                                         sprintf (client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr & 0xFF, (client_address.sin_addr.s_addr & 0xFF00) >> 8, (client_address.sin_addr.s_addr & 0xFF0000) >> 16, (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
                                         if (login_required (client_ipaddr) == 1) {
@@ -295,8 +281,8 @@ void start_server()
                                                 // was 256 bytes, but the relative fgets was called with
                                                 // the BUFSIZ parameter. Now it's fixed
                                                 char passwd_from_client[BUFSIZ];
-						char getit[BUFSIZ];
-						
+                                                char getit[BUFSIZ];
+
                                                 FILE* source_passwd;
 
                                                 log_string ("[CLIENT-AUTH]Authentication required!");
@@ -347,14 +333,14 @@ void start_server()
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[JASM-DAEMON][write()] Error!");
                                                                 log_error (errlog);
-								
+
                                                         }
 
-							if(read (client_sockfd,getit,strlen(getit)) < 0) {
-								sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
-								log_error("[JASM-DAEMON][read()] Error!");
-								log_error(errlog);
-							}
+                                                        if(read (client_sockfd,getit,strlen(getit)) < 0) {
+                                                                sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+                                                                log_error("[JASM-DAEMON][read()] Error!");
+                                                                log_error(errlog);
+                                                        }
 
                                                         if (write (client_sockfd, "retry", 5) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
@@ -399,7 +385,7 @@ void start_server()
                                                                 }
                                                                 else if (strcmp (passwd, passwd_from_client) != 0) {
                                                                         if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL) {
-									}
+                                                                        }
                                                                         fprintf (chkfile, "true");
                                                                         fclose (chkfile);
                                                                         sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d FAILED!", i);
@@ -412,10 +398,10 @@ void start_server()
                                                                         }
 
                                                                         if (i == *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
-																				char intalert[BUFSIZ];
+                                                                                char intalert[BUFSIZ];
                                                                                 shutdown (client_sockfd, 2);
                                                                                 log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
-																				sprintf(intalert,"[JASM-DAEMON][ALERT]More than %d tries failed",*(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values);
+                                                                                sprintf(intalert,"[JASM-DAEMON][ALERT]More than %d tries failed",*(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values);
                                                                                 break;
                                                                         }
                                                                 }
@@ -442,42 +428,53 @@ void start_server()
                                                 else if (chkfile == 1) {
                                                         FILE *pswfp;
                                                         char buf_in_passwd[256];
-							int bytes;
-							
+                                                        int bytes;
+
                                                         if (write (client_sockfd, chkpwd, strlen (chkpwd) ) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][write()] error");
                                                                 log_error (errlog);
                                                         }
 
-						        bytes = read (client_sockfd, buf_in_passwd, sizeof (buf_in_passwd));
-						        if(bytes < 0) {
+                                                        bytes = read (client_sockfd, buf_in_passwd, sizeof (buf_in_passwd));
+                                                        if(bytes < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][read()] error");
                                                                 log_error (errlog);
                                                         }else if (bytes == 0) {
-							    /* Do nothing*/
-							} else if(bytes > 0) {
-							    if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
-                                                                fputs (buf_in_passwd, pswfp);
-                                                                fclose (pswfp);
-							    }
-							}
-						}
-					}
+                                                                /* Do nothing*/
+                                                        } else if(bytes > 0) {
+                                                                if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
+                                                                        fputs (buf_in_passwd, pswfp);
+                                                                        fclose (pswfp);
+                                                                }
+                                                        }
+                                                }
+                                        }
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);
-                                        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) 
-                                             connection_counter++;
-                                        else if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
-                                            shutdown(client_sockfd,2);
-                                            continue;
+                                        #ifdef DEBUG
+                                        log_client(client_list);
+                                        #endif
+                                        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
+                                                connection_counter++;
+                                                #ifdef DEBUG
+                                                log_string("client connection is ok");
+                                                #endif
+                                        } else {
+                                                if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
+                                                        shutdown(client_sockfd,2);
+                                                #ifdef DEBUG
+                                                        log_string("client connection refused: max connection limit hit!");
+                                                #endif
+                                                        //continue;
+                                                }
                                         }
 #ifdef DEBUG
                                         sprintf(errlog,"Client: %d",connection_counter);
                                         log_string(errlog);
-#endif 
+#endif
 
                                 } else {
                                         ioctl (fd, FIONREAD, &nread);
@@ -489,6 +486,10 @@ void start_server()
                                                 log_string (buf);
                                                 rem_clientIp(&client_list, client_ipaddr);
                                                 connection_counter--;
+
+                                                #ifdef DEBUG
+                                                log_client(client_list);
+                                                #endif
                                         } else {
                                                 memset (received, 0, sizeof (received) );
                                                 return_value = read (fd, received, sizeof (received) );
