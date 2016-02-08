@@ -25,6 +25,7 @@
 #include <sys/sysinfo.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <sched.h>
 
 
 #include "getter.h"
@@ -50,16 +51,18 @@ void getUpTime (int fd);
 void getTotalRAM (int fd);
 void getFreeRAM (int fd);
 void getProcesses (int fd);
+void getCpuNumber (int fd);
 
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
-                                    "CpuName","CpuProcessor","UpTime","TotalRAM","FreeRAM","Processes"
+                                    "CpuName","CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion,getPosixVersion, getMachine,
-                                         getCpuName,getCpuProcessor, getUpTime, getTotalRAM, getFreeRAM, getProcesses 
+                                         getCpuName,getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
+                                         getProcesses 
                                         };
 
 /*
@@ -576,4 +579,36 @@ void getPosixVersion (int fd)
                   log_string (error);
             }
       }
-}     
+}  
+
+void getCpuNumber (int fd)
+{
+      int n,cpu_num;
+      char buf[BUFSIZ];
+      if( (cpu_num = sched_getcpu())==-1 )
+      {
+            log_error("getCpuNumber() Failed");
+            return;
+      }
+      else
+      {
+            sprintf(buf,"The process is running on cpu: %d ",cpu_num);
+            n = write(fd, buf, strlen(buf));
+            if(n < 0)
+            {
+                sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
+                  log_error ("[JASM-DEAMON][getCpuNumber][write()] Error!");
+                  log_error (error);  
+            }
+            if (n < strlen(buf) )
+            {
+                  sprintf (error, "[JASM-DAEMON][getCpuNumber][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
+                  log_error (error);  
+            }
+            else
+            {
+                  sprintf (error, "[JASM-DAEMON][getCpuNumber][write()] sent %d byte", n);
+                  log_string (error);
+            }
+      }
+}   
