@@ -86,7 +86,7 @@ static void excecute_command (int fd, char *ip, char *command)
         }
 
         // ************************** starter **************************************
-        if (strncmp ("start", command, 5) == 0) { //recieved start mod
+        if (strncmp ("start", command, strlen ("start") ) == 0) { //recieved start mod
                 int i;
 
                 strcpy (command, &command[5]);
@@ -118,14 +118,17 @@ static void excecute_command (int fd, char *ip, char *command)
                                                         memset (command, 0, BUFSIZ);
                                                         sprintf (command, "module <%s> started correctly", moduleName[i]);
                                                         log_string (command);
-                                                        add_module_running(&module, command, tid);
+                                                        add_module_running(&client->modules_list, command, tid);
                                                         return;
                                                 }
 
                                         } else {
                                                 sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
                                                 log_string(errlog);
-                                                write (fd, "fail", 4); //to this string to client
+                                                if (write (fd, "fail", 4) < 0) {
+                                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                        log_error (errlog);
+                                                }
                                                 return;
                                         }
                                 } else {
@@ -142,6 +145,61 @@ static void excecute_command (int fd, char *ip, char *command)
                         log_error (errlog);
                 }
                 return;
+        }
+
+        // ************************** stopper **************************************
+        if (strncmp ("stop", command, strlen ("stop") ) == 0) {
+                strcpy (command, &command[4]);
+                struct ip_node *client = find_clientIp(client_list, ip);
+                if(client != NULL) {
+                        if (client->modules_list != NULL) {
+                                struct module_running *aus = find_module_running(client->modules_list, command);
+                                if (aus != NULL) {
+
+                                        if (pthread_key_delete(aus->tid) == 0) {
+                                                log_string("[STOPPER] JASM stopped the module successfully");
+                                                rem_module_running(&(client->modules_list), command);
+                                                if (write(fd, "success", 7) < 0) {
+                                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                        log_error (errlog);
+                                                }
+                                                return;
+
+                                        } else {
+                                                log_error("[STOPPER] Unable to delete module's thread, pthread_key_delete fail");
+                                                if (write(fd, "fail", 4) < 0) {
+                                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                        log_error (errlog);
+                                                }
+                                                return;
+                                        }
+                                } else {
+                                        log_error("[STOPPER] Unable to find module to stop!");
+                                        if (write(fd, "fail", 4) < 0) {
+                                                sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                log_error (errlog);
+                                        }
+                                        return;
+                                }
+
+                        } else {
+                                log_error("[STOPPER] Client haven't any module running: unable to stop");
+                                if (write(fd, "fail", 4) < 0) {
+                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                        log_error (errlog);
+                                }
+                                return;
+                        }
+
+                } else {
+                        log_error("[STOPPER] Unable to find client - in heap - node");
+                        if (write(fd, "fail", 4) < 0) {
+                                sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                log_error (errlog);
+                        }
+                        return;
+                }
+
         }
 
         // ************************** miscellaneous ********************************
@@ -168,17 +226,13 @@ static void excecute_command (int fd, char *ip, char *command)
 
 void start_server()
 {
-#ifdef PASSWD_ENC_FILE
-        //use it
-#else
+#ifndef PASSWD_ENC_FILE
         char PASSWD_ENC_FILE[256];
         strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
         strcat (PASSWD_ENC_FILE, "/.jpwd");
 #endif
 
-#ifdef CHECK_ACCESS_FILE
-        //use it
-#else
+#ifndef CHECK_ACCESS_FILE
         char CHECK_ACCESS_FILE[256];
         strcpy (CHECK_ACCESS_FILE, getenv ("HOME") );
         strcat (CHECK_ACCESS_FILE, "/.jpwdchk");
