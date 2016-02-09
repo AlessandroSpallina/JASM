@@ -52,17 +52,19 @@ void getTotalRAM (int fd);
 void getFreeRAM (int fd);
 void getProcesses (int fd);
 void getCpuNumber (int fd);
+void getSchedulerVersion (int fd);
 
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
-                                    "CpuName","CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes"
+                                    "CpuName","CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes",
+                                    "SchedulerVersion"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion,getPosixVersion, getMachine,
                                          getCpuName,getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
-                                         getProcesses 
+                                         getProcesses, getSchedulerVersion
                                         };
 
 /*
@@ -610,5 +612,48 @@ void getCpuNumber (int fd)
                   sprintf (error, "[JASM-DAEMON][getCpuNumber][write()] sent %d byte", n);
                   log_string (error);
             }
+      }
+}
+
+void getSchedulerVersion (int fd)
+{
+      int file;
+      int n,i=0;
+      char temp[BUFSIZ];
+      char buf[BUFSIZ];
+      if ( (file = open("/proc/sched_debug",O_RDONLY))==-1)
+      {
+            log_error("getSchedulerVersion() Unable to open /proc/sched_debud");
+            return;
+      }
+      if( (read(file, temp, BUFSIZ))<=0 )
+      {
+            log_error("getSchedulerVersion() Failed to read");
+            close(file);
+            return;
+      }
+      close(file);
+      while(temp[i]!='\n') // copy the first line 
+      {
+            buf[i]=temp[i];
+            i++;
+      }
+      buf[i]='\0';
+      n = write(fd, buf, strlen(buf));
+      if(n < 0)
+      {
+          sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
+            log_error ("[JASM-DEAMON][getSchedulerVersion][write()] Error!");
+            log_error (error);  
+      }
+      if (n < strlen(buf) )
+      {
+            sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
+            log_error (error);  
+      }
+      else
+      {
+            sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte", n);
+            log_string (error);
       }
 }   
