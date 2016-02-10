@@ -21,7 +21,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h> // remove
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
@@ -124,10 +124,10 @@ void start_daemon()
 }
 
 /*LOGIN SECTION*/
-int login_required (const char* clientaddr)
+_Bool login_required (const char* clientaddr)
 {
-        if (strcmp (clientaddr, LOCALHOST) == 0) return 0;
-        else return 1;
+        if (strcmp (clientaddr, LOCALHOST) == 0) return false;
+        else return true;
 }
 
 int check_passwd_file (const char* __pwdf)

@@ -326,7 +326,7 @@ void start_server()
                                         }
                                         FD_SET (client_sockfd, &readfds);
                                         sprintf (client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr & 0xFF, (client_address.sin_addr.s_addr & 0xFF00) >> 8, (client_address.sin_addr.s_addr & 0xFF0000) >> 16, (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
-                                        if (login_required (client_ipaddr) == 1) {
+                                        /*if (login_required (client_ipaddr) == 1) {
                                                 int rpwd;
                                                 char getpasswd[256];
                                                 const char auth[] = "auth-required";
@@ -423,7 +423,7 @@ void start_server()
                                                                 {
                                                                         if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL)
                                                                         {
-                                                                                /*Ciao sono Giuseppe Simone*/
+                                                                                //Ciao sono Giuseppe Simone
                                                                         }
                                                                         fprintf (chkfile, "falset");
                                                                         fclose (chkfile);
@@ -496,7 +496,7 @@ void start_server()
                                                                 log_error ("[chkfile][read()] error");
                                                                 log_error (errlog);
                                                         }else if (bytes == 0) {
-                                                                /* Do nothing*/
+                                                                // Do nothing
                                                         } else if(bytes > 0) {
                                                                 if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
                                                                         fputs (buf_in_passwd, pswfp);
@@ -504,7 +504,7 @@ void start_server()
                                                                 }
                                                         }
                                                 }
-                                        }
+                                        }*/
                                         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
                                         log_string (buf);
                                         add_clientIp(&client_list, client_ipaddr);

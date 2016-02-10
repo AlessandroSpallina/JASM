@@ -37,7 +37,7 @@ extern char buildate[256];
 
 extern char *getTime (void);
 extern void start_daemon (void);
-extern int login_required (const char *clientaddr);
+extern _Bool login_required (const char *clientaddr);
 extern int check_passwd_file (const char* __pwdf);
 
 #endif
