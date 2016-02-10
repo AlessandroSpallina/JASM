@@ -48,17 +48,19 @@ void getCoreNum (int fd);
 void getCoreSpeeds (int fd);
 void getAddressSizes (int fd);
 void getCreatedProcNum (int fd);
+void getIfSwap (int fd);
+void getFileHandlesNum (int fd);
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion", "Machine",
                                     "CpuName", "CacheSize", "CoreNum", "CoreSpeeds",
-                                    "AddressSizes", "CreatedProcNum"
+                                    "AddressSizes", "CreatedProcNum", "IfSwap", "FileHandlesNum"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion, getMachine,
                                          getCpuName, getCacheSize, getCoreNum, getCoreSpeeds, getAddressSizes,
-                                         getCreatedProcNum
+                                         getCreatedProcNum, getIfSwap, getFileHandlesNum
                                         };
 
 /*
@@ -514,7 +516,7 @@ void getCoreSpeeds (int fd) //TODO fix a non det. error that occurs when used tw
    }
 }
 
-void getAddressSizes (int fd) //Da aggiungere
+void getAddressSizes (int fd)
 {
 		int cpu_fd;
 		char info[20] = "address sizes	: ";
@@ -555,7 +557,7 @@ void getAddressSizes (int fd) //Da aggiungere
     }
 }
 
-void getCreatedProcNum (int fd) //Da aggiungere
+void getCreatedProcNum (int fd)
 {
 		int proc_fd;
 		char info[20] = "processes ";
@@ -591,6 +593,91 @@ void getCreatedProcNum (int fd) //Da aggiungere
         else
         {
             sprintf (error, "[JASM-DAEMON][getCreatedProcNum][write()] sent %d byte", n);
+            log_string (error);
+        }
+    }
+}
+
+void getIfSwap (int fd) //Check for the existence of swap partitions
+{
+		int swaps_fd;
+		char buf[BUFSIZ];
+		char result[4];
+		int i = 0;
+		int n;
+	
+		swaps_fd = open("/proc/swaps", O_RDONLY);
+		if(read(swaps_fd, buf, BUFSIZ) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getIfSwap][read()] Error!");
+        log_error (error);
+		}
+		while(buf[i] != '\n') ++i;
+		if(buf[i+1] == EOF){
+			strcpy(result, "no");
+		}
+		else{
+			strcpy(result, "yes");
+		}
+		
+		n = write (fd, result, strlen(result));
+		close(swaps_fd);
+		if (n < 0)
+    {
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getIfSwap][write()] Error!");
+        log_error (error);
+    }
+    else
+    {
+        if (n < strlen (buf) )
+        {
+            sprintf (error, "[JASM-DAEMON][getIfSwap][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);
+        }
+        else
+        {
+            sprintf (error, "[JASM-DAEMON][getIfSwap][write()] sent %d byte", n);
+            log_string (error);
+        }
+    }
+}
+
+void getFileHandlesNum (int fd)
+{
+		int file_fd;
+		char buf[BUFSIZ];
+		char result[10];
+		int i = 0;
+		int n;
+	
+		file_fd = open("/proc/sys/fs/file-nr", O_RDONLY);
+		if(read(file_fd, buf, BUFSIZ) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getFileHandlesNum][read()] Error!");
+        log_error (error);
+		}
+		while(buf[i] != '\t') ++i;
+		sprintf(result, "%.*s", i, buf);
+		
+		n = write (fd, result, strlen(result));
+		close(file_fd);
+		if (n < 0)
+    {
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getFileHandlesNum][write()] Error!");
+        log_error (error);
+    }
+    else
+    {
+        if (n < strlen (buf) )
+        {
+            sprintf (error, "[JASM-DAEMON][getFileHandlesNum][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);
+        }
+        else
+        {
+            sprintf (error, "[JASM-DAEMON][getFileHandlesNum][write()] sent %d byte", n);
             log_string (error);
         }
     }
