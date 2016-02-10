@@ -24,7 +24,7 @@
 #include <sys/utsname.h>
 #include <errno.h>
 #include <fcntl.h>
-
+#include <sys/types.h>
 
 #include "getter.h"
 #include "miscellaneous.h"
@@ -46,15 +46,19 @@ void getCpuName (int fd);
 void getCacheSize (int fd);
 void getCoreNum (int fd);
 void getCoreSpeeds (int fd);
+void getAddressSizes (int fd);
+void getCreatedProcNum (int fd);
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion", "Machine",
-                                    "CpuName", "CacheSize", "CoreNum", "CoreSpeeds"
+                                    "CpuName", "CacheSize", "CoreNum", "CoreSpeeds",
+                                    "AddressSizes", "CreatedProcNum"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion, getMachine,
-                                         getCpuName, getCacheSize, getCoreNum, getCoreSpeeds
+                                         getCpuName, getCacheSize, getCoreNum, getCoreSpeeds, getAddressSizes,
+                                         getCreatedProcNum
                                         };
 
 /*
@@ -449,19 +453,21 @@ void getCoreNum (int fd)
     }
 }
 
-void getCoreSpeeds (int fd) //TODO fix a non det. error; read a large dimension file
+
+
+void getCoreSpeeds (int fd) //TODO fix a non det. error that occurs when used twice or more
 {
 	int count = 0;
 	int cpu_fd;
 	char info[20] = "cpu MHz		: ";
-	char buf[BUFSIZ];
-	char final_string[BUFSIZ];
-	char speeds[MAX_CORE][BUFSIZ];
+	char buf[CPU_FILE_SIZE];
+	char final_string[CPU_FILE_SIZE];
+	char speeds[MAX_CORE][CPU_FILE_SIZE];
 	char *tmp;
 	int n;
 	int i;
 	int j = 0;
-	
+
 	cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 	read(cpu_fd, buf, BUFSIZ); //legge tutto il file
 	tmp = &strstr(buf, info)[strlen(info)];
@@ -506,6 +512,88 @@ void getCoreSpeeds (int fd) //TODO fix a non det. error; read a large dimension 
           log_string (error);
        }
    }
+}
+
+void getAddressSizes (int fd) //Da aggiungere
+{
+		int cpu_fd;
+		char info[20] = "address sizes	: ";
+		char buf[BUFSIZ];
+		char *string;
+		int i = 0;
+		int n;
+	
+		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
+		if(read(cpu_fd, buf, BUFSIZ) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getAddressSizes][read()] Error!");
+        log_error (error);
+		}
+		string = &strstr(buf, info)[strlen(info)];
+		while(string[i] != '\n') ++i;
+		sprintf(buf, "%.*s", i, string);
+		n = write (fd, buf, strlen(buf));
+		close(cpu_fd);
+		if (n < 0)
+    {
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getAddressSizes][write()] Error!");
+        log_error (error);
+    }
+    else
+    {
+        if (n < strlen (buf) )
+        {
+            sprintf (error, "[JASM-DAEMON][getAddressSizes][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);
+        }
+        else
+        {
+            sprintf (error, "[JASM-DAEMON][getAddressSizes][write()] sent %d byte", n);
+            log_string (error);
+        }
+    }
+}
+
+void getCreatedProcNum (int fd) //Da aggiungere
+{
+		int proc_fd;
+		char info[20] = "processes ";
+		char buf[BUFSIZ];
+		char *string;
+		int i = 0;
+		int n;
+	
+		proc_fd = open("/proc/stat", O_RDONLY);
+		if(read(proc_fd, buf, BUFSIZ) <= 0){
+				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCreatedProcNum][read()] Error!");
+        log_error (error);
+		}
+		string = &strstr(buf, info)[strlen(info)];
+		while(string[i] != '\n') ++i;
+		sprintf(buf, "%.*s", i, string);
+		n = write (fd, buf, strlen(buf));
+		close(proc_fd);
+		if (n < 0)
+    {
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+        log_error ("[JASM-DAEMON][getCreatedProcNum][write()] Error!");
+        log_error (error);
+    }
+    else
+    {
+        if (n < strlen (buf) )
+        {
+            sprintf (error, "[JASM-DAEMON][getCreatedProcNum][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+            log_error (error);
+        }
+        else
+        {
+            sprintf (error, "[JASM-DAEMON][getCreatedProcNum][write()] sent %d byte", n);
+            log_string (error);
+        }
+    }
 }
 
 
