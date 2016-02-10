@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sched.h>
+#include <stdlib.h>
 
 
 #include "getter.h"
@@ -53,18 +54,19 @@ void getFreeRAM (int fd);
 void getProcesses (int fd);
 void getCpuNumber (int fd);
 void getSchedulerVersion (int fd);
+void getSchedulerInfo (int fd);
 
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
                                     "CpuName","CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes",
-                                    "SchedulerVersion"
+                                    "SchedulerVersion" ,"SchedulerInfo"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion,getPosixVersion, getMachine,
                                          getCpuName,getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
-                                         getProcesses, getSchedulerVersion
+                                         getProcesses, getSchedulerVersion, getSchedulerInfo
                                         };
 
 /*
@@ -623,7 +625,7 @@ void getSchedulerVersion (int fd)
       char buf[BUFSIZ];
       if ( (file = open("/proc/sched_debug",O_RDONLY))==-1)
       {
-            log_error("getSchedulerVersion() Unable to open /proc/sched_debud");
+            log_error("getSchedulerVersion() Unable to open /proc/sched_debug");
             return;
       }
       if( (read(file, temp, BUFSIZ))<=0 )
@@ -656,4 +658,70 @@ void getSchedulerVersion (int fd)
             sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte", n);
             log_string (error);
       }
-}   
+}  
+
+void getSchedulerInfo (int fd)
+{
+      int n;
+      int file;
+      int lat,gran,slice;
+      char buf[BUFSIZ];
+      char temp[BUFSIZ];
+      if ( (file = open("/proc/sys/kernel/sched_latency_ns",O_RDONLY))==-1)
+      {
+            log_error("getSchedulerInfo() Unable to open /proc/sys/kernel/sched_latency_ns");
+            return;
+      }
+      if( (read(file, temp, BUFSIZ))<=0 )
+      {
+            log_error("getSchedulerInfo() Failed to read");
+            close(file);
+            return;
+      }
+      close(file);
+      lat = atoi(temp);
+      if ( (file = open("/proc/sys/kernel/sched_min_granularity_ns",O_RDONLY))==-1)
+      {
+            log_error("getSchedulerInfo() Unable to open /proc/sys/kernel/sched_min_granularity_ns");
+            return;
+      }
+      if( (read(file, temp, BUFSIZ))<=0 )
+      {
+            log_error("getSchedulerInfo() Failed to read");
+            close(file);
+            return;
+      }
+      close(file);
+      gran = atoi(temp);
+      if ( (file = open("/proc/sys/kernel/sched_rr_timeslice_ms",O_RDONLY))==-1)
+      {
+            log_error("getSchedulerInfo() Unable to open /proc/sys/kernel/sched_rr_timeslice_ms");
+            return;
+      }
+      if( (read(file, temp, BUFSIZ))<=0 )
+      {
+            log_error("getSchedulerInfo() Failed to read");
+            close(file);
+            return;
+      }
+      close(file);
+      slice = atoi(temp);
+      sprintf(buf,"Latency:%d Granularity:%d Timeslice:%d ",lat,gran,slice);
+      n = write(fd, buf, strlen(buf));
+      if(n < 0)
+      {
+          sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
+            log_error ("[JASM-DEAMON][getSchedulerInfo][write()] Error!");
+            log_error (error);  
+      }
+      if (n < strlen(buf) )
+      {
+            sprintf (error, "[JASM-DAEMON][getSchedulerInfo][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
+            log_error (error);  
+      }
+      else
+      {
+            sprintf (error, "[JASM-DAEMON][getSchedulerInfo][write()] sent %d byte", n);
+            log_string (error);
+      }
+} 
