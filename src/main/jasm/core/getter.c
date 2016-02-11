@@ -27,7 +27,7 @@
 #include <fcntl.h>
 #include <sched.h>
 #include <stdlib.h>
-
+#include <sched.h>
 
 #include "getter.h"
 #include "miscellaneous.h"
@@ -338,13 +338,17 @@ void getMachine (int fd)
         }
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getUpTime (int fd)
 {
       char buf[BUFSIZ];
       struct sysinfo sys_info;
       int days,hours,min,sec;
       int n;
-      
+
       if( sysinfo (&sys_info) != 0)
       {
             log_error ("getUpTime() Failed");
@@ -379,13 +383,17 @@ void getUpTime (int fd)
         }
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getTotalRAM (int fd)
 {
       int n;
       struct sysinfo sys_info;
       char buf[BUFSIZ];
       const unsigned long megabyte = 1024*1024;
-      
+
       if( sysinfo (&sys_info) != 0)
       {
             log_error ("getTotalRAM() Failed");
@@ -404,7 +412,7 @@ void getTotalRAM (int fd)
             if (n < strlen(buf))
             {
                   sprintf (error, "[JASM-DAEMON][getTotalRAM][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                  log_error (error);  
+                  log_error (error);
             }
             else
             {
@@ -415,13 +423,17 @@ void getTotalRAM (int fd)
 
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getFreeRAM (int fd)
 {
       int n;
       struct sysinfo sys_info;
       char buf[BUFSIZ];
       const unsigned long megabyte = 1024*1024;
-      
+
       if( sysinfo (&sys_info) != 0)
       {
             log_error ("getFreeRAM() Failed");
@@ -440,7 +452,7 @@ void getFreeRAM (int fd)
             if (n < strlen(buf))
             {
                   sprintf (error, "[JASM-DAEMON][getFreeRAM][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                  log_error (error);  
+                  log_error (error);
             }
             else
             {
@@ -451,6 +463,10 @@ void getFreeRAM (int fd)
 
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getProcesses (int fd)
 {
       int n;
@@ -474,7 +490,7 @@ void getProcesses (int fd)
             if (n < strlen(buf) )
             {
                   sprintf (error, "[JASM-DAEMON][getProcesses][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                  log_error (error);  
+                  log_error (error);
             }
             else
             {
@@ -484,6 +500,10 @@ void getProcesses (int fd)
       }
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getCpuProcessor (int fd)
 {
       int n;
@@ -506,7 +526,7 @@ void getCpuProcessor (int fd)
       if (n < strlen(buf) )
       {
             sprintf (error, "[JASM-DAEMON][getCpuProcessor][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);  
+            log_error (error);
       }
       else
       {
@@ -515,6 +535,10 @@ void getCpuProcessor (int fd)
       }
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getPosixVersion (int fd)
 {
       int n;
@@ -527,18 +551,18 @@ void getPosixVersion (int fd)
       }
       else
       {
-            sprintf(buf,"Version: %d (YYYYMML)",version);
+            sprintf(buf,"Version: %ld (YYYYMML)",version);
             n = write(fd, buf, strlen(buf));
             if(n < 0)
             {
                 sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
                   log_error ("[JASM-DEAMON][getPosixVersion][write()] Error!");
-                  log_error (error);  
+                  log_error (error);
             }
             if (n < strlen(buf) )
             {
                   sprintf (error, "[JASM-DAEMON][getPosixVersion][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-                  log_error (error);  
+                  log_error (error);
             }
             else
             {
@@ -546,13 +570,17 @@ void getPosixVersion (int fd)
                   log_string (error);
             }
       }
-}  
+}
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getCpuNumber (int fd)
 {
       int n,cpu_num;
       char buf[BUFSIZ];
-      if( (cpu_num = sched_getcpu())==-1 )
+      if( (cpu_num = sched_getcpu()) == -1 )
       {
             log_error("getCpuNumber() Failed");
             return;
@@ -565,12 +593,12 @@ void getCpuNumber (int fd)
             {
                 sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
                   log_error ("[JASM-DEAMON][getCpuNumber][write()] Error!");
-                  log_error (error);  
+                  log_error (error);
             }
             if (n < strlen(buf) )
             {
                   sprintf (error, "[JASM-DAEMON][getCpuNumber][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-                  log_error (error);  
+                  log_error (error);
             }
             else
             {
@@ -580,6 +608,10 @@ void getCpuNumber (int fd)
       }
 }
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getSchedulerVersion (int fd)
 {
       int file;
@@ -598,7 +630,7 @@ void getSchedulerVersion (int fd)
             return;
       }
       close(file);
-      while(temp[i]!='\n') // copy the first line 
+      while(temp[i]!='\n') // copy the first line
       {
             buf[i]=temp[i];
             i++;
@@ -609,20 +641,24 @@ void getSchedulerVersion (int fd)
       {
           sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
             log_error ("[JASM-DEAMON][getSchedulerVersion][write()] Error!");
-            log_error (error);  
+            log_error (error);
       }
       if (n < strlen(buf) )
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-            log_error (error);  
+            log_error (error);
       }
       else
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte", n);
             log_string (error);
       }
-}  
+}
 
+/*
+ *  Getter coded by Ennio Nasca
+ *  https://github.com/ennnas
+ */
 void getSchedulerInfo (int fd)
 {
       int n;
@@ -675,16 +711,16 @@ void getSchedulerInfo (int fd)
       {
           sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
             log_error ("[JASM-DEAMON][getSchedulerInfo][write()] Error!");
-            log_error (error);  
+            log_error (error);
       }
       if (n < strlen(buf) )
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerInfo][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-            log_error (error);  
+            log_error (error);
       }
       else
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerInfo][write()] sent %d byte", n);
             log_string (error);
       }
-} 
+}
