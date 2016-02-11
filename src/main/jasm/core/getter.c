@@ -457,13 +457,13 @@ void getCoreNum (int fd)
 
 
 
-void getCoreSpeeds (int fd) //TODO fix a non det. error that occurs when used twice or more
+void getCoreSpeeds (int fd) //TODO fix something
 {
 	int count = 0;
 	int cpu_fd;
 	char info[20] = "cpu MHz		: ";
 	char buf[CPU_FILE_SIZE];
-	char final_string[CPU_FILE_SIZE];
+	char final_string[BUFSIZ];
 	char speeds[MAX_CORE][CPU_FILE_SIZE];
 	char *tmp;
 	int n;
@@ -471,9 +471,9 @@ void getCoreSpeeds (int fd) //TODO fix a non det. error that occurs when used tw
 	int j = 0;
 
 	cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-	read(cpu_fd, buf, BUFSIZ); //legge tutto il file
+	read(cpu_fd, buf, CPU_FILE_SIZE); //legge tutto il file
 	tmp = &strstr(buf, info)[strlen(info)];
-	while(tmp[0] != EOF){
+	while(1){
 		i = 0;
 		while(tmp[i] != '\n') ++i;
 		sprintf(speeds[j], "%.*s", i, tmp); 
