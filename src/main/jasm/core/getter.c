@@ -334,7 +334,7 @@ void getMachine (int fd)
     }
 }
 
-void getCpuName (int fd)
+void getCpuName (int fd) //Returns the name of the Cpu
 {
 		int cpu_fd;
 		char buf[BUFSIZ];
@@ -374,7 +374,7 @@ void getCpuName (int fd)
     }
 }
 
-void getCacheSize (int fd)
+void getCacheSize (int fd) //Returns the cache size of the cpu
 {
 		int cpu_fd;
 		char buf[BUFSIZ];
@@ -414,7 +414,7 @@ void getCacheSize (int fd)
     }
 }
 
-void getCoreNum (int fd)
+void getCoreNum (int fd) //Returns the number of physical cores
 {
 		int cpu_fd;
 		char info[20] = "cpu cores	: ";
@@ -457,9 +457,8 @@ void getCoreNum (int fd)
 
 
 
-void getCoreSpeeds (int fd) //TODO fix something
+void getCoreSpeeds (int fd) //Returns the core speeds
 {
-	int count = 0;
 	int cpu_fd;
 	char info[20] = "cpu MHz		: ";
 	char buf[CPU_FILE_SIZE];
@@ -471,19 +470,20 @@ void getCoreSpeeds (int fd) //TODO fix something
 	int j = 0;
 
 	cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-	read(cpu_fd, buf, CPU_FILE_SIZE); //legge tutto il file
-	tmp = &strstr(buf, info)[strlen(info)];
+	read(cpu_fd, buf, CPU_FILE_SIZE); //read the entire file
+	tmp = &strstr(buf, info)[strlen(info)]; //tmp holds the buffer starting from the first speed's point
 	while(1){
 		i = 0;
 		while(tmp[i] != '\n') ++i;
 		sprintf(speeds[j], "%.*s", i, tmp); 
-		if(strstr(tmp, info) == NULL) break; //Se è uguale a NULL, era l'ultimo processore
+		if(strstr(tmp, info) == NULL) break; //if it's NULL, it was the last core, and it can exit from loop
 		else{
 			tmp = &strstr(tmp, info)[strlen(info)];
 		}
 		++j;
 	}
 	
+	/*This code is just for formatting*/
 	for (i = 0; i < j+1; i += 1)
 	{
 			sprintf(final_string + strlen(final_string), "%d: %s Mhz", i, speeds[i]); 
@@ -516,7 +516,7 @@ void getCoreSpeeds (int fd) //TODO fix something
    }
 }
 
-void getAddressSizes (int fd)
+void getAddressSizes (int fd) //Returns cpu address size
 {
 		int cpu_fd;
 		char info[20] = "address sizes	: ";
@@ -557,7 +557,7 @@ void getAddressSizes (int fd)
     }
 }
 
-void getCreatedProcNum (int fd)
+void getCreatedProcNum (int fd) //Returns the number of created processes since the start
 {
 		int proc_fd;
 		char info[20] = "processes ";
@@ -614,7 +614,7 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 		}
 		while(buf[i] != '\n') ++i;
 		if(buf[i+1] == EOF){
-			strcpy(result, "no");
+			strcpy(result, "no"); //if the first line is the only line of the file
 		}
 		else{
 			strcpy(result, "yes");
@@ -643,7 +643,7 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
     }
 }
 
-void getFileHandlesNum (int fd)
+void getFileHandlesNum (int fd) //Returns opened file handles (and file descriptors) number
 {
 		int file_fd;
 		char buf[BUFSIZ];
