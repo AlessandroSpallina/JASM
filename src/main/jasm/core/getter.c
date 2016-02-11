@@ -334,6 +334,7 @@ void getMachine (int fd)
     }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getCpuName (int fd) //Returns the name of the Cpu
 {
 		int cpu_fd;
@@ -374,6 +375,7 @@ void getCpuName (int fd) //Returns the name of the Cpu
     }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getCacheSize (int fd) //Returns the cache size of the cpu
 {
 		int cpu_fd;
@@ -414,6 +416,7 @@ void getCacheSize (int fd) //Returns the cache size of the cpu
     }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getCoreNum (int fd) //Returns the number of physical cores
 {
 		int cpu_fd;
@@ -456,7 +459,7 @@ void getCoreNum (int fd) //Returns the number of physical cores
 }
 
 
-
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getCoreSpeeds (int fd) //Returns the core speeds
 {
 	int cpu_fd;
@@ -516,6 +519,7 @@ void getCoreSpeeds (int fd) //Returns the core speeds
    }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getAddressSizes (int fd) //Returns cpu address size
 {
 		int cpu_fd;
@@ -557,6 +561,7 @@ void getAddressSizes (int fd) //Returns cpu address size
     }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getCreatedProcNum (int fd) //Returns the number of created processes since the start
 {
 		int proc_fd;
@@ -598,6 +603,7 @@ void getCreatedProcNum (int fd) //Returns the number of created processes since 
     }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getIfSwap (int fd) //Check for the existence of swap partitions
 {
 		int swaps_fd;
@@ -643,6 +649,7 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
     }
 }
 
+/*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/
 void getFileHandlesNum (int fd) //Returns opened file handles (and file descriptors) number
 {
 		int file_fd;
