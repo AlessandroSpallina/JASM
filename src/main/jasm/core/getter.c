@@ -46,7 +46,6 @@ void getKernelVersion (int fd);
 void getPosixVersion (int fd);
 void getMachine (int fd);
 void getGetter (int fd);
-void getCpuName (int fd);
 void getCpuProcessor (int fd);
 void getUpTime (int fd);
 void getTotalRAM (int fd);
@@ -59,13 +58,13 @@ void getSchedulerInfo (int fd);
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
-                                    "CpuName","CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes",
+                                    "CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes",
                                     "SchedulerVersion" ,"SchedulerInfo"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion,getPosixVersion, getMachine,
-                                         getCpuName,getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
+                                         getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
                                          getProcesses, getSchedulerVersion, getSchedulerInfo
                                         };
 
@@ -337,42 +336,6 @@ void getMachine (int fd)
                         }
                 }
         }
-}
-
-void getCpuName (int fd)
-{
-		int cpu_fd;
-		char buf[BUFSIZ];
-		char *string;
-		int i = 0;
-		int n;
-		
-		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
-		read(cpu_fd, buf, 200); //TODO controllo errore
-		string = &strstr(buf, "model name	: ")[strlen("model name	: ")];
-		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
-		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
-		n = write (fd, buf, strlen(buf));
-		close(cpu_fd);
-		if (n < 0)
-    {
-        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCpuName][write()] Error!");
-        log_error (error);
-    }
-    else
-    {
-        if (n < strlen (buf) )
-        {
-            sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
-        }
-        else
-        {
-            sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte", n);
-            log_string (error);
-        }
-    }
 }
 
 void getUpTime (int fd)
