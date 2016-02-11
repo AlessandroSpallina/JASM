@@ -24,7 +24,7 @@ futuro non molto lontano sarà compilabile anche su Windows.
 Il codice è strutturato in maniera tale da poter estendere nel tempo le
 funzionalità di JASM evitando di diventare pazzi leggendo ogni riga di codice
 del programma, scrivendo, invece, librerie e header che astraggono interfacce
-stadard stabilite nei futuri readme (nel frattempo inizia a leggerti il codice)
+standard stabilite nei futuri readme (nel frattempo inizia a leggerti il codice)
 e inserendo il nome dell'header in un array di stringhe in "modules.c".
 Disponibile anche la possibilità di estendere JASM programmando singole funzioni
 che inviano ai client delle brevi info, quali ad esempio il tipo di architettura,
