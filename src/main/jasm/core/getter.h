@@ -19,7 +19,9 @@
 #ifndef _GETTER_H
 #define _GETTER_H
 
-#define NGETTER 7
+#define MAX_CORE 16
+#define CPU_FILE_SIZE 65536 //dimensione massima del file cpuinfo
+#define NGETTER 24
 
 extern char getterName[NGETTER][BUFSIZ];
 extern void (*getterFunction[NGETTER]) (int);
@@ -30,7 +32,24 @@ extern void getHostname (int fd);
 extern void getKernelName (int fd);
 extern void getKernelRelease (int fd);
 extern void getKernelVersion (int fd);
+extern void getPosixVersion (int fd);
 extern void getMachine (int fd);
 extern void getGetter (int fd);
+extern void getCpuName (int fd);
+extern void getCacheSize (int fd);
+extern void getCoreNum (int fd);
+extern void getCoreSpeeds (int fd);
+extern void getAddressSizes (int fd);
+extern void getCreatedProcNum (int fd);
+extern void getIfSwap (int fd);
+extern void getFileHandlesNum (int fd);
+extern void getCpuProcessor (int fd);
+extern void getCpuNumber (int fd);
+extern void getUpTime (int fd);
+extern void getTotalRAM (int fd);
+extern void getFreeRAM (int fd);
+extern void getProcesses (int fd);
+extern void getSchedulerVersion (int fd);
+extern void getSchedulerInfo (int fd);
 
 #endif

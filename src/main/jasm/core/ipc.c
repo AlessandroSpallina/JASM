@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <syslog.h>
+#include <stdbool.h>
 
 #include "configfile.h"
 #include "ipc.h"
@@ -86,7 +87,7 @@ static void excecute_command (int fd, char *ip, char *command)
         }
 
         // ************************** starter **************************************
-        if (strncmp ("start", command, 5) == 0) { //recieved start mod
+        if (strncmp ("start", command, strlen ("start") ) == 0) { //recieved start mod
                 int i;
 
                 strcpy (command, &command[5]);
@@ -118,14 +119,17 @@ static void excecute_command (int fd, char *ip, char *command)
                                                         memset (command, 0, BUFSIZ);
                                                         sprintf (command, "module <%s> started correctly", moduleName[i]);
                                                         log_string (command);
-                                                        add_module_running(&module, command, tid);
+                                                        add_module_running(&client->modules_list, command, tid);
                                                         return;
                                                 }
 
                                         } else {
                                                 sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
                                                 log_string(errlog);
-                                                write (fd, "fail", 4); //to this string to client
+                                                if (write (fd, "fail", 4) < 0) {
+                                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                        log_error (errlog);
+                                                }
                                                 return;
                                         }
                                 } else {
@@ -142,6 +146,61 @@ static void excecute_command (int fd, char *ip, char *command)
                         log_error (errlog);
                 }
                 return;
+        }
+
+        // ************************** stopper **************************************
+        if (strncmp ("stop", command, strlen ("stop") ) == 0) {
+                strcpy (command, &command[4]);
+                struct ip_node *client = find_clientIp(client_list, ip);
+                if(client != NULL) {
+                        if (client->modules_list != NULL) {
+                                struct module_running *aus = find_module_running(client->modules_list, command);
+                                if (aus != NULL) {
+
+                                        if (pthread_key_delete(aus->tid) == 0) {
+                                                log_string("[STOPPER] JASM stopped the module successfully");
+                                                rem_module_running(&(client->modules_list), command);
+                                                if (write(fd, "success", 7) < 0) {
+                                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                        log_error (errlog);
+                                                }
+                                                return;
+
+                                        } else {
+                                                log_error("[STOPPER] Unable to delete module's thread, pthread_key_delete fail");
+                                                if (write(fd, "fail", 4) < 0) {
+                                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                        log_error (errlog);
+                                                }
+                                                return;
+                                        }
+                                } else {
+                                        log_error("[STOPPER] Unable to find module to stop!");
+                                        if (write(fd, "fail", 4) < 0) {
+                                                sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                                log_error (errlog);
+                                        }
+                                        return;
+                                }
+
+                        } else {
+                                log_error("[STOPPER] Client haven't any module running: unable to stop");
+                                if (write(fd, "fail", 4) < 0) {
+                                        sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                        log_error (errlog);
+                                }
+                                return;
+                        }
+
+                } else {
+                        log_error("[STOPPER] Unable to find client - in heap - node");
+                        if (write(fd, "fail", 4) < 0) {
+                                sprintf (errlog, "[ERROR][ÐEBUG] write() failed\n[ERROR][] Caused By: %s", strerror (errno) );
+                                log_error (errlog);
+                        }
+                        return;
+                }
+
         }
 
         // ************************** miscellaneous ********************************
@@ -165,25 +224,202 @@ static void excecute_command (int fd, char *ip, char *command)
         }
 }
 
-
-void start_server()
+static _Bool goodLoginRoutine(char *client_ipaddr, int client_sockfd)
 {
-#ifdef PASSWD_ENC_FILE
-        //use it
-#else
+        char buf[BUFSIZ];
+
+        sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
+        log_string (buf);
+        add_clientIp(&client_list, client_ipaddr);
+  #ifdef DEBUG
+        log_client(client_list);
+  #endif
+        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
+                connection_counter++;
+          #ifdef DEBUG
+                log_string("client connection is ok");
+                sprintf(errlog,"Client: %d",connection_counter);
+                log_string(errlog);
+          #endif
+
+                return true;
+
+        } else {
+                //if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values)
+                shutdown(client_sockfd,2);
+          #ifdef DEBUG
+                log_string("client connection refused: max connection limit hit!");
+                sprintf(errlog,"Client: %d",connection_counter);
+                log_string(errlog);
+          #endif
+                return false;
+        }
+
+}
+
+
+static _Bool isCorrectPassword(int client_sockfd)
+{
+  #ifndef PASSWD_ENC_FILE
         char PASSWD_ENC_FILE[256];
         strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
         strcat (PASSWD_ENC_FILE, "/.jpwd");
-#endif
+  #endif
 
-#ifdef CHECK_ACCESS_FILE
-        //use it
-#else
+  #ifndef CHECK_ACCESS_FILE
         char CHECK_ACCESS_FILE[256];
         strcpy (CHECK_ACCESS_FILE, getenv ("HOME") );
         strcat (CHECK_ACCESS_FILE, "/.jpwdchk");
-#endif // CHECK_ACCESS_FILE
+  #endif // CHECK_ACCESS_FILE
+        int rpwd;
+        char getpasswd[256];
+        const char auth[] = "auth-required";
+        const char granted[] = "granted";
+        const char denied[] = "denied";
+        char passwd_from_client[BUFSIZ];
+        char getit[BUFSIZ];
 
+        FILE* source_passwd;
+
+        log_string ("[CLIENT-AUTH]Authentication required!");
+        if (write (client_sockfd, auth, strlen (auth) ) < 0) {
+                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                log_error ("[write()][auth] Error");
+                log_error (errlog);
+        }
+        
+        if ( (rpwd = read (client_sockfd, getpasswd, sizeof (getpasswd) ) ) < 0) {
+                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                log_error ("[read()][getpasswd] Error");
+                log_error (errlog);
+        } else {
+                if (rpwd == 0) {
+                        log_string ("[JASM-DAEMON]Client disconnected or leaved empty while inserting password");
+                        shutdown (client_sockfd, 2);
+                }
+        }
+
+        if ( (source_passwd = fopen (PASSWD_ENC_FILE, "r") ) != NULL) {
+                char *ret_value = fgets (passwd_from_client, BUFSIZ, source_passwd);
+                if (ret_value == NULL)
+                {
+                        log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                        fclose (source_passwd);
+                        exit (NOFILE_ERROR);
+                }
+                fclose (source_passwd);
+        } else {
+                log_error ("[JASM-DAEMON][FILE]Password file not found!");
+                log_error ("[SECURITY]JASM is going to be killed to avoid intrusion");
+                exit (NOFILE_ERROR);
+        }
+        if (strcmp (getpasswd, passwd_from_client) == 0) {
+                log_string ("[PWD][OK]Password accepted!");
+                log_string ("[PWD][OK]Authorized!");
+                if (write (client_sockfd, granted, strlen (granted) ) < 0) {
+                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                        log_error ("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted");
+                        log_error (errlog);
+                }
+                return true;
+
+        } else  {
+
+                log_error ("[PWD][DEN]Wrong password!");
+                if (write (client_sockfd, denied, strlen (denied) ) < 0) {
+                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                        log_error ("[JASM-DAEMON][write()] Error!");
+                        log_error (errlog);
+                }
+
+                if(read (client_sockfd,getit,strlen(getit)) < 0) {
+                        sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
+                        log_error("[JASM-DAEMON][read()] Error!");
+                        log_error(errlog);
+                }
+
+                if (write (client_sockfd, "retry", 5) < 0) {
+                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                        log_error ("[JASM-DAEMON][write()] Error");
+                        log_error (errlog);
+                }
+
+                for (int i = 1; i <= *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values + 1; i++) {
+                        FILE * chkfile;
+                        char passwd[256];
+                        char attstr[BUFSIZ];
+
+                        int nbs = read (client_sockfd, passwd, sizeof (passwd) );
+                        if (nbs == 0) {
+                                log_string ("[JASM-DAEMON][LOGIN]0 Bytes received!");
+                                shutdown (client_sockfd, 2);
+
+                        }
+                        else if (nbs < 0)
+                        {
+                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                                log_error ("[JASM-DAEMON][read()] Error");
+                                log_error (errlog);
+                        }
+
+                        if (strcmp (passwd, passwd_from_client) == 0)
+                        {
+                                if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL)
+                                {
+                                        log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                                        fclose (source_passwd);
+                                        exit (NOFILE_ERROR);
+                                }
+                                fprintf (chkfile, "falset");
+                                fclose (chkfile);
+                                sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!", i);
+                                log_string (attstr);
+                                if (write (client_sockfd, "authorized", strlen ("authorized") ) < 0)
+                                {
+                                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                                        log_error ("[JASM-DAEMON][write()] Error");
+                                        log_error (errlog);
+                                }
+                                break;
+                        }
+                        else if (strcmp (passwd, passwd_from_client) != 0) {
+                                if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL) {
+                                        log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                                        fclose (source_passwd);
+                                        exit (NOFILE_ERROR);
+                                }
+                                fprintf (chkfile, "true");
+                                fclose (chkfile);
+                                sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d FAILED!", i);
+                                log_string (attstr);
+
+                                if (write (client_sockfd, "retry", strlen ("retry") ) < 0) {
+                                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
+                                        log_error ("[JASM-DAEMON][write()] Error");
+                                        log_error (errlog);
+                                }
+
+                                if (i == *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
+                                        char intalert[BUFSIZ];
+                                        shutdown (client_sockfd, 2);
+                                        log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
+                                        sprintf(intalert,"[JASM-DAEMON][ALERT]More than %d tries failed",*(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values);
+
+                                }
+                        }
+                }
+        }
+        return false;
+}
+
+void start_server()
+{
+
+  #ifndef PASSWD_ENC_FILE
+        char PASSWD_ENC_FILE[256];
+        strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
+        strcat (PASSWD_ENC_FILE, "/.jpwd");
+  #endif
         int server_sockfd, client_sockfd;
         int server_len;
         socklen_t client_len;
@@ -238,7 +474,7 @@ void start_server()
         log_string ("[JASM-DAEMON]Server started");
 
         while (1) {
-                char *ret_value = NULL;
+                //char *ret_value = NULL;
                 char buf[BUFSIZ];
                 char received[BUFSIZ];
                 int fd;
@@ -272,140 +508,16 @@ void start_server()
                                         }
                                         FD_SET (client_sockfd, &readfds);
                                         sprintf (client_ipaddr, "%d.%d.%d.%d", client_address.sin_addr.s_addr & 0xFF, (client_address.sin_addr.s_addr & 0xFF00) >> 8, (client_address.sin_addr.s_addr & 0xFF0000) >> 16, (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
-                                        if (login_required (client_ipaddr) == 1) {
-                                                int rpwd;
-                                                char getpasswd[256];
-                                                const char auth[] = "auth-required";
-                                                const char granted[] = "granted";
-                                                const char denied[] = "denied";
-                                                // was 256 bytes, but the relative fgets was called with
-                                                // the BUFSIZ parameter. Now it's fixed
-                                                char passwd_from_client[BUFSIZ];
-                                                char getit[BUFSIZ];
-
-                                                FILE* source_passwd;
-
-                                                log_string ("[CLIENT-AUTH]Authentication required!");
-                                                if (write (client_sockfd, auth, strlen (auth) ) < 0) {
-                                                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                        log_error ("[write()][auth] Error");
-                                                        log_error (errlog);
-                                                }
-
-                                                if ( (rpwd = read (client_sockfd, getpasswd, sizeof (getpasswd) ) ) < 0) {
-                                                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                        log_error ("[read()][getpasswd] Error");
-                                                        log_error (errlog);
-                                                }
-
-                                                if (rpwd == 0) {
-                                                        log_string ("[JASM-DAEMON]Client disconnected or leaved empty while inserting password");
-                                                        shutdown (client_sockfd, 2);
-                                                        break;
-                                                }
-
-                                                if ( (source_passwd = fopen (PASSWD_ENC_FILE, "r") ) != NULL) {
-                                                        ret_value = fgets (passwd_from_client, BUFSIZ, source_passwd);
-                                                        if (ret_value == NULL)
-                                                        {
-                                                                log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value");
-                                                        }
-                                                        fclose (source_passwd);
+                                        //************************************************
+                                        if(login_required(client_ipaddr)) {
+                                               
+                                        	if(isCorrectPassword(client_sockfd)) {
+                                                	goodLoginRoutine(client_ipaddr, client_sockfd);
                                                 } else {
-                                                        log_error ("[JASM-DAEMON][FILE]Password file not found!");
-                                                        log_error ("[SECURITY]JASM is going to be killed to avoid intrusion");
-                                                        exit (NOFILE_ERROR);
-                                                }
-
-                                                if (strcmp (getpasswd, passwd_from_client) == 0) {
-                                                        log_string ("[PWD][OK]Password accepted!");
-                                                        log_string ("[PWD][OK]Authorized!");
-                                                        if (write (client_sockfd, granted, strlen (granted) ) < 0) {
-                                                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                                log_error ("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted");
-                                                                log_error (errlog);
-                                                        }
-                                                }
-                                                else if (strcmp (getpasswd, passwd_from_client) != 0) {
-
-                                                        log_error ("[PWD][DEN]Wrong password!");
-                                                        if (write (client_sockfd, denied, strlen (denied) ) < 0) {
-                                                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                                log_error ("[JASM-DAEMON][write()] Error!");
-                                                                log_error (errlog);
-
-                                                        }
-
-                                                        if(read (client_sockfd,getit,strlen(getit)) < 0) {
-                                                                sprintf(errlog,"[JASM-DAEMON][errno] Errno: %s",strerror(errno));
-                                                                log_error("[JASM-DAEMON][read()] Error!");
-                                                                log_error(errlog);
-                                                        }
-
-                                                        if (write (client_sockfd, "retry", 5) < 0) {
-                                                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                                log_error ("[JASM-DAEMON][write()] Error");
-                                                                log_error (errlog);
-                                                        }
-
-                                                        for (int i = 1; i <= *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values + 1; i++) {
-                                                                FILE * chkfile;
-                                                                char passwd[256];
-                                                                char attstr[BUFSIZ];
-
-                                                                int nbs = read (client_sockfd, passwd, sizeof (passwd) );
-                                                                if (nbs == 0) {
-                                                                        log_string ("[JASM-DAEMON][LOGIN]0 Bytes received!");
-                                                                        break;
-                                                                }
-                                                                else if (nbs < 0)
-                                                                {
-                                                                        sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                                        log_error ("[JASM-DAEMON][read()] Error");
-                                                                        log_error (errlog);
-                                                                }
-
-                                                                if (strcmp (passwd, passwd_from_client) == 0)
-                                                                {
-                                                                        if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL)
-                                                                        {
-                                                                                /*Ciao sono Giuseppe Simone*/
-                                                                        }
-                                                                        fprintf (chkfile, "falset");
-                                                                        fclose (chkfile);
-                                                                        sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!", i);
-                                                                        log_string (attstr);
-                                                                        if (write (client_sockfd, "authorized", strlen ("authorized") ) < 0)
-                                                                        {
-                                                                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                                                log_error ("[JASM-DAEMON][write()] Error");
-                                                                                log_error (errlog);
-                                                                        }
-                                                                        break;
-                                                                }
-                                                                else if (strcmp (passwd, passwd_from_client) != 0) {
-                                                                        if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL) {
-                                                                        }
-                                                                        fprintf (chkfile, "true");
-                                                                        fclose (chkfile);
-                                                                        sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d FAILED!", i);
-                                                                        log_string (attstr);
-
-                                                                        if (write (client_sockfd, "retry", strlen ("retry") ) < 0) {
-                                                                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                                                log_error ("[JASM-DAEMON][write()] Error");
-                                                                                log_error (errlog);
-                                                                        }
-
-                                                                        if (i == *(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values) {
-                                                                                char intalert[BUFSIZ];
-                                                                                shutdown (client_sockfd, 2);
-                                                                                log_string ("[JASM-DAEMON][ALERT]Connection with client was shutted down!");
-                                                                                sprintf(intalert,"[JASM-DAEMON][ALERT]More than %d tries failed",*(int*)_config[CONFIG_MAX_AUTHENTICATION_TRIES].config_values);
-                                                                                break;
-                                                                        }
-                                                                }
-                                                        }
+                                                	//if here -> too many wrongs
+                                                	shutdown (client_sockfd, 2);
+                                                	sprintf(errlog, "[WARNING] Client %s insert too many wrong passwords. Closing sockets, be careful man!", client_ipaddr);
+                                                	log_string(errlog);
                                                 }
                                         } else {
                                                 const char chkpwd[] = "check-pwd-file";
@@ -441,8 +553,8 @@ void start_server()
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][read()] error");
                                                                 log_error (errlog);
-                                                        }else if (bytes == 0) {
-                                                                /* Do nothing*/
+                                                        //}else if (bytes == 0) {
+                                                                // Do nothing
                                                         } else if(bytes > 0) {
                                                                 if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
                                                                         fputs (buf_in_passwd, pswfp);
@@ -450,31 +562,8 @@ void start_server()
                                                                 }
                                                         }
                                                 }
+                                                goodLoginRoutine(client_ipaddr, client_sockfd);
                                         }
-                                        sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
-                                        log_string (buf);
-                                        add_clientIp(&client_list, client_ipaddr);
-                                        #ifdef DEBUG
-                                        log_client(client_list);
-                                        #endif
-                                        if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
-                                                connection_counter++;
-                                                #ifdef DEBUG
-                                                log_string("client connection is ok");
-                                                #endif
-                                        } else {
-                                                if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
-                                                        shutdown(client_sockfd,2);
-                                                #ifdef DEBUG
-                                                        log_string("client connection refused: max connection limit hit!");
-                                                #endif
-                                                        //continue;
-                                                }
-                                        }
-#ifdef DEBUG
-                                        sprintf(errlog,"Client: %d",connection_counter);
-                                        log_string(errlog);
-#endif
 
                                 } else {
                                         ioctl (fd, FIONREAD, &nread);
@@ -504,4 +593,5 @@ void start_server()
                         }
                 }
         }
+
 }
