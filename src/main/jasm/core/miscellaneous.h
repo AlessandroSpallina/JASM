@@ -39,5 +39,5 @@ extern char *getTime (void);
 extern void start_daemon (void);
 extern _Bool login_required (const char *clientaddr);
 extern int check_passwd_file (const char* __pwdf);
-
+extern int read_line(int file, char *buffer,int length);
 #endif
