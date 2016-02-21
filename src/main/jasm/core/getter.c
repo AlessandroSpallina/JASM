@@ -62,20 +62,27 @@ void getProcesses (int fd);
 void getCpuNumber (int fd);
 void getSchedulerVersion (int fd);
 void getSchedulerInfo (int fd);
-
+void getCHRDevices (int fd);
+void getBLKDevices (int fd);
+void getEmulatedFSDevices (int fd);
+void getRealFSDevices (int fd);
+void getMeminfo (int fd);
+void getModules (int fd);
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
                                     "CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes",
                                     "SchedulerVersion" ,"SchedulerInfo", "CpuName", "CacheSize", "CoreNum", "CoreSpeeds",
-                                    "AddressSizes", "CreatedProcNum", "IfSwap", "FileHandlesNum"
+                                    "AddressSizes", "CreatedProcNum", "IfSwap", "FileHandlesNum","CHRDevices","BLKDevices",
+                                    "EmulatedFSDevices", "RealFSDevices","Meminfo","Modules"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getKernelName, getKernelRelease, getKernelVersion,getPosixVersion, getMachine,
                                          getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
                                          getProcesses, getSchedulerVersion, getSchedulerInfo, getCpuName, getCacheSize, getCoreNum,
-                                         getCoreSpeeds, getAddressSizes,getCreatedProcNum, getIfSwap, getFileHandlesNum
+                                         getCoreSpeeds, getAddressSizes,getCreatedProcNum, getIfSwap, getFileHandlesNum, getCHRDevices, getBLKDevices,
+                                         getEmulatedFSDevices, getRealFSDevices, getMeminfo, getModules
                                         };
 
 /*
@@ -743,7 +750,7 @@ void getCpuName (int fd) //Returns the name of the Cpu
 		char *string;
 		int i = 0;
 		int n;
-		
+
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -784,7 +791,7 @@ void getCacheSize (int fd) //Returns the cache size of the cpu
 		char *string;
 		int i = 0;
 		int n;
-		
+
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -826,7 +833,7 @@ void getCoreNum (int fd) //Returns the number of physical cores
 		char *string;
 		int i = 0;
 		int n;
-	
+
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -879,26 +886,26 @@ void getCoreSpeeds (int fd) //Returns the core speeds
 	while(1){
 		i = 0;
 		while(tmp[i] != '\n') ++i;
-		sprintf(speeds[j], "%.*s", i, tmp); 
+		sprintf(speeds[j], "%.*s", i, tmp);
 		if(strstr(tmp, info) == NULL) break; //if it's NULL, it was the last core, and it can exit from loop
 		else{
 			tmp = &strstr(tmp, info)[strlen(info)];
 		}
 		++j;
 	}
-	
+
 	/*This code is just for formatting*/
 	for (i = 0; i < j+1; i += 1)
 	{
-			sprintf(final_string + strlen(final_string), "%d: %s Mhz", i, speeds[i]); 
+			sprintf(final_string + strlen(final_string), "%d: %s Mhz", i, speeds[i]);
 			if(i != j){
 				sprintf(final_string + strlen(final_string), " | ");
 			}
 	}
-	
+
 	close(cpu_fd);
 	n = write (fd, final_string, strlen(final_string));
-	
+
 	if (n < 0)
   	{
   	     sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -929,7 +936,7 @@ void getAddressSizes (int fd) //Returns cpu address size
 		char *string;
 		int i = 0;
 		int n;
-	
+
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -971,7 +978,7 @@ void getCreatedProcNum (int fd) //Returns the number of created processes since 
 		char *string;
 		int i = 0;
 		int n;
-	
+
 		proc_fd = open("/proc/stat", O_RDONLY);
 		if(read(proc_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -1012,7 +1019,7 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 		char result[4];
 		int i = 0;
 		int n;
-	
+
 		swaps_fd = open("/proc/swaps", O_RDONLY);
 		if(read(swaps_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -1026,7 +1033,7 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 		else{
 			strcpy(result, "yes");
 		}
-		
+
 		n = write (fd, result, strlen(result));
 		close(swaps_fd);
 		if (n < 0)
@@ -1058,7 +1065,7 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
 		char result[10];
 		int i = 0;
 		int n;
-	
+
 		file_fd = open("/proc/sys/fs/file-nr", O_RDONLY);
 		if(read(file_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -1067,7 +1074,7 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
 		}
 		while(buf[i] != '\t') ++i;
 		sprintf(result, "%.*s", i, buf);
-		
+
 		n = write (fd, result, strlen(result));
 		close(file_fd);
 		if (n < 0)
@@ -1090,5 +1097,391 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
         }
     }
 }
+void getCHRDevices (int fd)
+{
+        int lenght=50;
+        int file,res;
+        int lines=0,i=0;
+        char *path="/proc/devices";
+        char *devices[lenght];
+        ssize_t ret_val = -1;
 
 
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+          return;
+        }
+
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+            if((strncmp(devices,"Block",5))==0) break;
+            lines++;
+        }
+
+        lines=lines-2;
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+          return;
+        }
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+                return;
+        }
+
+        lines=lines+1;
+        lseek(file,0,SEEK_SET);
+        for (i = 0; i < lines; i++)
+        {
+          if (i==0)
+          {
+            res=read_line(file,devices,length);
+          }
+          else
+          {
+                res=read_line(file,devices,length);
+
+                ret_val = write (fd, devices, strlen(devices));
+
+                if (ret_val == 0 || ret_val == -1)
+                {
+                        log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                        log_error (error);
+                        return;
+                }
+        }
+      }
+      close(file);
+}
+void getBLKDevices (int fd)
+{
+        int length=50;
+        int file,res;
+        int lines=0,i=0,j=0,k=0;
+        char *path="/proc/devices";
+        char devices[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+
+            if((strncmp(devices,"Block",5))==0)
+            {
+              j=1;
+            }
+            if(j==1)
+            {
+
+               lines++;
+            }
+            else
+            {
+
+               k++;
+            }
+
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+               log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+               log_error (error);
+               return;
+        }
+
+        lseek(file,0,SEEK_SET);
+        for(i=0;i<k;i++)
+        {
+          res=read_line(file,devices,length);
+        }
+        for (i = 0; i < lines; i++)
+        {
+          if (i==0)
+          {
+            res=read_line(file,devices,length);
+          }
+                    res=read_line(file,devices,length);
+                    ret_val = write (fd, devices, strlen(devices));
+
+                    if (ret_val == 0 || ret_val == -1)
+                    {
+                            log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                            log_error (error);
+                            return;
+                    }
+        }
+        close(file);
+        return;
+}
+void getEmulatedFSDevices (int fd)
+{
+        int length=50;
+        int file,res;
+        int lines=0,i=0,j=0,k=0;
+        char *path="/proc/filesystems";
+        char devices[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+          return;
+        }
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+
+            if((strncmp(devices,"nodev",5))==0)
+            {
+              lines++;
+            }
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+                return;
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+            if((strncmp(devices,"nodev",5))==0)
+            {
+
+
+                    ret_val = write (fd, devices, strlen(devices));
+
+                    if (ret_val == 0 || ret_val == -1)
+                    {
+                            log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                            log_error (error);
+                            return;
+                    }
+            }
+        }
+        close(file);
+
+}
+void getRealFSDevices (int fd)
+{
+        int length=50;
+        int file,res;
+        int lines=0,i=0,j=0,k=0;
+        char *path="/proc/filesystems";
+        char devices[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+
+            if((strncmp(devices,"nodev",5))==0);
+            else lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+                return;
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+            if((strncmp(devices,"nodev",5))==0);
+            else
+            {
+              ret_val = write (fd, devices, strlen(devices));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+                      return;
+              }
+
+            }
+        }
+        close(file);
+
+}
+void getMeminfo (int fd)
+{
+        int length=50;
+        int file,res;
+        int lines=0,i=0,j=0,k=0;
+        char *path="/proc/meminfo";
+        char devices[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+               log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+               log_error (error);
+               return;
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+
+              ret_val = write (fd, devices, strlen(devices));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                     log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                     log_error (error);
+                     return;
+              }
+
+
+        }
+        close(file);
+
+}
+void getModules (int fd)
+{
+        int length=100;
+        int file,res;
+        int lines=0,i=0,j=0,k=0;
+        char *path="/proc/modules";
+        char devices[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+                return;
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,devices,length))!=0)
+        {
+
+              ret_val = write (fd, devices, strlen(devices));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+                      return;
+              }
+
+
+        }
+        close(file);
+        return;
+}
