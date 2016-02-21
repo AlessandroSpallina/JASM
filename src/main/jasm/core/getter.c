@@ -68,13 +68,21 @@ void getEmulatedFSDevices (int fd);
 void getRealFSDevices (int fd);
 void getMeminfo (int fd);
 void getModules (int fd);
+void getBuddyinfo (int fd);
+void getDma (int fd);
+void getIOmem (int fd);
+void getKeyUsr (int fd);
+void getMtrr (int fd);
+void getMisc (int fd);
+void getInterrupts (int fd);
+
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
                                     "CpuProcessor","CpuNumber","UpTime","TotalRAM","FreeRAM","Processes",
                                     "SchedulerVersion" ,"SchedulerInfo", "CpuName", "CacheSize", "CoreNum", "CoreSpeeds",
                                     "AddressSizes", "CreatedProcNum", "IfSwap", "FileHandlesNum","CHRDevices","BLKDevices",
-                                    "EmulatedFSDevices", "RealFSDevices","Meminfo","Modules"
+                                    "EmulatedFSDevices", "RealFSDevices","Meminfo","Modules","Buddyinfo","Dma", "IOmem","KeyUsr", "Mtrr","Misc","Interrupts"
                                    };
 
 void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
@@ -82,7 +90,8 @@ void (*getterFunction[NGETTER]) (int) = {getVersion, getCopyright, getHostname,
                                          getCpuProcessor, getCpuNumber, getUpTime, getTotalRAM, getFreeRAM,
                                          getProcesses, getSchedulerVersion, getSchedulerInfo, getCpuName, getCacheSize, getCoreNum,
                                          getCoreSpeeds, getAddressSizes,getCreatedProcNum, getIfSwap, getFileHandlesNum, getCHRDevices, getBLKDevices,
-                                         getEmulatedFSDevices, getRealFSDevices, getMeminfo, getModules
+                                         getEmulatedFSDevices, getRealFSDevices, getMeminfo, getModules, getBuddyinfo, getDma, getIOmem,
+                                         getKeyUsr,getMtrr,getMisc,getInterrupts
                                         };
 
 /*
@@ -1097,6 +1106,11 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
         }
     }
 }
+
+/*
+ *  Getter coded by Emanuele Virgillito
+ *  https://github.com/EmaVirg
+ */
 void getCHRDevices (int fd)
 {
         int lenght=50;
@@ -1161,6 +1175,11 @@ void getCHRDevices (int fd)
       }
       close(file);
 }
+
+/*
+ *  Getter coded by Emanuele Virgillito
+ *  https://github.com/EmaVirg
+ */
 void getBLKDevices (int fd)
 {
         int length=50;
@@ -1240,6 +1259,11 @@ void getBLKDevices (int fd)
         close(file);
         return;
 }
+
+/*
+ *  Getter coded by Emanuele Virgillito
+ *  https://github.com/EmaVirg
+ */
 void getEmulatedFSDevices (int fd)
 {
         int length=50;
@@ -1304,6 +1328,11 @@ void getEmulatedFSDevices (int fd)
         close(file);
 
 }
+
+/*
+ *  Getter coded by Emanuele Virgillito
+ *  https://github.com/EmaVirg
+ */
 void getRealFSDevices (int fd)
 {
         int length=50;
@@ -1367,6 +1396,11 @@ void getRealFSDevices (int fd)
         close(file);
 
 }
+
+/*
+ *  Getter coded by Emanuele Virgillito
+ *  https://github.com/EmaVirg
+ */
 void getMeminfo (int fd)
 {
         int length=50;
@@ -1426,6 +1460,11 @@ void getMeminfo (int fd)
         close(file);
 
 }
+
+/*
+ *  Getter coded by Emanuele Virgillito
+ *  https://github.com/EmaVirg
+ */
 void getModules (int fd)
 {
         int length=100;
@@ -1478,6 +1517,443 @@ void getModules (int fd)
                       log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
                       log_error (error);
                       return;
+              }
+
+
+        }
+        close(file);
+        return;
+}
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getBuddyinfo (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=0;
+        char *path="/proc/buddyinfo";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+              }
+
+
+        }
+        close(file);
+        return;
+}
+
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getDma (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=0;
+        char *path="/proc/dma";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+              }
+
+
+        }
+        close(file);
+        return;
+}
+
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getIOmem (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=0;
+        char *path="/proc/iomem";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+              }
+
+
+        }
+        close(file);
+        return;
+}
+
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getKeyUsr (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=0;
+        char *path="/proc/key-users";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+              }
+
+
+        }
+        close(file);
+        return;
+}
+
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getMtrr (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=0;
+        char *path="/proc/mtrr";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+              }
+
+
+        }
+        close(file);
+        return;
+}
+
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getMisc (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=1;
+        char *path="/proc/misc";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
+              }
+
+
+        }
+        close(file);
+        return;
+}
+
+/*
+ *  Getter coded by Orazio Scavo
+ *  https://github.com/orazioscavo13
+ */
+void getInterrupts (int fd)
+{
+        int length=120;
+        int file,res;
+        int lines=0;
+        char *path="/proc/interrupts";
+        char riga[length];
+        int ret_val = -1;
+
+        file=open(path,O_RDONLY);
+        if(file==-1)
+        {
+          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          log_error (error);
+
+          return;
+        }
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+            lines++;
+        }
+
+
+        if (lines == 0)
+        {
+          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
+          log_error (error);
+
+          return;
+        }
+
+        ret_val = write (fd, &lines, sizeof (lines));
+
+        if (ret_val == 0 || ret_val == -1)
+        {
+                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                log_error (error);
+        }
+
+        lseek(file,0,SEEK_SET);
+
+        while((res=read_line(file,riga,length))!=0)
+        {
+
+              ret_val = write (fd, riga, strlen(riga));
+
+              if (ret_val == 0 || ret_val == -1)
+              {
+                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                      log_error (error);
               }
 
 
