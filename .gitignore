@@ -6,6 +6,12 @@
 *.vim
 *.layout
 *.cbp
+*.*.user
+*.user
+*.creator
+*.config
+*.includes
+*.files
 
 jasm.log
 jasm-debug

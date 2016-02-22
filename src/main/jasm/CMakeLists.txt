@@ -4,7 +4,22 @@ cmake_minimum_required(VERSION 2.8.12) #CMake 2.8
 
 project(JASM C) #JASM
 
-#versioning 
+#versioning
+#Versioning & Build Date
+
+#PATTERN : MAJOR.MINOR.REVISION:PATCH
+set(JASM_VMAJOR 0)
+set(JASM_VMINOR 0)
+set(JASM_VREV 0)
+set(JASM_VPATCH 0)
+set(JASM_VERSION "${JASM_VMAJOR}.${JASM_VMINOR}.${JASM_VREV}:${JASM_VPATCH}")
+#if(${CMAKE_BUILD_TYPE})
+#    set(JASM_VERSION "${JASM_VMAJOR}.${JASM_VMINOR}.${JASM_VREV}:${JASM_VPATCH}-debug")
+#endif()
+configure_file (
+    "core/jasmbuild_info.h.in"
+    "core/jasmbuild_info.h"
+    )
 
 find_package(Threads REQUIRED) 
 if(UNIX)
@@ -14,7 +29,7 @@ if(UNIX)
 	endif()
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -pipe -mtune=native -std=c11 -Wall -W")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -pipe -mtune=native -std=c11 -Wall")
 set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=native -std=c11 -Wall -W")
 
 set(CORESRCS core/configfile.c core/getter.c core/ipc.c core/logger.c 
