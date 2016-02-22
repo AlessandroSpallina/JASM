@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright © 2015 Alessandro Spallina
+* Copyright ?? 2015 Alessandro Spallina
 * email: alessandrospallina1@gmail.com
 * github: https://github.com/AlessandroSpallina
 *
@@ -19,6 +19,7 @@
 #ifndef _MODULES_LIST_H
 #define _MODULES_LIST_H
 
+#include <pthread.h>
 /*
  *  These structs are atomic elements of an ordered list allocated in heap.
  *  The list is ordered by client_ip, every ip_node have a pointer to an ordered

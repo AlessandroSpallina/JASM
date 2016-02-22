@@ -1,5 +1,10 @@
 ### JASM
 
+*READ[DEV]: To enable debugging , generate Makefile using CMake*
+~~~
+cmake . -DCMAKE_BUILD_TYPE=Debug
+~~~
+
 *URGENT: JASMCLI marked as deprecated, will be replaced soon*
 
 JustAnotherSystemMonitor

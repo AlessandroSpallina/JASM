@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright © 2015 Alessandro Spallina
+* Copyright ?? 2015 Alessandro Spallina
 * email: alessandrospallina1@gmail.com
 * github: https://github.com/AlessandroSpallina
 *
