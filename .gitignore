@@ -8,10 +8,10 @@
 *.cbp
 *.*.user
 *.user
-*.creator
-*.config
-*.includes
-*.files
+JASM.creator
+JASM.config
+JASM.includes
+JASM.files
 
 jasm.log
 jasm-debug
