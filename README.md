@@ -1,10 +1,5 @@
 ### JASM
 
-*READ[DEV]: To enable debugging , generate Makefile using CMake*
-~~~
-cmake . -DCMAKE_BUILD_TYPE=Debug
-~~~
-
 *URGENT: JASMCLI marked as deprecated, will be replaced soon*
 
 JustAnotherSystemMonitor
@@ -23,13 +18,9 @@ Unix-like operating systems are supported, but we are planning to use GNU C Libr
 
 *Noobs: how to compile?*
 
-Just type make, the output directory is bin/ :)
-
-*Mmh... Ok, other make rules?*
-
- - clean (cleans object files and other things)
- - cleanbin (cleans bin/ directory except placeholder to avoid bin directory gets deleted from git when staging)
- - debug [builds a *debug* release(debug symbols,no optimization,preproc opts...)]
+We just switched *CMake* build automation tool!
+Configure this project almost everywhere!
+Follow instructions below (as we suggest) 
 
 *Compiler*
 
@@ -38,6 +29,65 @@ We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makef
 *Nerdy*
 
 We use C11
+
+### USE CMAKE (IMPORTANT)
+ 
+ As you read above, we just switched to cmake, now you can configure this project even on Windows, but we will give you instruction for GNU/Linux (and almost UNIX and Unix-like OS)
+
+ CMake is a build-automation tool, with it you can build project files (from XCode to VS) and Makefiles! (Cross-platform Make)
+
+ Follow this instructions
+
+ * Be sure you are using GCC
+ ~~~
+ $ export CC=/usr/bin/gcc
+ ~~~
+ You should change your shell's rc and add above line to the rcfile.
+ If you are using a shell like fish (it is NOT POSIX compilant)
+ ~~~
+ $ set -x CC /usr/bin/gcc
+ ~~~
+
+ * Well, you are in JASM directory... Now?
+ We already created a directory called "buildenv", CMakeFiles are configured to use it
+ ~~~
+ $ ls buildenv 
+ ~~~
+ *probably it is empty, if no output, then it is right*
+
+ * Change directory, configure, compile
+  Now it's time to compile!
+  ~~~
+  $ cd buildenv/
+  ~~~
+  ... configure via cmake
+  ~~~
+  $ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc
+  ~~~
+  *Explaination: cmake checks for CMakeLists.txt in the '..' directory*
+  * -DCMAKE_BUILD_TYPE=Relase : means that the build must be "Release", but you may want to use "-DCMAKE_BUILD_TYPE=Debug"
+  * -DCMAKE_C_COMPILER=/usr/bin/gcc : tells cmake what compiler should use, it is not really necessary if you set CC=gcc (*INFO: for CXX, same thing but its CMAKE_CXX_COMPILER*)
+  Then, we can launch make
+  ~~~
+  $ make -j2
+  ~~~
+  Now make (-j2 = 2 jobs working...) does all the stuffs and you can find jasm to ../bin/jasm ; if you used the Debug: ../bin-debug/jasm
+  You may want to know what happens in the backend
+  ~~~
+  $ make VERBOSE=1 -j2
+  ~~~
+
+ * Now, you may want to delete buildenv content, just use
+ ~~~
+ $ rm -rf *
+ ~~~
+ *Inside buildenv/*
+
+ * You can also use clean rule
+ ~~~
+ $ make clean
+ ~~~
+ *Inside buildenv/*
 
 ### Versions
 
