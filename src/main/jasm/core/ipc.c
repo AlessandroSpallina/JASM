@@ -31,6 +31,7 @@
 #include <syslog.h>
 #include <stdbool.h>
 
+#include "jasmbuild_info.h"
 #include "configfile.h"
 #include "ipc.h"
 #include "miscellaneous.h"

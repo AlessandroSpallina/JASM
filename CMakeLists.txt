@@ -11,6 +11,8 @@ cmake_minimum_required(VERSION 2.8.12)
 #JASM target
 project(JASM)
 
+set(COPYRIGHT "GNU Public License 3 - GPLv3")
+
 #Versioning & Build Date
 
 #PATTERN : MAJOR.MINOR.REVISION:PATCH

@@ -30,9 +30,6 @@
 #define ERR_SET_PROCESS_SPAWN 141
 #define LOCALHOST "127.0.0.1"
 
-#define VERSION "jasm-develstage" //<-- CHANGE IT!
-#define COPYRIGHT "GNU Public License (GPL) v3" //<-- GPLv3
-
 extern char buildate[256];
 
 extern char *getTime (void);

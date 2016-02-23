@@ -5,8 +5,8 @@ JASM_SYSTEMD_SERVICE=jasm.service
 
 if [ $(id -u) -eq 0 ];
 then
-				[ -f bin/jasm ] && cp -v bin/jasm /usr/bin/jasm
-				[ -f $JASM_SYSTEMD_SERVICE ] && cp -v $JASM_SYSTEMD_SERVICE $SYSTEMD_TARGET_DIR
+				[ -f bin/jasm ] && cp -v bin/jasm /usr/bin/jasm || exit 1
+				[ -f $JASM_SYSTEMD_SERVICE ] && cp -v $JASM_SYSTEMD_SERVICE $SYSTEMD_TARGET_DIR || exit 2
 
 				printf "* To enable jasm.service run:\n* systemctl enable jasm.service\n"
 				printf "\033[32m* Copy the file \033[0m\033[34mdata/jconfig to /home/your_username/.jasm_config\033[0m\n"
