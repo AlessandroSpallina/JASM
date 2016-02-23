@@ -2,7 +2,6 @@
 *.depend
 *.vimrc
 *.anjuta_sym_db.db
-*.o
 *.vim
 *.layout
 *.cbp
@@ -21,12 +20,15 @@ jasmcli.*
 *.gch
 *.h.gch
 
+*.a
+*.so
+*.o
+
 GTAGS
 GRTAGS
 GPATH
 
 *~
-
 
 CMakeCache.txt
 CMakeFiles
