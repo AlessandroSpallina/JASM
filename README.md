@@ -127,6 +127,8 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
 ### Install
 
+ * UNIX / Unix-like
+
  Use install.sh to do stuffs (UNIX / Unix-like)
 
  ~~~
@@ -137,6 +139,9 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
  Then, copy yourself *data/jconfig* to *$HOME/.jasm_config*
 
+ * WINDOWS 
+ 
+ We hope to create a batch script for win
  
 ### Platform
 
