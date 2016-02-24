@@ -41,3 +41,4 @@ string(TIMESTAMP BUILD_DATE "%Y/%m/%d %H:%M:%S")
 
 #Go to subdirectory
 add_subdirectory(src/main/jasm)
+
