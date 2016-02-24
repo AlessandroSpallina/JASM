@@ -98,6 +98,10 @@ We use C11
  *Inside buildenv/*
  
  *NOTE: YOU CAN SWITCH TARGET USING -DCMAKE_BUILD_TYPE=Debug, re-using cmake*
+ 
+ *Don't delete jasmbuild_info.h.in*
+ 
+ *Change version number using CMakeLists.txtx (howto in file)*
 
 ### Versions
 

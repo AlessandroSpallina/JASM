@@ -15,8 +15,9 @@ set(COPYRIGHT "GNU Public License 3 - GPLv3")
 
 #Versioning & Build Date
 
-#PATTERN : MAJOR.MINOR.REVISION:PATCH
+#PATTERN : MAJOR.MINOR.REVISION:PATCH-BType-reltype
 #Ex : X.Y.Z:P-btype-rel
+#     0.0.1:3-unstable-release
 
 # IMPORTANT, CHANGE THIS FOR EVERY NEW VERSION #
 set(JASM_VMAJOR 0)
