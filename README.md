@@ -129,6 +129,9 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  ~~~
  *remember to copy data/jconfig to /home/username/.jasm_config*
  
+ * then, take data/jconfig and put it to $HOME/.jasm_config
+ * copy jasm.service to /etc/systemd/system/jasm.service
+ 
 ### Platform
 
  * JASM Core: Development 
