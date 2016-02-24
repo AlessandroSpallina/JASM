@@ -1,5 +1,7 @@
 ### JASM
 
+*NEWS: Switch to CMake, read below for instructions*
+
 *URGENT: JASMCLI marked as deprecated, will be replaced soon*
 
 JustAnotherSystemMonitor
@@ -62,12 +64,15 @@ We use C11
   ~~~
   ... configure via cmake
   ~~~
-  $ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc
+  $ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local
   ~~~
   *Explaination: cmake checks for CMakeLists.txt in the '..' directory*
   * -DCMAKE_BUILD_TYPE=Relase : means that the build must be "Release", but you may want to use "-DCMAKE_BUILD_TYPE=Debug"
   * -DCMAKE_C_COMPILER=/usr/bin/gcc : tells cmake what compiler should use, it is not really necessary if you set CC=gcc (*INFO: for CXX, same thing but its CMAKE_CXX_COMPILER*)
   Then, we can launch make
+  * -DCMAKE_INSTALL_PREFIX=/usr/local : tells cmake the install directory (Not necessary)
+  *on UNIX is /usr/local by default, on WINDOWS C:\Program Files*
+  (Note that you may change the systemd service file)
   ~~~
   $ make -j2
   ~~~
@@ -76,6 +81,8 @@ We use C11
   ~~~
   $ make VERBOSE=1 -j2
   ~~~
+  
+  Now, go below to the install parameter, jumping instructions below(later)
 
  * Now, you may want to delete buildenv content, just use
  ~~~
@@ -115,10 +122,12 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  * Nothing
 
 ### Install
- Just execute install.sh, this will copy binaries, libs,service and headers, to your system
- 
+
+ *Inside buildenv/*
+ ~~~
+ make install
+ ~~~
  *remember to copy data/jconfig to /home/username/.jasm_config*
- 
  
 ### Platform
 
