@@ -91,10 +91,13 @@ We use C11
  *Inside buildenv/*
 
  * You can also use clean rule
+ ... if you want to rebuild 
  ~~~
  $ make clean
  ~~~
  *Inside buildenv/*
+ 
+ *NOTE: YOU CAN SWITCH TARGET USING -DCMAKE_BUILD_TYPE=Debug, re-using cmake*
 
 ### Versions
 
