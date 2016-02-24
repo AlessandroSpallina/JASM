@@ -32,6 +32,13 @@ We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makef
 
 We use C11
 
+### GIT HOOKS
+
+ This repository uses git hooks to keep working tree clean,
+ learn more: https://git-scm.com/book/it/v2/Customizing-Git-Git-Hooks
+
+ check: *.git/hooks/pre-commit*
+
 ### USE CMAKE (IMPORTANT)
  
  As you read above, we just switched to cmake, now you can configure this project even on Windows, but we will give you instruction for GNU/Linux (and almost UNIX and Unix-like OS)
