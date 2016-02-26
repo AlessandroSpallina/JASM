@@ -46,3 +46,7 @@ CMakeScripts
 Makefile
 cmake_install.cmake
 install_manifest.txt
+
+#Packages
+*.deb
+*.rpm
