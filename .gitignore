@@ -1,3 +1,8 @@
+# Originally written from Stefano Belli
+# Add here useless IDE's project files
+# Don't delete anything here
+
+#IDEs
 *.anjuta
 *.depend
 *.vimrc
@@ -12,24 +17,29 @@
 *.includes
 *.files
 
+#JASM-related files
 jasm.log
 jasm-debug
 client.log
 jasmcli.*
 
+#Various
 *.gch
 *.h.gch
 
+#Static / Shared libraries and Objects 
 *.a
 *.so
 *.o
 
+#GTAGS files
 GTAGS
 GRTAGS
 GPATH
 
 *~
 
+#CMake useless files (Do not include CMakeFiles.txt!!)
 CMakeCache.txt
 CMakeFiles
 CMakeScripts
