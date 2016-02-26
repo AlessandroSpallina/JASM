@@ -5,11 +5,15 @@
 
 # --> ./CMakeLists.txt
 
+include(InstallRequiredSystemLibraries)
+
 #CMake 2.8 required (at least)
 cmake_minimum_required(VERSION 2.8.12)
 
 #JASM target
 project(JASM)
+
+set(MAINDIR ${PROJECT_SOURCE_DIR})
 
 set(COPYRIGHT "GNU Public License 3 - GPLv3")
 
@@ -41,4 +45,17 @@ string(TIMESTAMP BUILD_DATE "%Y/%m/%d %H:%M:%S")
 
 #Go to subdirectory
 add_subdirectory(src/main/jasm)
+
+install(FILES ${PROJECT_SOURCE_DIR}/bin/jasm
+    PERMISSIONS WORLD_EXECUTE
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(FILES ${PROJECT_SOURCE_DIR}/jasm.service
+    PERMISSIONS WORLD_READ
+    DESTINATION /etc/systemd/system)
+
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Ste")
+
+#Use CPack
+include(CPack)
 

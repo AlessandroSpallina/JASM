@@ -24,8 +24,8 @@ set(CORESRCS core/configfile.c core/getter.c core/ipc.c core/logger.c
  core/miscellaneous.c core/modules.c core/modules_list.c core/signals.c)
 set(MODSRCS modules/module_logsender.c)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG  ../../../../bin-debug)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ../../../../bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG  ${MAINDIR}/bin-debug)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${MAINDIR}/bin)
 
 #timedate definition
 add_definitions(-D_XOPEN_SOURCE=700)
