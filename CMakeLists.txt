@@ -24,6 +24,11 @@ cmake_minimum_required(VERSION 2.8.12)
 #JASM target
 project(JASM)
 
+#If no build type is specified
+if(NOT CMAKE_BUILD_TYPE)
+		set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 set(MAINDIR ${PROJECT_SOURCE_DIR})
 
 set(COPYRIGHT "GNU Public License 3 - GPLv3")
