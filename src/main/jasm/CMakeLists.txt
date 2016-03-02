@@ -12,7 +12,6 @@ configure_file (
 find_package(Threads REQUIRED) 
 if(UNIX)
 	if(THREADS_HAVE_PTHREAD_ARG)
-		set(CMAKE_THREAD_LIBS_INIT "-pthread")
 		target_compile_options(PUBLIC jasm "-pthread")
 	endif()
 endif()
