@@ -16,8 +16,13 @@ if(UNIX)
 	endif()
 endif()
 
-set(CMAKE_C_FLAGS_RELEASE "-O2 -pipe -mtune=native -std=c11 -Wall")
-set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=native -std=c11 -Wall -W")
+set(CMAKE_C_FLAGS_RELEASE "-O2 -pipe -mtune=native -std=c11 ")
+set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=native -std=c11 -Wall")
+
+if(WARNALL STREQUAL "yes")
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -W -Wextra -Wshadow")
+	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -W -Wextra -Wshadow")
+endif()
 
 set(CORESRCS core/configfile.c core/getter.c core/ipc.c core/logger.c 
  core/miscellaneous.c core/modules.c core/modules_list.c core/signals.c)
