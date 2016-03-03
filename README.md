@@ -64,9 +64,10 @@ We use C11
   ~~~
   ... configure via cmake
   ~~~
-  $ cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
+  $ cmake .. -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
   ~~~
   *Explaination: cmake checks for CMakeLists.txt in the '..' directory*
+  * -DWARNALL="yes" : Enables full-warning verbosing (by default it does not verbose many things)
   * -DCMAKE_BUILD_TYPE=Relase : means that the build must be "Release", but you may want to use "-DCMAKE_BUILD_TYPE=Debug"
   * -DCMAKE_C_COMPILER=/usr/bin/gcc : tells cmake what compiler should use, it is not really necessary if you set CC=gcc (*INFO: for CXX, same thing but its CMAKE_CXX_COMPILER*)
   * -DCMAKE_INSTALL_PREFIX=/usr/local : installs binary in /usr/local/bin
