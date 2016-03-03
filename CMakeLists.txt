@@ -106,3 +106,5 @@ set(CPACK_RPM_PACKAGE_DESCRIPTION "JASM is another system monitoring platform...
 #Use CPack
 include(CPack)
 
+#Show options finally
+include(cmake/showsettings.cmake)
