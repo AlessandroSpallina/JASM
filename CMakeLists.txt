@@ -1,6 +1,7 @@
 #Stefano Belli <stefano9913@gmail.com> <plus.google.com/+StefanoBelli>
 #<https://github.com/StefanoBelli>
 
+#todo: more warn definition
 #Suggested parameters: -DCMAKE_BUILD_TYPE=Release
 #                      -DCMAKE_C_COMPILER=/usr/bin/gcc (or export environment variable CC=/usr/bin/gcc)
 #                      -DCMAKE_INSTALL_PREFIX=/usr/local (if you change this, you must change jasm.service)
@@ -50,7 +51,7 @@ set(JASM_BTYPE develstage)
 # DO NOT EDIT BELOW #
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" )
                 set(JASM_VERSION "${JASM_VMAJOR}.${JASM_VMINOR}.${JASM_VREV}-${JASM_BTYPE}-debug")
-else()
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
                 set(JASM_VERSION "${JASM_VMAJOR}.${JASM_VMINOR}.${JASM_VREV}-${JASM_BTYPE}-release")
 endif()
 # DO NOT EDIT ABOVE #
