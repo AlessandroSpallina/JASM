@@ -21,7 +21,7 @@
 jasm.log
 jasm-debug
 client.log
-jasmcli.*
+jasmcli.*.log
 
 #Various
 *.gch

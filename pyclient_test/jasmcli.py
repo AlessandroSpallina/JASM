@@ -59,7 +59,7 @@ def checkThings(socketObject):
 	getmsg = socketObject.getMessage(256)
 #	print(getmsg)
 	if getmsg == "auth-not-requirednochk-pwdfile":
-		Print.info("Non-required authentication")
+		Print.info("Non-required authentication\n")
 		return 0
 	elif getmsg == "auth-not-requiredcheck-pwd-file":
 		passwd = str(input("[Authentication] Type a password here: "))
@@ -93,10 +93,10 @@ def cmdline(socketObject):
 		return -3
 
 	while True:
-		getcmd = str(input("--> "))
+		getcmd = str(input("\n--> "))
 		socketObject.sendMessage(getcmd)
 		resp = socketObject.getMessage(256)
-		Print.response(resp)
+		Print.resp(resp)
 
 argdict = argchk(sys.argv)
 host = argdict['connect']
@@ -115,10 +115,10 @@ elif initconn == -1:
 
 checks = checkThings(csock)
 if checks == -1:
-	Print.error("Something wrong!!")
+	Print.error("Something wrong!!\n")
 	exit(-3)
 elif checks == 0:
-	Print.info("Access Granted!")
+	Print.info("Access Granted!\n")
 	cmdline(csock)
 
 endconn = closeConnection(csock)
