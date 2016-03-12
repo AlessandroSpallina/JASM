@@ -232,27 +232,27 @@ static _Bool goodLoginRoutine(char *client_ipaddr, int client_sockfd)
         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
         log_string (buf);
         add_clientIp(&client_list, client_ipaddr);
-  #ifdef DEBUG
+#ifdef DEBUG
         log_client(client_list);
-  #endif
+#endif
         if (connection_counter <= *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values) {
                 connection_counter++;
-          #ifdef DEBUG
+#ifdef DEBUG
                 log_string("client connection is ok");
                 sprintf(errlog,"Client: %d",connection_counter);
                 log_string(errlog);
-          #endif
+#endif
 
                 return true;
 
         } else {
                 //if (connection_counter > *(int*)_config[CONFIG_MAX_CONNECTIONS].config_values)
                 shutdown(client_sockfd,2);
-          #ifdef DEBUG
+#ifdef DEBUG
                 log_string("client connection refused: max connection limit hit!");
                 sprintf(errlog,"Client: %d",connection_counter);
                 log_string(errlog);
-          #endif
+#endif
                 return false;
         }
 
@@ -521,14 +521,19 @@ void start_server()
                                                 	log_string(errlog);
                                                 }
                                         } else {
+                                                // change assignment method ( using strncpy() )
                                                 const char chkpwd[] = "check-pwd-file";
                                                 const char nochkpwd[] = "nochk-pwdfile";
-                                                int chkfile;
+                                                int chkfile, ackretv;
                                                 const char not_required[] = "auth-not-required";
+
+                                                char* ackreply;
 
                                                 if (write (client_sockfd, not_required, strlen (not_required) ) < 0)
                                                         log_error ("[not_required][write()] Error");
+
                                                 log_string ("[CLIENT-AUTH]Authentication NOT required!");
+                                                log_string("trymeee");
                                                 chkfile = check_passwd_file (PASSWD_ENC_FILE);
 
                                                 if (chkfile == 0) {
