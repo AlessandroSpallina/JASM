@@ -130,6 +130,6 @@ elif endconn == -1:
 	exit(-5)
 
 if __name__ != "__main__":
-	exit -1
+	exit(-1)
 	
 
