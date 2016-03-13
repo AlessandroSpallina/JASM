@@ -27,6 +27,7 @@ Follow instructions below (as we suggest)
 *Compiler*
 
 We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makefiles in cli/ and core/ changing CFLAGS
+(**We may consider _Clang_**)
 
 *Nerdy*
 
