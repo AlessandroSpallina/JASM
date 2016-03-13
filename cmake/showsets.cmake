@@ -7,7 +7,10 @@ message("* Copyright: ${COPYRIGHT} (Alessandro Spallina)")
 
 if(UNIX)
 		message("* OS: UNIX/Unix-like ")
+elseif(WIN32)
+        message("* OS: MS Windows ")
 endif()
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 		message("* Build type: Debug ")
