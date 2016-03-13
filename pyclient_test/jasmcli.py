@@ -3,6 +3,7 @@
 import os, sys
 from commsock import CommSocket
 from formatprint import Print
+#from traceback import format_exc as backtrace 
 
 host = ""
 __PORT__ = 9734
@@ -27,7 +28,7 @@ def argchk(opt):
 
 def banner(ipaddr):
 	print("** JASM Python Client **")
-	print("[CONNECT] Connecting to: ",ipaddr)
+	Print.info("[CONNECT] Connecting to: ",ipaddr,'\n')
 
 def initConnection(socketObject):
 	if socketObject is None:
@@ -62,29 +63,29 @@ def checkThings(socketObject):
 		Print.info("Non-required authentication\n")
 		return 0
 	elif getmsg == "auth-not-requiredcheck-pwd-file":
-		passwd = str(input("[Authentication] Type a password here: "))
+		passwd = str(input("[AUTH] Type a password here: "))
 		sendMsg = socketObject.sendMessage(passwd)
 		return 0
 	elif getmsg == "auth-required":
-		passwd = str(input("[Authentication] Login password: "))
+		passwd = str(input("[AUTH] Login password: "))
 		sendMsg = socketObject.sendMessage(passwd)
 		answer = socketObject.getMessage(256)
 #		print(answer)
 		if answer == "granted":
-			Print.info("Passwd accepted!")
+			Print.info("[AUTH]Passwd accepted!\n")
 			return 0
 		elif answer == "deniedretry":
-			print("[Password Auth] Wrong password!")
-			passwdmsg = str(input("[Authentication] Retry: "))
+			Print.warn("[AUTH] Wrong password!\n")
+			passwdmsg = str(input("[AUTH] Retry: "))
 			socketObject.sendMessage(passwdmsg)
 			while True:
 				sobject = socketObject.getMessage(256)
 				if sobject == "deniedretry" or sobject == "retry":
-					passwdmsg = str(input("[Authentication] Retry: "))
+					passwdmsg = str(input("[AUTH] Retry: "))
 					socketObject.sendMessage(passwdmsg)
-					Print.warn("Retry!")
+					Print.warn("[AUTH]Retry!\n")
 				elif sobject == "authorized":
-					Print.info("Authorized")
+					Print.info("[AUTH]Authorized\n")
 					return 0
 	return -1
 
@@ -94,40 +95,62 @@ def cmdline(socketObject):
 
 	while True:
 		getcmd = str(input("\n--> "))
+		if getcmd == "quit":
+			Print.info("Closing connection...\n")
+			if socketObject.endConnection() == 0:
+				Print.info("Exiting...\n")
+				exit(0)
+			else:
+				Print.error("ERROR WHILE CLOSING CONNECTION!!\n")
+				Print.error("EXITING WITH ERROR!!\n")
+				exit(-1)
+
 		socketObject.sendMessage(getcmd)
 		resp = socketObject.getMessage(256)
 		Print.resp(resp)
 
-argdict = argchk(sys.argv)
-host = argdict['connect']
-csock = CommSocket(host,__PORT__)
-banner(csock.getipaddr())
+try:		
+	argdict = argchk(sys.argv)
+	host = argdict['connect']
+	csock = CommSocket(host,__PORT__)
+	banner(csock.getipaddr())
 
-initconn = initConnection(csock)
-if initconn == 0:
-	print("[CONNECT] Success - connected!")
-elif initconn == -2:
-	print("[CONNECT] Timeout - failed!")
-	exit(-1)
-elif initconn == -1:
-	print("[CONNECT] General socket error - failed!")
-	exit(-2)
+	initconn = initConnection(csock)
+	if initconn == 0:
+		Print.info("[CONNECT] Success - connected!\n")
+	elif initconn == -2:
+		Print.error("[CONNECT] Timeout - failed!\n")
+		exit(-1)
+	elif initconn == -1:
+		Print.error("[CONNECT] General socket error - failed!\n")
+		exit(-2)
 
-checks = checkThings(csock)
-if checks == -1:
-	Print.error("Something wrong!!\n")
-	exit(-3)
-elif checks == 0:
-	Print.info("Access Granted!\n")
-	cmdline(csock)
+	checks = checkThings(csock)
+	if checks == -1:
+		Print.error("Something wrong!!\n")
+		exit(-3)
+	elif checks == 0:
+		Print.info("Access Granted!\n")
+		cmdline(csock)
 
-endconn = closeConnection(csock)
-if endconn == 0:
-	print("[DISCONNECT] Success - disconnected!")
-	exit(-4)
-elif endconn == -1:
-	print("[DISCONNECT] General socket error - failed!")
-	exit(-5)
+	endconn = closeConnection(csock)
+	if endconn == 0:
+		Print.info("[DISCONNECT] Success - disconnected!\n")
+		exit(-4)
+	elif endconn == -1:
+		Print.error("[DISCONNECT] General socket error - failed!\n")
+		exit(-5)
+except KeyboardInterrupt:
+	Print.info("Closing connection\n")
+	if csock.endConnection() == 0:
+		Print.info("Closed connection!\n")
+	else:
+		Print.error("ERROR WHILE CLOSING CONNECTION!\n")
+		Print.error("EXITING WITH ERROR!!\n")
+		exit(-1)
+
+	Print.info("Bye bye!\n")
+	exit(0)
 
 if __name__ != "__main__":
 	exit(-1)
