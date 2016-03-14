@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <sched.h>
 
+#include "jasmbuild_info.h"
 #include "getter.h"
 #include "miscellaneous.h"
 #include "logger.h"

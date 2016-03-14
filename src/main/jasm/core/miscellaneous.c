@@ -28,6 +28,7 @@
 #include <syslog.h>
 #include <errno.h>
 
+#include "jasmbuild_info.h"
 #include "configfile.h"
 #include "miscellaneous.h"
 #include "logger.h"

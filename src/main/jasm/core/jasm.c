@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "jasmbuild_info.h"
 #include "miscellaneous.h"
 #include "ipc.h"
 #include "signals.h"

@@ -1,5 +1,7 @@
 ### JASM
 
+*NEWS: Switch to CMake, read below for instructions*
+
 *URGENT: JASMCLI marked as deprecated, will be replaced soon*
 
 JustAnotherSystemMonitor
@@ -18,21 +20,89 @@ Unix-like operating systems are supported, but we are planning to use GNU C Libr
 
 *Noobs: how to compile?*
 
-Just type make, the output directory is bin/ :)
-
-*Mmh... Ok, other make rules?*
-
- - clean (cleans object files and other things)
- - cleanbin (cleans bin/ directory except placeholder to avoid bin directory gets deleted from git when staging)
- - debug [builds a *debug* release(debug symbols,no optimization,preproc opts...)]
+We just switched *CMake* build automation tool!
+Configure this project almost everywhere!
+Follow instructions below (as we suggest) 
 
 *Compiler*
 
 We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makefiles in cli/ and core/ changing CFLAGS
+(**We may consider _Clang_**)
 
 *Nerdy*
 
 We use C11
+
+### USE CMAKE (IMPORTANT)
+ 
+ As you read above, we just switched to cmake, now you can configure this project even on Windows, but we will give you instruction for GNU/Linux (and almost UNIX and Unix-like OS)
+
+ CMake is a build-automation tool, with it you can build project files (from XCode to VS) and Makefiles! (Cross-platform Make)
+
+ Follow this instructions
+
+ * Be sure you are using GCC
+ ~~~
+ $ export CC=/usr/bin/gcc
+ ~~~
+ You should change your shell's rc and add above line to the rcfile.
+ If you are using a shell like fish (it is NOT POSIX compilant)
+ ~~~
+ $ set -x CC /usr/bin/gcc
+ ~~~
+
+ * Well, you are in JASM directory... Now?
+ We already created a directory called "buildenv", CMakeFiles are configured to use it
+ ~~~
+ $ ls buildenv 
+ ~~~
+ *probably it is empty, if no output, then it is right*
+
+ * Change directory, configure, compile
+  Now it's time to compile!
+  ~~~
+  $ cd buildenv/
+  ~~~
+  ... configure via cmake
+  ~~~
+  $ cmake .. -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
+  ~~~
+  *Explaination: cmake checks for CMakeLists.txt in the '..' directory*
+  * -DWARNALL="yes" : Enables full-warning verbosing (by default it does not verbose many things)
+  * -DCMAKE_BUILD_TYPE=Relase : means that the build must be "Release", but you may want to use "-DCMAKE_BUILD_TYPE=Debug"
+  * -DCMAKE_C_COMPILER=/usr/bin/gcc : tells cmake what compiler should use, it is not really necessary if you set CC=gcc (*INFO: for CXX, same thing but its CMAKE_CXX_COMPILER*)
+  * -DCMAKE_INSTALL_PREFIX=/usr/local : installs binary in /usr/local/bin
+  * -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m) : sets os. name and arch. (highly suggested)
+  Then, we can launch make
+  ~~~
+  $ make -j2
+  ~~~
+  Now make (-j2 = 2 jobs working...) does all the stuffs and you can find jasm to ../bin/jasm ; if you used the Debug: ../bin-debug/jasm
+  You may want to know what happens in the backend
+  ~~~
+  $ make VERBOSE=1 -j2
+  ~~~
+  
+  Now, go below to the install parameter, jumping instructions below
+
+ * Now, you may want to delete buildenv content, just use
+ ~~~
+ $ rm -rf *
+ ~~~
+ *Inside buildenv/*
+
+ * You can also use clean rule
+ ... if you want to rebuild 
+ ~~~
+ $ make clean
+ ~~~
+ *Inside buildenv/*
+ 
+ *NOTE: YOU CAN SWITCH TARGET USING -DCMAKE_BUILD_TYPE=Debug, re-using cmake*
+ 
+ *Don't delete jasmbuild_info.h.in*
+ 
+ *Change version number using CMakeLists.txtx (howto in file)*
 
 ### Versions
 
@@ -60,11 +130,36 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  * Nothing
 
 ### Install
- Just execute install.sh, this will copy binaries, libs,service and headers, to your system
- 
- *remember to copy data/jconfig to /home/username/.jasm_config*
- 
- 
+
+ Be sure to be *root* (id -u = 0)
+
+ then, inside buildenv:
+ ~~~
+ make install
+ ~~~
+
+ Done
+
+ * What does this installs on my system?
+  * /usr/local/bin/jasm
+  * /etc/systemd/system/jasm.service
+
+### Packaging
+
+ For now, you can build deb and rpm packages thanks to CPack
+
+ Inside buildenv (as root):
+ ~~~
+ make package
+ ~~~
+
+ :)
+
+ * Deb = works
+ * Rpm = to check
+
+ We will provide tgz individually
+
 ### Platform
 
  * JASM Core: Development 
