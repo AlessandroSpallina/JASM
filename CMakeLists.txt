@@ -17,7 +17,7 @@
 
 # --> ./CMakeLists.txt
 
-message("[+] CMake: CMakeLists.txt")
+message(">>> CMake: CMakeLists.txt")
 include(InstallRequiredSystemLibraries)
 
 #CMake 2.8 required (at least)
@@ -111,5 +111,4 @@ include(CPack)
 #Show settings after configuration
 include(cmake/showsets.cmake)
 
-message("[+] CMakeLists.txt ; DONE!")
-
+message("<<< CMakeLists.txt ; DONE!")

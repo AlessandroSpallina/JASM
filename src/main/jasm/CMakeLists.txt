@@ -1,6 +1,6 @@
 # Stefano Belli
 # --> src/main/jasm/CMakeLists.txt
-message("[+] CMake: src/main/jasm/CMakeLists.txt")
+message(">>> CMake: src/main/jasm/CMakeLists.txt")
 cmake_minimum_required(VERSION 2.8.12) #CMake 2.8
 
 project(JASM C) #JASM
@@ -18,19 +18,25 @@ if(UNIX)
 endif()
 
 if(NOT WARNALL)
+    message("-- WARNALL NOT SET -- no ")
     set(WARNALL "no")
 endif()
 
 if(NOT BUILDARCH)
+    message("-- BUILDARCH NOT SET -- native")
     set(BUILDARCH "native")
 endif()
 
+message("-- Setting CFLAGS ")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -pipe -mtune=${BUILDARCH} -std=c11 ")
 set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=${BUILDARCH} -std=c11 -Wall")
 
 if(WARNALL STREQUAL "yes")
+    message("-- WARNALL ENABLED ")
 	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -W -Wextra -Wshadow")
 	set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -W -Wextra -Wshadow")
+elseif(WARNALL STREQUAL "no")
+    message("-- WARNALL DISABLED")
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -38,6 +44,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BUILDFLAGS ${CMAKE_C_FLAGS_DEBUG})
 endif()
+
+message("-- Preparing sources...")
 
 set(CORESRCS core/configfile.c core/getter.c core/ipc.c core/logger.c 
  core/miscellaneous.c core/modules.c core/modules_list.c core/signals.c)
@@ -55,5 +63,5 @@ add_executable(jasm core/jasm.c)
 
 target_link_libraries(jasm jasmcore jasmmodules ${CMAKE_THREAD_LIBS_INIT})
 
-message("[+] src/main/jasm/CMakeLists.txt ; DONE!")
+message("<<< CMake: src/main/jasm/CMakeLists.txt ; DONE!")
 message("* BUILDFLAGS: ${BUILDFLAGS}")
