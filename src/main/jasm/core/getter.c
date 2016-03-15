@@ -19,15 +19,20 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
 #include <string.h>
+
+#ifdef __unix__
+#include <arpa/inet.h>
 #include <sys/utsname.h>
-#include <sys/sysinfo.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <sched.h>
-#include <stdlib.h>
 #include <sched.h>
+#endif
+
+#ifdef __gnu_linux__
+#include <sys/sysinfo.h>
+#endif
 
 #include "jasmbuild_info.h"
 #include "getter.h"
@@ -355,6 +360,7 @@ void getMachine (int fd)
  */
 void getUpTime (int fd)
 {
+#ifdef __gnu_linux__
       char buf[BUFSIZ];
       struct sysinfo sys_info;
       int days,hours,min,sec;
@@ -392,6 +398,7 @@ void getUpTime (int fd)
                 log_string (error);
             }
         }
+#endif
 }
 
 /*
@@ -400,6 +407,7 @@ void getUpTime (int fd)
  */
 void getTotalRAM (int fd)
 {
+#ifdef __gnu_linux__
       int n;
       struct sysinfo sys_info;
       char buf[BUFSIZ];
@@ -431,7 +439,7 @@ void getTotalRAM (int fd)
                   log_string (error);
             }
       }
-
+#endif
 }
 
 /*
@@ -440,6 +448,7 @@ void getTotalRAM (int fd)
  */
 void getFreeRAM (int fd)
 {
+#ifdef __gnu_linux__
       int n;
       struct sysinfo sys_info;
       char buf[BUFSIZ];
@@ -471,7 +480,7 @@ void getFreeRAM (int fd)
                   log_string (error);
             }
       }
-
+#endif
 }
 
 /*
@@ -480,6 +489,7 @@ void getFreeRAM (int fd)
  */
 void getProcesses (int fd)
 {
+#ifdef __gnu_linux__
       int n;
       char buf[BUFSIZ];
       struct sysinfo sys_info;
@@ -509,6 +519,7 @@ void getProcesses (int fd)
                   log_string (error);
             }
       }
+#endif
 }
 
 /*
