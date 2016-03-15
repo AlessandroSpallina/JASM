@@ -28,6 +28,7 @@ jasm
 *.gch
 *.plist
 *.pyc
+*.*.pyc
 *.h.gch
 
 #Static / Shared libraries and Objects 
