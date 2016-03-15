@@ -19,8 +19,11 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
 #include <unistd.h>
+
+#ifdef __unix__
+#include <sys/types.h>
+#endif
 
 #include "logger.h"
 #include "signals.h"
