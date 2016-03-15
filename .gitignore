@@ -22,9 +22,12 @@ jasm.log
 jasm-debug
 client.log
 jasmcli.*.log
+jasm
 
 #Various
 *.gch
+*.plist
+*.pyc
 *.h.gch
 
 #Static / Shared libraries and Objects 
