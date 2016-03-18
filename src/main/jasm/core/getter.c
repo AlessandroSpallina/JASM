@@ -134,9 +134,11 @@ void getVersion (int fd)
                 log_error ("[JASM-DAEMON][getVersion][write()] Error!");
                 log_error (error);
         }
+        
         else
         {
-                if (n < strlen (VERSION) )
+            
+                if (n < strlen (VERSION) ) // warning, int < unsigned int
                 {
                         sprintf (error, "[JASM-DAEMON][getVersion][write()] sent %d byte, correct num byte is %zu", n, strlen (VERSION) );
                         log_error (error);
@@ -160,6 +162,7 @@ void getCopyright (int fd)
                 log_error ("[JASM-DAEMON][getCopyright][write()] Error!");
                 log_error (error);
         }
+        
         else
         {
                 if (n < strlen (COPYRIGHT) )
@@ -195,6 +198,7 @@ void getHostname (int fd)
                         log_error ("[JASM-DAEMON][getHostname][write()] Error!");
                         log_error (error);
                 }
+                
                 else
                 {
                         if (n < strlen (buf) )
@@ -231,6 +235,7 @@ void getKernelName (int fd)
                         log_error ("[JASM-DAEMON][getKernelName][write()] Error!");
                         log_error (error);
                 }
+                
                 else
                 {
                         if (n < strlen (buf) )
@@ -244,6 +249,7 @@ void getKernelName (int fd)
                                 log_string (error);
                         }
                 }
+                
         }
 }
 

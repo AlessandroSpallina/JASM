@@ -526,10 +526,8 @@ void start_server()
                                                 // change assignment method ( using strncpy() )
                                                 const char chkpwd[] = "check-pwd-file";
                                                 const char nochkpwd[] = "nochk-pwdfile";
-                                                int chkfile, ackretv;
+                                                int chkfile;
                                                 const char not_required[] = "auth-not-required";
-
-                                                char* ackreply;
 
                                                 if (write (client_sockfd, not_required, strlen (not_required) ) < 0)
                                                         log_error ("[not_required][write()] Error");
