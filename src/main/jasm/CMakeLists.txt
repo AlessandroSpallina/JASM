@@ -28,8 +28,8 @@ if(NOT BUILDARCH)
 endif()
 
 message("-- Setting CFLAGS ")
-set(CMAKE_C_FLAGS_RELEASE "-O2 -pipe -mtune=${BUILDARCH} -std=c11 -D_GNU_SOURCE")
-set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=${BUILDARCH} -std=c11 -Wall -D_GNU_SOURCE ")
+set(CMAKE_C_FLAGS_RELEASE "-O2 -pipe -mtune=${BUILDARCH} -std=c11 -D__BSD_VISIBLE -D_GNU_SOURCE")
+set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=${BUILDARCH} -std=c11 -Wall -D__BSD_VISIBLE -D_GNU_SOURCE ")
 
 if(WARNALL STREQUAL "yes")
     message("-- WARNALL ENABLED ")

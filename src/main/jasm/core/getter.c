@@ -605,6 +605,7 @@ void getPosixVersion (int fd)
  */
 void getCpuNumber (int fd)
 {
+#ifdef __gnu_linux__
       int n,cpu_num;
       char buf[BUFSIZ];
       if( (cpu_num = sched_getcpu()) == -1 )
@@ -633,6 +634,7 @@ void getCpuNumber (int fd)
                   log_string (error);
             }
       }
+#endif
 }
 
 /*
