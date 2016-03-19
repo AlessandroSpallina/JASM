@@ -16,20 +16,22 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+#ifdef __unix__
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <pthread.h>
 #include <netinet/in.h>
 #include <sys/time.h>
 #include <sys/ioctl.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <syslog.h>
-#include <stdbool.h>
+#endif
 
 #include "jasmbuild_info.h"
 #include "configfile.h"
@@ -524,10 +526,8 @@ void start_server()
                                                 // change assignment method ( using strncpy() )
                                                 const char chkpwd[] = "check-pwd-file";
                                                 const char nochkpwd[] = "nochk-pwdfile";
-                                                int chkfile, ackretv;
+                                                int chkfile;
                                                 const char not_required[] = "auth-not-required";
-
-                                                char* ackreply;
 
                                                 if (write (client_sockfd, not_required, strlen (not_required) ) < 0)
                                                         log_error ("[not_required][write()] Error");

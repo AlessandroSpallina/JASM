@@ -65,7 +65,7 @@ We use C11
   ~~~
   ... configure via cmake
   ~~~
-  $ cmake .. -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
+  $ cmake .. -DBUILDARCH="x86-64" -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
   ~~~
   *Explaination: cmake checks for CMakeLists.txt in the '..' directory*
   * -DWARNALL="yes" : Enables full-warning verbosing (by default it does not verbose many things)
@@ -73,6 +73,21 @@ We use C11
   * -DCMAKE_C_COMPILER=/usr/bin/gcc : tells cmake what compiler should use, it is not really necessary if you set CC=gcc (*INFO: for CXX, same thing but its CMAKE_CXX_COMPILER*)
   * -DCMAKE_INSTALL_PREFIX=/usr/local : installs binary in /usr/local/bin
   * -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m) : sets os. name and arch. (highly suggested)
+  * -DBUILDARCH="x86-64" : specify build architecture
+
+  __what if one(or more) of these parameters aren't specified?__
+  * WARNALL: "no" by default
+  * CMAKE_BUILD_TYPE : "Release" by default
+  * CMAKE_C_COMPILER : looks for default compiler in environment variable (WinNT / UNIX)
+  * CMAKE_INSTALL_PREFIX : depends on OS: if UNIX is "/usr/local" by default, on Windows... I don't remember! :D
+  * CMAKE_SYSTEM_NAME : keeps undefined 
+  * BUILDARCH : native by default
+
+  ~~~
+  $ cmake .. -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m) -DCPACK_PACKAGE_VENDOR="Your name" -DCMAKE_C_COMPILER=$(which clang)
+  ~~~
+  Is a good configuration command! :)
+
   Then, we can launch make
   ~~~
   $ make -j2

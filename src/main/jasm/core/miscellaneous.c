@@ -18,15 +18,18 @@
 ****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
+#include <time.h>
+
+#ifdef __unix__
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include <syslog.h>
 #include <errno.h>
+#endif
 
 #include "jasmbuild_info.h"
 #include "configfile.h"

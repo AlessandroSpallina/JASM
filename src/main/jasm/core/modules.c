@@ -20,8 +20,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#ifdef __unix__
 #include <pthread.h>
 #include <errno.h>
+#endif
 
 #include "miscellaneous.h"
 #include "modules.h"
