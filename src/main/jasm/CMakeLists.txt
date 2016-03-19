@@ -33,8 +33,8 @@ set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=${BUILDARCH} -std=c11 -Wall -D_GNU_SO
 
 if(WARNALL STREQUAL "yes")
     message("-- WARNALL ENABLED ")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -W -Wextra -Wshadow")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -W -Wextra -Wshadow")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -W -Wextra -Wshadow -Wno-sign-compare")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -Wall -W -Wextra -Wshadow -Wno-sign-compare")
 elseif(WARNALL STREQUAL "no")
     message("-- WARNALL DISABLED")
 endif()
