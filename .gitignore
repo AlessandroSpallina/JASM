@@ -23,6 +23,7 @@ jasm-debug
 client.log
 jasmcli.*.log
 jasm
+jasmbuild_info.h
 
 #Various
 *.gch
