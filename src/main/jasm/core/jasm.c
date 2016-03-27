@@ -42,13 +42,15 @@ int main (void)
 								propretval = set_property_value();
 
 								if (propretval == 1) {
-																log_string ("[JASM-DAEMON][INFO]You need to create a configuration file");
-																log_string ("[JASM-DAEMON][INFO]Using standard values");
-																sprintf (logstr,"[JASM-DAEMON][INFO]Server's config source: %s/.jasm_config",homedir);
-																log_string (logstr);
-								} else if (propretval == -1) log_string ("[JASM-DAEMON][INFO]Property value is NULL!");
-								else
-																log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
+                                    log_string ("[JASM-DAEMON][INFO]You need to create a configuration file");
+                                    log_string ("[JASM-DAEMON][INFO]Using standard values");
+                                    sprintf (logstr,"[JASM-DAEMON][INFO]Server's config source: %s/.jasm_config",homedir);
+                                    log_string (logstr);
+                                } else if (propretval == -1) {
+                                    log_string ("[JASM-DAEMON][INFO]Property value is NULL!");
+                                } else {
+                                    log_string ("[JASM-DAEMON][INFO]Using values defined in the server's configuration file!");
+                                }
 #ifdef DEBUG
 								log_string ("[JASM-DAEMON][INFO][DEBUG] Accessing struct...");
 								for(int ind=0; ind<=NCONFIG_PROPERTIES_COUNTER; ind++) {
@@ -56,5 +58,6 @@ int main (void)
 																log_string(logstr_debug);
 								}
 #endif //DEBUG
-								start_server(); //starts server after the daemon (ready to get commands)
+                                //starts server after the daemon (ready to get commands)
+                                start_server();
 }

@@ -8,8 +8,7 @@
 #define CONFIG_MAX_CONNECTIONS 0
 #define CONFIG_ALL -1
 
-extern struct config
-{
+extern struct config {
     char config_name[BUFSIZ];
     void * config_values;
 } _config[NCONFIG_PROPERTIES];

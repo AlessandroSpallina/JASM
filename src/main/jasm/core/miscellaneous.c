@@ -81,8 +81,7 @@ void start_daemon()
         log_string (buf_intro);
         log_string ("[JASM-DAEMON] Creating new process...");
         pid = fork();
-        switch (pid)
-        {
+        switch (pid) {
         case -1:
                 sprintf (errlog, "[PROCESS-SPAWN]Error: %s\n", strerror (errno) );
                 log_error ("[PROCESS-SPAWN][fork()] failed");
@@ -101,8 +100,7 @@ void start_daemon()
                 exit (_EXIT_SUCCESS);
                 break;
         }
-        if (setsid() < 0)
-        {
+        if (setsid() < 0) {
                 log_error ("[PROCESS-BACKGROUND][setsid()] failed");
                 sprintf (errlog, "[PROCESS-BACKGROUND]Error: %s\n", strerror (errno) );
                 log_error (errlog);
@@ -110,8 +108,9 @@ void start_daemon()
                 syslog (LOG_ERR, "Put process background failed!");
                 closelog();
                 exit (ERR_SET_PROCESS_BACKGROUND);
+        } else {
+            log_string ("[PROCESS-BACKGROUND][setsid()] success");
         }
-        else log_string ("[PROCESS-BACKGROUND][setsid()] success");
 
         //closes fd: stdin, stdout, stderr
         close (0);
@@ -130,12 +129,18 @@ void start_daemon()
 /*LOGIN SECTION*/
 _Bool login_required (const char* clientaddr)
 {
-        if (strcmp (clientaddr, LOCALHOST) == 0) return false;
-        else return true;
+        if (strcmp (clientaddr, LOCALHOST) == 0) {
+            return false;
+        } else {
+            return true;
+        }
 }
 
 int check_passwd_file (const char* __pwdf)
 {
-        if (access (__pwdf, F_OK) != -1) return 0;
-        else return 1;
+        if (access (__pwdf, F_OK) != -1) {
+            return 0;
+        } else {
+            return 1;
+        }
 }
