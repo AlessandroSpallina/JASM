@@ -109,8 +109,9 @@ def cmdline(socketObject):
 				exit(-1)
 
 		socketObject.sendMessage(getcmd)
-		resp = socketObject.getMessage(256)
-		Print.resp(resp)
+		resp = socketObject.getMessage(1024)
+		sys.stdout.flush()
+		sys.stdout.write(resp)
 
 try:
 	argdict = argchk(sys.argv)
