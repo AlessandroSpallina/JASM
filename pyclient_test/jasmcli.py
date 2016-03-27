@@ -9,7 +9,6 @@ host = ""
 __PORT__ = 9734
 
 def argchk(opt):
-        dbg=False
         if opt is None:
                 return -1
 
@@ -23,12 +22,9 @@ def argchk(opt):
                 if opt[i] == "--connect":
                         if opt[i + 1] != None:
                                 ipaddr = opt[i + 1]
-                elif opt[i] == "--debug":
-                        dbg=True 
-
                 i = i + 1
 
-        return { "connect" : ipaddr, "debug" : dbg }
+        return { "connect" : ipaddr }
 
 def banner(ipaddr):
 	print("** JASM Python Client **")
