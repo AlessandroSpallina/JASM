@@ -20,7 +20,7 @@
 #define LOGGER_H
 
 #ifdef DEBUG
-  #define CLIENTLOGPATH "../data/client.log"
+#define CLIENTLOGPATH "../data/client.log"
 #endif
 
 extern char LOGPATH[BUFSIZ];
@@ -31,7 +31,7 @@ extern void log_error(const char * message);
 extern void set_logpath(void);
 
 #ifdef DEBUG
-  extern void log_client (struct ip_node *clist);
+extern void log_client (struct ip_node *clist);
 #endif
 
 #endif //LOGGER_H

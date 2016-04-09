@@ -263,24 +263,24 @@ static _Bool goodLoginRoutine(char *client_ipaddr, int client_sockfd)
 
 static _Bool isCorrectPassword(int client_sockfd)
 {
-  #ifndef PASSWD_ENC_FILE
+#ifndef PASSWD_ENC_FILE
         char PASSWD_ENC_FILE[256];
         strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
         strcat (PASSWD_ENC_FILE, "/.jpwd");
-  #endif
+#endif
 
-  #ifndef CHECK_ACCESS_FILE
+#ifndef CHECK_ACCESS_FILE
         char CHECK_ACCESS_FILE[256];
         strcpy (CHECK_ACCESS_FILE, getenv ("HOME") );
         strcat (CHECK_ACCESS_FILE, "/.jpwdchk");
-  #endif // CHECK_ACCESS_FILE
+#endif // CHECK_ACCESS_FILE
         int rpwd;
-        char getpasswd[256];
-        const char auth[] = "auth-required";
-        const char granted[] = "granted";
-        const char denied[] = "denied";
-        char passwd_from_client[BUFSIZ];
-        char getit[BUFSIZ];
+        char auth[BUFSIZ], granted[BUFSIZ], denied[BUFSIZ];
+        char passwd_from_client[BUFSIZ], getit[BUFSIZ], getpasswd[256];
+
+        strncpy(auth,"auth-required",13);
+        strncpy(granted,"granted",7);
+        strncpy(denied,"denied",6);
 
         FILE* source_passwd;
 
@@ -417,12 +417,11 @@ static _Bool isCorrectPassword(int client_sockfd)
 
 void start_server()
 {
-
-  #ifndef PASSWD_ENC_FILE
+#ifndef PASSWD_ENC_FILE
         char PASSWD_ENC_FILE[256];
         strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
         strcat (PASSWD_ENC_FILE, "/.jpwd");
-  #endif
+#endif
         int server_sockfd, client_sockfd;
         int server_len;
         socklen_t client_len;
@@ -582,9 +581,9 @@ void start_server()
                                                 rem_clientIp(&client_list, client_ipaddr);
                                                 connection_counter--;
 
-                                                #ifdef DEBUG
+#ifdef DEBUG
                                                 log_client(client_list);
-                                                #endif
+#endif
                                         } else {
                                                 memset (received, 0, sizeof (received) );
                                                 return_value = read (fd, received, sizeof (received) );

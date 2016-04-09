@@ -62,8 +62,9 @@ static int alloc_clientIp(struct ip_node **head, char *ip)
         struct ip_node *aus = NULL;
 
         aus = (struct ip_node *) malloc (sizeof (struct ip_node));
-        if (aus == NULL)
+        if (aus == NULL) {
                 return -1;
+        }
 
         strcpy(aus->client_ip, ip);
         aus->modules_list = NULL;
@@ -159,8 +160,9 @@ static int alloc_module_running(struct module_running **head, char *name, pthrea
         struct module_running *aus = NULL;
 
         aus = (struct module_running *) malloc (sizeof (struct module_running));
-        if(aus == NULL)
+        if(aus == NULL) {
                 return -1;
+        }
 
         strcpy(aus->name, name);
         aus->tid = tid;

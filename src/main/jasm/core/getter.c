@@ -419,6 +419,8 @@ void getUpTime (int fd)
                 log_string (error);
             }
         }
+#else
+        log_string("[INFO]Support for getUpTime() not availible! ");
 #endif
 }
 
@@ -460,6 +462,8 @@ void getTotalRAM (int fd)
                   log_string (error);
             }
       }
+#else
+    log_string("[INFO] Support for getTotalRAM() not availible! ");
 #endif
 }
 
@@ -501,6 +505,8 @@ void getFreeRAM (int fd)
                   log_string (error);
             }
       }
+#else
+    log_string("[INFO]Support for getFreeRAM() not availible");
 #endif
 }
 
@@ -540,6 +546,8 @@ void getProcesses (int fd)
                   log_string (error);
             }
       }
+#else
+    log_string("[INFO]Support for getProcesses not availible!");
 #endif
 }
 
@@ -621,6 +629,7 @@ void getPosixVersion (int fd)
  */
 void getCpuNumber (int fd)
 {
+#ifdef __gnu_linux__
       int n,cpu_num;
       char buf[BUFSIZ];
       if( (cpu_num = sched_getcpu()) == -1 )
@@ -649,6 +658,9 @@ void getCpuNumber (int fd)
                   log_string (error);
             }
       }
+#else
+    log_string("[INFO] Support for getCpuNumber() not availible!");
+#endif
 }
 
 /*
@@ -779,34 +791,28 @@ void getCpuName (int fd) //Returns the name of the Cpu
 
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
-				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCpuName][read()] Error!");
-        log_error (error);
+                sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+                log_error ("[JASM-DAEMON][getCpuName][read()] Error!");
+                log_error (error);
 		}
 		string = &strstr(buf, "model name	: ")[strlen("model name	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
 		n = write (fd, buf, strlen(buf));
 		close(cpu_fd);
-		if (n < 0)
-    {
-        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCpuName][write()] Error!");
-        log_error (error);
-    }
-    else
-    {
-        if (n < strlen (buf) )
-        {
-            sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+        if (n < 0) {
+                sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
+                log_error ("[JASM-DAEMON][getCpuName][write()] Error!");
+                log_error (error);
+        } else {
+            if (n < strlen (buf) ) {
+                sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
+                log_error (error);
+            } else {
+                sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte", n);
+                log_string (error);
+            }
         }
-        else
-        {
-            sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte", n);
-            log_string (error);
-        }
-    }
 }
 
 /*Getter coded by Pierluca D'Oro https://github.com/Bellamy442/*/

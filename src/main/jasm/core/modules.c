@@ -57,8 +57,7 @@ void getModule (int fd)
                 count = strlen (moduleName[i]);
 
                 ret_val = write (fd, &count, sizeof (count) );
-                if (ret_val == 0 || ret_val == -1)
-                {
+                if (ret_val == 0 || ret_val == -1) {
                         fprintf (stderr, "Error in the write() operation on fd");
                 }
                 if (write (fd, moduleName[i], count) <0) {
