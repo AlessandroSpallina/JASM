@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import socket
-import threading
 
 class CommSocket:
 	def __init__(self,_ipaddr,_port):
@@ -26,12 +25,13 @@ class CommSocket:
 		return 0
 
 	def sendMessage(self,_msg):
-		_msg_bytes = str.encode(_msg)
-		try:
-			self.tcp_sock.send(_msg_bytes)
-		except socket.error:
-			return -1
-		return 0
+                _msg = _msg + '\0'
+                _msg_bytes = str.encode(_msg)
+                try:
+                    self.tcp_sock.send(_msg_bytes)
+                except socket.error:
+                    return -1
+                return 0
 
 	def getMessage(self,bufsz):
 		try:

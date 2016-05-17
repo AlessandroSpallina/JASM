@@ -285,7 +285,7 @@ static _Bool isCorrectPassword(int client_sockfd)
         FILE* source_passwd;
 
         log_string ("[CLIENT-AUTH]Authentication required!");
-        if (write (client_sockfd, auth, strlen (auth) ) < 0) {
+        if (write (client_sockfd, auth, strlen (auth)+1 ) < 0) {
                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                 log_error ("[write()][auth] Error");
                 log_error (errlog);
@@ -319,7 +319,7 @@ static _Bool isCorrectPassword(int client_sockfd)
         if (strcmp (getpasswd, passwd_from_client) == 0) {
                 log_string ("[PWD][OK]Password accepted!");
                 log_string ("[PWD][OK]Authorized!");
-                if (write (client_sockfd, granted, strlen (granted) ) < 0) {
+                if (write (client_sockfd, granted, strlen (granted)+1 ) < 0) {
                         sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                         log_error ("[core/ipc.c][start_server()][getpasswd][write()] ERROR while sending granted");
                         log_error (errlog);
@@ -329,7 +329,7 @@ static _Bool isCorrectPassword(int client_sockfd)
         } else  {
 
                 log_error ("[PWD][DEN]Wrong password!");
-                if (write (client_sockfd, denied, strlen (denied) ) < 0) {
+                if (write (client_sockfd, denied, strlen (denied)+1 ) < 0) {
                         sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                         log_error ("[JASM-DAEMON][write()] Error!");
                         log_error (errlog);
@@ -341,7 +341,7 @@ static _Bool isCorrectPassword(int client_sockfd)
                         log_error(errlog);
                 }
 
-                if (write (client_sockfd, "retry", 5) < 0) {
+                if (write (client_sockfd, "retry", 6) < 0) {
                         sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                         log_error ("[JASM-DAEMON][write()] Error");
                         log_error (errlog);
@@ -377,7 +377,7 @@ static _Bool isCorrectPassword(int client_sockfd)
                                 fclose (chkfile);
                                 sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!", i);
                                 log_string (attstr);
-                                if (write (client_sockfd, "authorized", strlen ("authorized") ) < 0)
+                                if (write (client_sockfd, "authorized", strlen ("authorized")+1 ) < 0)
                                 {
                                         sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                         log_error ("[JASM-DAEMON][write()] Error");
@@ -396,7 +396,7 @@ static _Bool isCorrectPassword(int client_sockfd)
                                 sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d FAILED!", i);
                                 log_string (attstr);
 
-                                if (write (client_sockfd, "retry", strlen ("retry") ) < 0) {
+                                if (write (client_sockfd, "retry", 6 ) < 0) {
                                         sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                         log_error ("[JASM-DAEMON][write()] Error");
                                         log_error (errlog);
@@ -528,7 +528,7 @@ void start_server()
                                                 int chkfile;
                                                 const char not_required[] = "auth-not-required";
 
-                                                if (write (client_sockfd, not_required, strlen (not_required) ) < 0)
+                                                if (write (client_sockfd, not_required, strlen (not_required)+1 ) < 0)
                                                         log_error ("[not_required][write()] Error");
 
                                                 log_string ("[CLIENT-AUTH]Authentication NOT required!");
@@ -536,7 +536,7 @@ void start_server()
                                                 chkfile = check_passwd_file (PASSWD_ENC_FILE);
 
                                                 if (chkfile == 0) {
-                                                        if (write (client_sockfd, nochkpwd, strlen (nochkpwd) ) < 0) {
+                                                        if (write (client_sockfd, nochkpwd, strlen (nochkpwd)+1 ) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][write()] error");
                                                                 log_error (errlog);
@@ -547,7 +547,7 @@ void start_server()
                                                         char buf_in_passwd[256];
                                                         int bytes;
 
-                                                        if (write (client_sockfd, chkpwd, strlen (chkpwd) ) < 0) {
+                                                        if (write (client_sockfd, chkpwd, strlen (chkpwd)+1 ) < 0) {
                                                                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
                                                                 log_error ("[chkfile][write()] error");
                                                                 log_error (errlog);

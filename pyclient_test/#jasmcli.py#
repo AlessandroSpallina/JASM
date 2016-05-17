@@ -1,3 +1,4 @@
+
 #!/usr/bin/python3
 
 import os, sys
@@ -59,36 +60,35 @@ def checkThings(socketObject):
 	getmsg = socketObject.getMessage(256)
 	print(getmsg)
 
-
-	if getmsg == "auth-not-required\0":
+	if getmsg == "auth-not-required":
 		iffile = socketObject.getMessage(256)
 		print(iffile)
-		if iffile == "nochk-pwdfile\0":
+		if iffile == "nochk-pwdfile":
 			return 0
 		elif iffile == "check-pwd-file":
 			pwd = str(input("[AUTH] Choose a login password: "))
 			sendPwd = socketObject.sendMessage(pwd)
 			if sendPwd == 0:
 				return 0
-	elif getmsg == "auth-required\0":
+	elif getmsg == "auth-required":
 		passwd = str(input("[AUTH] Login password: "))
 		sendMsg = socketObject.sendMessage(passwd)
 		answer = socketObject.getMessage(256)
 #		print(answer)
-		if answer == "granted\0":
+		if answer == "granted":
 			Print.info("[AUTH]Passwd accepted!\n")
 			return 0
-		elif answer == "deniedretry\0" or answer == "denied\0":
+		elif answer == "deniedretry" or answer == "denied":
 			Print.warn("[AUTH] Wrong password!\n")
 			passwdmsg = str(input("[AUTH] Retry: "))
 			socketObject.sendMessage(passwdmsg)
 			while True:
 				sobject = socketObject.getMessage(256)
-				if sobject == "deniedretry\0" or sobject == "retry\0":
+				if sobject == "deniedretry" or sobject == "retry":
 					passwdmsg = str(input("[AUTH] Retry: "))
 					socketObject.sendMessage(passwdmsg)
 					Print.warn("[AUTH]Retry!\n")
-				elif sobject == "authorized\0":
+				elif sobject == "authorized":
 					Print.info("[AUTH]Authorized\n")
 					return 0
 	return -1
