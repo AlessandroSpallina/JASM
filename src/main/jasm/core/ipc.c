@@ -305,9 +305,6 @@ static _Bool isCorrectPassword(int client_sockfd)
                 return true;
 
         } else  {
-
-                int cnt;
-
                 log_error ("[PWD][DEN]Wrong password!");
                 rcval = sendMsg(client_sockfd,denied);
                 if(rcval == 0 || rcval == -1) {
@@ -434,47 +431,50 @@ void start_server()
 
                 testfds = readfds;
 
-                result = select (FD_SETSIZE, &testfds, (fd_set *) 0, (fd_set *) 0, (struct timeval *) 0);
+                result = select(FD_SETSIZE, &testfds, (fd_set *) 0, (fd_set *) 0, (struct timeval *) 0);
 
                 if (result < 1) {
-                        sprintf (errlog, "[JASM-DAEMON]Error: %s\n", strerror (errno) );
-                        log_error ("[JASM-DAEMON][select()]Server failed");
-                        log_error (errlog);
-                        exit (SOCKET_SELECT_FAILED);
+                        sprintf(errlog, "[JASM-DAEMON]Error: %s\n", strerror(errno));
+                        log_error("[JASM-DAEMON][select()]Server failed");
+                        log_error(errlog);
+                        exit(SOCKET_SELECT_FAILED);
                 }
 
                 for (fd = 0; fd < FD_SETSIZE; ++fd) {
-                        if (FD_ISSET (fd, &testfds) ) {
+                        if (FD_ISSET (fd, &testfds)) {
                                 if (fd == server_sockfd) {
-                                        client_len = sizeof (client_address);
-                                        client_sockfd = accept (server_sockfd, (struct sockaddr *) &client_address, &client_len);
+                                        client_len = sizeof(client_address);
+                                        client_sockfd = accept(server_sockfd, (struct sockaddr *) &client_address,
+                                                               &client_len);
                                         if (client_sockfd < 0) {
-                                                sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                                                log_error ("[JASM-DAEMON][accept()]Failed to accept socket connection!");
-                                                log_error (errlog);
-                                                openlog ("JASM", LOG_PID, LOG_DAEMON);
-                                                syslog (LOG_ERR, "FATAL! Failed to accept client incoming connection! Exiting...");
+                                                sprintf(errlog, "[JASM-DAEMON][errno] Errno: %s", strerror(errno));
+                                                log_error("[JASM-DAEMON][accept()]Failed to accept socket connection!");
+                                                log_error(errlog);
+                                                openlog("JASM", LOG_PID, LOG_DAEMON);
+                                                syslog(LOG_ERR,
+                                                       "FATAL! Failed to accept client incoming connection! Exiting...");
                                                 closelog();
-                                                exit (SOCKET_CLIENT_CONNECTION_FAILED);
+                                                exit(SOCKET_CLIENT_CONNECTION_FAILED);
                                         }
                                         FD_SET (client_sockfd, &readfds);
-                                        sprintf (client_ipaddr, "%d.%d.%d.%d", \
-                                                 client_address.sin_addr.s_addr & 0xFF,\
-                                                 (client_address.sin_addr.s_addr & 0xFF00) >> 8,\
-                                                 (client_address.sin_addr.s_addr & 0xFF0000) >> 16,\
+                                        sprintf(client_ipaddr, "%d.%d.%d.%d", \
+                                                 client_address.sin_addr.s_addr & 0xFF, \
+                                                 (client_address.sin_addr.s_addr & 0xFF00) >> 8, \
+                                                 (client_address.sin_addr.s_addr & 0xFF0000) >> 16, \
                                                  (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
 
                                         //************************************************
-                                        if(login_required(client_ipaddr)) {
-                                               
-                                        	if(isCorrectPassword(client_sockfd)) {
-                                                	goodLoginRoutine(client_ipaddr, client_sockfd);
-                                            } else {
-                                                	//if here -> too many wrongs
-                                                	shutdown (client_sockfd, 2);
-                                                    sprintf(errlog, "[WARNING] Client %s disconnected!", client_ipaddr);
-                                                	log_string(errlog);
-                                            }
+                                        if (login_required(client_ipaddr)) {
+
+                                                if (isCorrectPassword(client_sockfd)) {
+                                                        goodLoginRoutine(client_ipaddr, client_sockfd);
+                                                } else {
+                                                        //if here -> too many wrongs
+                                                        shutdown(client_sockfd, 2);
+                                                        sprintf(errlog, "[WARNING] Client %s disconnected!",
+                                                                client_ipaddr);
+                                                        log_string(errlog);
+                                                }
                                         } else {
                                                 // change assignment method ( using strncpy() )
                                                 const char chkpwd[] = "check-pwd-file";
@@ -482,23 +482,23 @@ void start_server()
                                                 int chkfile;
                                                 const char not_required[] = "auth-not-required";
 
-                                                rcval = sendMsg(client_sockfd,not_required);
-                                                if(rcval == 0 || rcval == -1) {
-                                                    close(client_sockfd);
-                                                    break;
-                                                }
-
-                                                log_string ("[CLIENT-AUTH]Authentication NOT required!");
-                                                log_string("trymeee");
-                                                chkfile = check_passwd_file (PASSWD_ENC_FILE);
-
-                                                if (chkfile == 0) {
-                                                    sleep(1);
-                                                    rcval = sendMsg(client_sockfd,nochkpwd);
-                                                    if(rcval == 0 || rcval == -1) {
+                                                rcval = sendMsg(client_sockfd, not_required);
+                                                if (rcval == 0 || rcval == -1) {
                                                         close(client_sockfd);
                                                         break;
-                                                    }
+                                                }
+
+                                                log_string("[CLIENT-AUTH]Authentication NOT required!");
+                                                log_string("trymeee");
+                                                chkfile = check_passwd_file(PASSWD_ENC_FILE);
+
+                                                if (chkfile == 0) {
+                                                        sleep(1);
+                                                        rcval = sendMsg(client_sockfd, nochkpwd);
+                                                        if (rcval == 0 || rcval == -1) {
+                                                                close(client_sockfd);
+                                                                break;
+                                                        }
                                                 }
                                                 else if (chkfile == 1) {
                                                         sleep(1);
@@ -506,21 +506,21 @@ void start_server()
                                                         char buf_in_passwd[256];
                                                         int bytes;
 
-                                                        rcval = sendMsg(client_sockfd,chkpwd);
-                                                        if(rcval == 0 || rcval == -1) {
-                                                            close(client_sockfd);
-                                                            break;
+                                                        rcval = sendMsg(client_sockfd, chkpwd);
+                                                        if (rcval == 0 || rcval == -1) {
+                                                                close(client_sockfd);
+                                                                break;
                                                         }
 
-                                                        rcval = recvMsg(client_sockfd,buf_in_passwd);
-                                                        if(rcval == 0 || rcval == -1) {
-                                                            close(client_sockfd);
-                                                            break;
+                                                        rcval = recvMsg(client_sockfd, buf_in_passwd);
+                                                        if (rcval == 0 || rcval == -1) {
+                                                                close(client_sockfd);
+                                                                break;
                                                         }
 
-                                                        if ( (pswfp = fopen (PASSWD_ENC_FILE, "w+") ) != NULL) {
-                                                            fputs (buf_in_passwd, pswfp);
-                                                            fclose (pswfp);
+                                                        if ((pswfp = fopen(PASSWD_ENC_FILE, "w+")) != NULL) {
+                                                                fputs(buf_in_passwd, pswfp);
+                                                                fclose(pswfp);
                                                         }
 
                                                 }
@@ -528,13 +528,14 @@ void start_server()
                                         }
 
                                 } else {
-                                        ioctl (fd, FIONREAD, &nread);
+                                        ioctl(fd, FIONREAD, &nread);
 
                                         if (nread == 0) {
-                                                close (fd);
+                                                close(fd);
                                                 FD_CLR (fd, &readfds);
-                                                sprintf (buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
-                                                log_string (buf);
+                                                sprintf(buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s",
+                                                        client_sockfd, client_ipaddr);
+                                                log_string(buf);
                                                 rem_clientIp(&client_list, client_ipaddr);
                                                 connection_counter--;
 
@@ -542,19 +543,19 @@ void start_server()
                                                 log_client(client_list);
 #endif
                                         } else {
-                                                memset (received, '\0',strlen(received));
-                                                rcval = recvMsg(fd,received);
-                                                if(rcval != -1) {
-                                                    sprintf (buf, "[CMD-GET] Got command from %d: <%s>", fd, received);
-                                                    log_string (buf);
-                                                    excecute_command (fd, client_ipaddr, received);
+                                                memset(received, '\0', strlen(received));
+                                                rcval = recvMsg(fd, received);
+                                                if (rcval != -1) {
+                                                        sprintf(buf, "[CMD-GET] Got command from %d: <%s>", fd,
+                                                                received);
+                                                        log_string(buf);
+                                                        excecute_command(fd, client_ipaddr, received);
                                                 }
                                         }
                                 }
                         }
                 }
         }
-
 }
 
 int recvMsg(unsigned int sockfd, char *__dest)

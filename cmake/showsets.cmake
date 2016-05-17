@@ -14,7 +14,11 @@ else()
 endif()
 
 if(NOT BUILDARCH)
-    set(BUILDARCH "native")
+    set(BUILDARCH "system's architecture")
+endif()
+
+if(NOT MTUNESW)
+    set(MTUNESW "native (not choosen)")
 endif()
 
 if(NOT WARNALL)
@@ -45,6 +49,7 @@ elseif(WNOEXCLUDE STREQUAL "no")
 endif()
 
 message("* C Compiler: ${CMAKE_C_COMPILER}")
+message("* MTUNESW: ${MTUNESW}")
 message("* Architecture: ${BUILDARCH}")
 message("* Build version: ${JASM_VERSION}")
 message("* Build date: ${BUILD_DATE}")

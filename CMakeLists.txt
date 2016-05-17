@@ -75,7 +75,7 @@ install(FILES ${PROJECT_SOURCE_DIR}/jasm.service
     DESTINATION /etc/systemd/system)
 
 #Packaging#
-set(CPACK_GENERATOR "DEB;RPM")
+set(CPACK_GENERATOR "DEB")
 
 #General
 set(CPACK_PACKAGE_VERSION_MAJOR ${JASM_VMAJOR})
@@ -99,11 +99,11 @@ set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "JASM is an hackable and modular system mon
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION_SUMMARY "Modular and Hackable System Monitor")
 
 #RH
-set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
-set(CPACK_RPM_COMPRESSION_TYPE "xz")
-set(CPACK_RPM_PACKAGE_RELEASE 0)
-set(CPACK_RPM_PACKAGE_URL "https://github.com/AlessandroSpallina/JASM")
-set(CPACK_RPM_PACKAGE_DESCRIPTION "JASM is another system monitoring platform... But you can change it your own!")
+#set(CPACK_RPM_PACKAGE_LICENSE "GPLv3")
+#set(CPACK_RPM_COMPRESSION_TYPE "xz")
+#set(CPACK_RPM_PACKAGE_RELEASE 0)
+#set(CPACK_RPM_PACKAGE_URL "https://github.com/AlessandroSpallina/JASM")
+#set(CPACK_RPM_PACKAGE_DESCRIPTION "JASM is another system monitoring platform... But you can change it your own!")
 
 #Use CPack
 include(CPack)

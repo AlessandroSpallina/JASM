@@ -16,6 +16,7 @@
 *.config
 *.includes
 *.files
+*.kdev4
 
 #JASM-related files
 jasm.log
