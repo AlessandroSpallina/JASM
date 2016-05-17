@@ -28,14 +28,16 @@ class CommSocket:
                 _msg = _msg + '\0'
                 _msg_bytes = str.encode(_msg)
                 try:
-                    self.tcp_sock.send(_msg_bytes)
+                    if self.tcp_sock.send(_msg_bytes) == 0:
+                        return 0
+
                 except socket.error:
                     return -1
                 return 0
 
 	def getMessage(self,bufsz):
 		try:
-			sock_msg = self.tcp_sock.recv(bufsz)
+                        sock_msg = self.tcp_sock.recv(bufsz)
 		except socket.error:
 			return -1
 		return str(sock_msg.decode("utf-8")) 

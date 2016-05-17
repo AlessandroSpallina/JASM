@@ -74,19 +74,18 @@ def checkThings(socketObject):
 		passwd = str(input("[AUTH] Login password: "))
 		sendMsg = socketObject.sendMessage(passwd)
 		answer = socketObject.getMessage(256)
-#		print(answer)
+		print(answer)
 		if answer == "granted\0":
 			Print.info("[AUTH]Passwd accepted!\n")
 			return 0
-		elif answer == "deniedretry\0" or answer == "denied\0":
+		elif answer == "denied\0":
 			Print.warn("[AUTH] Wrong password!\n")
 			passwdmsg = str(input("[AUTH] Retry: "))
 			socketObject.sendMessage(passwdmsg)
 			while True:
 				sobject = socketObject.getMessage(256)
-				if sobject == "deniedretry\0" or sobject == "retry\0":
+				if sobject == "retry\0":
 					passwdmsg = str(input("[AUTH] Retry: "))
-					socketObject.sendMessage(passwdmsg)
 					Print.warn("[AUTH]Retry!\n")
 				elif sobject == "authorized\0":
 					Print.info("[AUTH]Authorized\n")

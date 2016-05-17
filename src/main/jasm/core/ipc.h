@@ -26,4 +26,7 @@ extern void start_server (void);
 
 extern struct ip_node *client_list;
 
+extern int recvMsg(unsigned int sockfd, char *__dest);
+extern int sendMsg(unsigned int sockfd, const char __src[256]);
+
 #endif
