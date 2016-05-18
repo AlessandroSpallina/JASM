@@ -24,9 +24,8 @@
 #include "logger.h"
 #include "miscellaneous.h"
 
-
-char homedir[BUFSIZ];
-char LOGPATH[BUFSIZ];
+char LOGPATH[256];
+char homedir[256];
 
 void set_logpath(void)
 {

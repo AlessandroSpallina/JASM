@@ -65,7 +65,7 @@ def checkThings(socketObject):
 		print(iffile)
 		if iffile == "nochk-pwdfile\0":
 			return 0
-		elif iffile == "check-pwd-file":
+		elif iffile == "check-pwd-file\0":
 			pwd = str(input("[AUTH] Choose a login password: "))
 			sendPwd = socketObject.sendMessage(pwd)
 			if sendPwd == 0:

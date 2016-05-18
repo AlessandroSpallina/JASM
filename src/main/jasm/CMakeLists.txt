@@ -21,6 +21,12 @@ if(NOT WARNALL)
     endif()
 endif()
 
+if(NOT CMAKE_C_COMPILER)
+    if(NOT DEFINED $ENV{CC})
+        set(CMAKE_C_COMPILER "/usr/bin/cc")
+    endif()
+endif()
+
 if(NOT MTUNESW)
     message("-- MTUNESW NOT SET -- native")
     set(MTUNESW "native")
@@ -45,8 +51,8 @@ if(NOT CFLAGSADD)
 endif()
 
 message("-- Setting CFLAGS ")
-set(CMAKE_C_FLAGS_RELEASE "${CFLAGSADD} -O2 -pipe ${BUILDARCH} -mtune=${MTUNESW} -std=c11 -D__BSD_VISIBLE -D_GNU_SOURCE")
-set(CMAKE_C_FLAGS_DEBUG "${CFLAGSADD} -DDEBUG -g ${BUILDARCH} -mtune=${MTUNESW} -std=c11 -Wall -D__BSD_VISIBLE -D_GNU_SOURCE ")
+set(CMAKE_C_FLAGS_RELEASE "${CFLAGSADD} -O2 -pipe ${BUILDARCH} -mtune=${MTUNESW} -std=c11 ")
+set(CMAKE_C_FLAGS_DEBUG "${CFLAGSADD} -DDEBUG -g ${BUILDARCH} -mtune=${MTUNESW} -std=c11 -Wall ")
 
 if(WARNALL STREQUAL "yes")
     message("-- WARNALL ENABLED ")
@@ -81,14 +87,18 @@ file(GLOB_RECURSE MODSRCS "modules/*.c")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG  ${MAINDIR}/bin-debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${MAINDIR}/bin)
 
-#timedate definition
-add_definitions(-D_XOPEN_SOURCE=700)
+#
+# __BSD_SOURCE : required for FreeBSD
+#
+add_definitions(-D_XOPEN_SOURCE=700 -D_GNU_SOURCE -D__BSD_VISIBLE)
 
 if(CORESRCS AND MODSRCS)
     add_library(jasmcore STATIC ${CORESRCS})#libjasmcore.a (linked)
     add_library(jasmmodules STATIC ${MODSRCS})#libjasmmodules.a (linked)
     add_executable(jasm core/jasm.c) 
     target_link_libraries(jasm jasmcore jasmmodules ${CMAKE_THREAD_LIBS_INIT})
+else()
+    message("-- Error: Core sources and Modules sources not found!!")
 endif()
 
 message("<<< CMake: src/main/jasm/CMakeLists.txt ; DONE!")

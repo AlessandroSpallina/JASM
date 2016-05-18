@@ -23,8 +23,8 @@
 #define CLIENTLOGPATH "../data/client.log"
 #endif
 
-extern char LOGPATH[BUFSIZ];
-extern char homedir[BUFSIZ];
+extern char LOGPATH[256];
+extern char homedir[256];
 
 extern void log_string(const char * message);
 extern void log_error(const char * message);
