@@ -17,6 +17,8 @@
 *.includes
 *.files
 *.kdev4
+*.iml
+*.xml 
 
 #JASM-related files
 jasm.log

@@ -41,7 +41,7 @@
 struct ip_node *client_list = NULL;
 
 /* TODO */
-static unsigned int connection_counter = 0;
+static char PASSWD_ENC_FILE[256];
 char errlog[BUFSIZ];
 
 
@@ -198,10 +198,6 @@ static _Bool goodLoginRoutine(char *client_ipaddr, int client_sockfd)
 #ifdef DEBUG
         log_client(client_list);
 #endif
-        ++connection_counter;
-
-        sprintf(buf,"[CLIENT-CONNECT] Connected: %d",connection_counter);
-        log_string(buf);
 
         //todo here
         return true;
@@ -210,25 +206,11 @@ static _Bool goodLoginRoutine(char *client_ipaddr, int client_sockfd)
 
 static _Bool isCorrectPassword(int client_sockfd)
 {
-#ifndef PASSWD_ENC_FILE
-        char PASSWD_ENC_FILE[256];
-        strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
-        strcat (PASSWD_ENC_FILE, "/.jpwd");
-#endif
-
-#ifndef CHECK_ACCESS_FILE
-        char CHECK_ACCESS_FILE[256];
-        strcpy (CHECK_ACCESS_FILE, getenv ("HOME") );
-        strcat (CHECK_ACCESS_FILE, "/.jpwdchk");
-#endif // CHECK_ACCESS_FILE
-
         char passwd_from_client[256], getpasswd[256];
 
-        FILE* source_passwd;
+        FILE* source_passwd=NULL;
 
         log_string ("[CLIENT-AUTH]Authentication required!");
-
-        int i;
         ssize_t rcval;
 
         rcval = sendMsg(client_sockfd,"auth-required");
@@ -241,20 +223,21 @@ static _Bool isCorrectPassword(int client_sockfd)
             return false;
         }
 
-        if ( (source_passwd = fopen (PASSWD_ENC_FILE, "r") ) != NULL) {
-                char *ret_value = fgets (passwd_from_client, BUFSIZ, source_passwd);
-                if (ret_value == NULL) {
-                        log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
-                        fclose (source_passwd);
-                        close(client_sockfd);
-                        exit (NOFILE_ERROR);
-                }
-                fclose (source_passwd);
+        if ((source_passwd = fopen(PASSWD_ENC_FILE, "r")) != NULL) {
+            char *ret_value = fgets(passwd_from_client, 256, source_passwd);
+            if (ret_value == NULL) {
+                log_error("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                fclose(source_passwd);
+                close(client_sockfd);
+                exit(NOFILE_ERROR);
+            }
         } else {
-                log_error ("[JASM-DAEMON][FILE]Password file not found!");
-                log_error ("[SECURITY]JASM is going to be killed to avoid intrusion");
-                exit (NOFILE_ERROR);
+            log_error(strerror(errno));
+            fclose(source_passwd);
+            close(client_sockfd);
+            exit(NOFILE_ERROR);
         }
+
         if (strcmp (getpasswd, passwd_from_client) == 0) {
                 log_string ("[PWD][OK]Password accepted!");
                 log_string ("[PWD][OK]Authorized!");
@@ -271,67 +254,15 @@ static _Bool isCorrectPassword(int client_sockfd)
                 if(rcval == 0 || rcval == -1) {
                         return false;
                 }
-
-                for (i = 0; i <= 4; ++i) {
-                        FILE * chkfile;
-                        char passwd[256];
-                        char attstr[BUFSIZ];
-
-                        if(i == 4) {
-                            shutdown(client_sockfd,2);
-                            break;
-                        }
-
-                        rcval = recvMsg(client_sockfd,passwd);
-                        if(rcval == 0 || rcval == -1) {
-                            return false;
-                        }
-
-                        if (strcmp (passwd, passwd_from_client) == 0) {
-                                if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL) {
-                                        log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
-                                        fclose (source_passwd);
-                                        exit (NOFILE_ERROR);
-                                }
-                                fprintf (chkfile, "falset");
-                                fclose (chkfile);
-                                sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d SUCCESS!", i);
-                                log_string (attstr);
-
-                                rcval = sendMsg(client_sockfd,"authorized");
-                                if(rcval == 0 || rcval == -1) {
-                                    return false;
-                                }
-                                return true;
-                        }
-                        else if (strcmp (passwd, passwd_from_client) != 0) {
-                                if ( (chkfile = fopen (CHECK_ACCESS_FILE, "w+") ) == NULL) {
-                                        log_error ("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
-                                        fclose (source_passwd);
-                                        exit (NOFILE_ERROR);
-                                }
-                                fprintf (chkfile, "true");
-                                fclose (chkfile);
-                                sprintf (attstr, "[JASM-DAEMON][LOGIN]Attempt: %d FAILED!", i);
-                                log_string (attstr);
-
-                                rcval = sendMsg(client_sockfd,"retry");
-                                if(rcval == 0 || rcval == -1) {
-                                    return false;
-                                }
-                        }
-                }
         }
         return false;
 }
 
 void start_server()
 {
-#ifndef PASSWD_ENC_FILE
-        char PASSWD_ENC_FILE[256];
-        strcpy (PASSWD_ENC_FILE, getenv ("HOME") );
-        strcat (PASSWD_ENC_FILE, "/.jpwd");
-#endif
+    strncpy (PASSWD_ENC_FILE, getenv ("HOME"),strlen(getenv("HOME")));
+    strncat (PASSWD_ENC_FILE, "/.jpwd",strlen("/.jpwd"));
+
         int server_sockfd, client_sockfd;
         int server_len;
         socklen_t client_len;
@@ -498,7 +429,6 @@ void start_server()
                                                         client_sockfd, client_ipaddr);
                                                 log_string(buf);
                                                 rem_clientIp(&client_list, client_ipaddr);
-                                                connection_counter--;
 
 #ifdef DEBUG
                                                 log_client(client_list);
