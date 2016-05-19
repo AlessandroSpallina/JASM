@@ -17,8 +17,11 @@
 *.includes
 *.files
 *.kdev4
-*.iml
-*.xml 
+JASM.iml
+misc.xml
+modules.xml
+vcs.xml
+workspace.xml
 
 #JASM-related files
 jasm.log
