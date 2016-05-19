@@ -142,7 +142,7 @@ static void excecute_command (int fd, char *ip, char *command)
                                 struct module_running *aus = find_module_running(client->modules_list, command);
                                 if (aus != NULL) {
 
-                                        if (pthread_key_delete(aus->tid) == 0) {
+                                        if (pthread_key_delete((pthread_key_t)aus->tid) == 0) {
                                                 log_string("[STOPPER] JASM stopped the module successfully");
                                                 rem_module_running(&(client->modules_list), command);
                                                 sendMsg(fd,"success");
@@ -222,13 +222,14 @@ static _Bool isCorrectPassword(int client_sockfd)
         strcat (CHECK_ACCESS_FILE, "/.jpwdchk");
 #endif // CHECK_ACCESS_FILE
 
-        char passwd_from_client[256], getit[256], getpasswd[256];
+        char passwd_from_client[256], getpasswd[256];
 
         FILE* source_passwd;
 
         log_string ("[CLIENT-AUTH]Authentication required!");
 
-        int rcval,i;
+        int i;
+        ssize_t rcval;
 
         rcval = sendMsg(client_sockfd,"auth-required");
         if(rcval == 0 || rcval == -1) {
@@ -365,7 +366,7 @@ void start_server()
         server_address.sin_port = htons (SERVER_PORT);
         server_len = sizeof (server_address);
 
-        if (bind (server_sockfd, (struct sockaddr *) &server_address, server_len) < 0) {
+        if (bind (server_sockfd, (struct sockaddr *) &server_address, (socklen_t)server_len) < 0) {
                 sprintf (errlog, "[JASM-DAEMON][bind()]Error: %s\n", strerror (errno) );
                 log_error ("[JASM-DAEMON][bind()]Failed to bind socket");
                 log_error (errlog);
@@ -397,8 +398,7 @@ void start_server()
                 char received[BUFSIZ];
                 int fd;
                 int nread;
-                int rcval;
-                ssize_t return_value = 0;
+                ssize_t rcval;
 
                 testfds = readfds;
 
@@ -519,9 +519,14 @@ void start_server()
         }
 }
 
-int recvMsg(unsigned int sockfd, char *__dest)
+ssize_t recvMsg(int sockfd, char *__dest)
 {
-    int rcval;
+    if(sockfd < 0) {
+        log_error("[JASM-DAEMON][recvMsg()]Passed sockfd is invalid!");
+        return -3;
+    }
+
+    ssize_t rcval;
     char __pre_dest[BUFSIZ], fmtErr[100];
 
     memset(__pre_dest,'\0',strlen(__pre_dest));
@@ -533,7 +538,7 @@ int recvMsg(unsigned int sockfd, char *__dest)
         }
         memset(__dest,'\0',strlen(__dest));
         sprintf(fmtErr,"[JASM-DAEMON][recvMsg()][recv()] FAIL: %s",strerror(errno));
-        log_string(fmtErr);
+        log_error(fmtErr);
         return -1;
     } else if (rcval == 0) {
         memset(__dest,'\0',strlen(__dest));
@@ -547,16 +552,21 @@ int recvMsg(unsigned int sockfd, char *__dest)
     }
 }
 
-int sendMsg(unsigned int sockfd, const char __src[MAX_LENGHT_SEND])
+ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
 {
-    int rcval;
+    if (sockfd < 0) {
+        log_error("[JASM-DAEMON][sendMsg()]Passed sockfd is invalid!");
+        return -3;
+    }
+
+    ssize_t rcval;
     char __final_src[MAX_LENGHT_SEND],fmtErr[100];
 
     /* OVERFLOW PROTECTION */
     if(strlen(__src)+1 > MAX_LENGHT_SEND) {
         if((rcval=send(sockfd,"0verfl0w\0",strlen("0verfl0w")+1,0)) == -1) {
             sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
-            log_string(fmtErr);
+            log_error(fmtErr);
         } else if (rcval == 0) {
             log_string("[JASM-DAEMON][sendMsg()] Client disconnected!");
             shutdown(sockfd,2);
@@ -568,7 +578,7 @@ int sendMsg(unsigned int sockfd, const char __src[MAX_LENGHT_SEND])
     strncpy(__final_src,__src,strlen(__src)+1);
     if((rcval=send(sockfd,__final_src,strlen(__final_src)+1,0)) == -1) {
         sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
-        log_string(fmtErr);
+        log_error(fmtErr);
         return -1;
     } else if (rcval == 0) {
         log_string("[JASM-DAEMON][sendMsg()] Client disconnected!");

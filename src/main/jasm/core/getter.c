@@ -60,9 +60,8 @@ void getGetter (int fd)
 {
         int i;
         int n_getter = NGETTER;
-        int count = 0;
-        //start from an error condition, to make sure we do not miss anything
-        ssize_t ret_val = -1;
+        size_t count = 0;
+        ssize_t ret_val;
 
         ret_val = write (fd, &n_getter, sizeof (n_getter) );
 
@@ -89,14 +88,11 @@ void getGetter (int fd)
 
 void getVersion (int fd)
 {
-        int n;
         sendMsg(fd,VERSION);
 }
 
 void getCopyright (int fd)
 {
-        int n;
-
         sendMsg(fd,COPYRIGHT);
 }
 
@@ -193,7 +189,7 @@ void getUpTime (int fd)
 #ifdef __gnu_linux__
       char buf[BUFSIZ];
       struct sysinfo sys_info;
-      int days,hours,min,sec;
+      long days,hours,min,sec;
 
       if( sysinfo (&sys_info) != 0)
       {
@@ -205,7 +201,7 @@ void getUpTime (int fd)
             hours = (sys_info.uptime / 3600) - (days * 24);
             min = (sys_info.uptime / 60) - (hours * 60) - (days * 1440);
             sec = (sys_info.uptime) - (min * 60) - (hours * 3600) - (days * 86400);
-            sprintf(buf,"%02d:%02d:%02d:%02d",days,hours,min,sec);
+            sprintf(buf,"%ld:%ld:%ld:%ld",days,hours,min,sec);
       }
       sendMsg(fd,buf);
 #else
@@ -248,7 +244,7 @@ void getFreeRAM (int fd)
 #ifdef __gnu_linux__
       struct sysinfo sys_info;
       char buf[BUFSIZ];
-      const unsigned long megabyte = 1024*1024;
+      const unsigned long MEGABYTE = 1024*1024;
 
       if( sysinfo (&sys_info) != 0)
       {
@@ -257,7 +253,7 @@ void getFreeRAM (int fd)
       }
       else
       {
-            sprintf (buf,"%lu MB",sys_info.freeram/megabyte);
+            sprintf (buf,"%lu MB",sys_info.freeram/MEGABYTE);
             sendMsg(fd,buf);
       }
 #else
@@ -295,7 +291,7 @@ void getProcesses (int fd)
  */
 void getCpuProcessor (int fd)
 {
-      int numCPU,onCPU;
+      long numCPU,onCPU;
       char buf[BUFSIZ];
       //TODO error checking
       if( (numCPU=sysconf(_SC_NPROCESSORS_CONF))==-1 || (onCPU=sysconf(_SC_NPROCESSORS_ONLN))==-1)
@@ -303,7 +299,7 @@ void getCpuProcessor (int fd)
             log_error("getCpuProcessor() Failed");
             return;
       }
-      sprintf(buf,"Number of CPU configured: %d Online: %d",numCPU,onCPU);
+      sprintf(buf,"Number of CPU configured: %ld Online: %ld",numCPU,onCPU);
       sendMsg(fd,buf);
 }
 
@@ -588,7 +584,6 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 		char buf[BUFSIZ];
 		char result[4];
 		int i = 0;
-		int n;
 	
 		swaps_fd = open("/proc/swaps", O_RDONLY);
 		if(read(swaps_fd, buf, BUFSIZ) <= 0){
@@ -616,7 +611,6 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
 		char buf[BUFSIZ];
 		char result[10];
 		int i = 0;
-		int n;
 	
 		file_fd = open("/proc/sys/fs/file-nr", O_RDONLY);
 		if(read(file_fd, buf, BUFSIZ) <= 0){

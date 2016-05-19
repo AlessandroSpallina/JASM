@@ -19,6 +19,8 @@
 #ifndef _IPC_H
 #define _IPC_H
 
+#include <sys/types.h>
+
 #define MAX_LENGHT_RECV 256
 #define MAX_LENGHT_SEND 256
 
@@ -28,7 +30,7 @@ extern void start_server (void);
 
 extern struct ip_node *client_list;
 
-extern int recvMsg(unsigned int sockfd, char *__dest);
-extern int sendMsg(unsigned int sockfd, const char __src[256]);
+extern ssize_t recvMsg(int sockfd, char *__dest);
+extern ssize_t sendMsg(int sockfd, const char __src[256]);
 
 #endif

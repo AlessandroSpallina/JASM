@@ -36,7 +36,7 @@ void (*moduleStart[NMODULE]) (void) = {start_logsender};
 
 void getModule (int fd)
 {
-        int count = 0;
+        size_t count = 0;
         int nmodule = NMODULE; //check itoa
         ssize_t ret_val = 0;
 

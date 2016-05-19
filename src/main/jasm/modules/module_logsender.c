@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <string.h>
 /*#include <sys/utsname.h>
-#include <sys/types.h>
 #include <pthread.h>*/
 #include <errno.h>
 
@@ -90,7 +89,7 @@ void start_logsender()
         //sends all log file
         while(sendNextLine(&fp) != -1) ;
 
-        while(1) {
+        while(1) { /* ENDLESS LOOP */
                 //and wait n sec before updating :)
                 //The sleep() function shall cause the calling thread to be suspended from execution [POSIX Doc]
                 sleep(sec);
