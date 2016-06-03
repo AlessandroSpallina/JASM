@@ -21,13 +21,17 @@
 #include "ipc.h"
 #include "signals.h"
 #include "logger.h"
+#include "cfgparser.h"
 
 int main (void)
 {
-								set_logpath(); //sets path where to log...
-								start_daemon(); //starts background daemon
-								set_signals_feel(); //logs a set of signals
-
-                                //starts server after the daemon (ready to get commands)
-                                start_server();
+	struct configval cfgvalues;
+	
+	set_logpath(); //sets path where to log..
+	start_daemon(); //starts background daemon
+	set_signals_feel(); //logs a set of signals
+	get_values(&cfgvalues); //gets config values
+	
+	//starts server after the daemon (ready to get commands)
+	start_server();
 }
