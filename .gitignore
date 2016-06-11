@@ -18,6 +18,7 @@
 *.files
 *.kdev4
 .idea/
+JASM/
 
 #JASM-related files
 jasm.log
