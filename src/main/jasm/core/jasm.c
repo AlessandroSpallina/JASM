@@ -16,7 +16,6 @@
 * You should have received a copy of the GNU General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 ****************************************************************************/
-
 #include "miscellaneous.h"
 #include "ipc.h"
 #include "signals.h"
@@ -26,12 +25,14 @@
 int main (void)
 {
 	struct configval cfgvalues;
-	
+
 	set_logpath(); //sets path where to log..
 	start_daemon(); //starts background daemon
 	set_signals_feel(); //logs a set of signals
-	get_values(&cfgvalues); //gets config values
-	
-	//starts server after the daemon (ready to get commands)
+    if(get_values(&cfgvalues) == -1) {
+        log_string("[JASM-DAEMON][CONFIG] Configuration file doesn't exist!");
+    }
+
+    //starts server after the daemon (ready to get commands)
 	start_server();
 }
