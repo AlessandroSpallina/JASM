@@ -45,7 +45,6 @@ int get_values(struct configval *cfg)
     }
     
     while(1) {
-        int i;
         char completeContent[256];
         
         bzero(completeContent,strlen(completeContent));
