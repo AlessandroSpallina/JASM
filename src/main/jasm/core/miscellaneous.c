@@ -95,15 +95,15 @@ void start_daemon()
                 exit (_EXIT_SUCCESS);
         }
         if (setsid() < 0) {
-                log_error ("[PROCESS-BACKGROUND][setsid()] failed");
-                sprintf (errlog, "[PROCESS-BACKGROUND]Error: %s\n", strerror (errno) );
+                log_error ("[PROCESS-SID][setsid()] failed");
+                sprintf (errlog, "[PROCESS-SID]Error: %s\n", strerror (errno) );
                 log_error (errlog);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
-                syslog (LOG_ERR, "Put process background failed!");
+                syslog (LOG_ERR, "Setting sid for new process failed!");
                 closelog();
                 exit (ERR_SET_PROCESS_BACKGROUND);
         } else {
-            log_string ("[PROCESS-BACKGROUND][setsid()] success");
+            log_string ("[PROCESS-SID][setsid()] success");
         }
 
         //closes fd: stdin, stdout, stderr

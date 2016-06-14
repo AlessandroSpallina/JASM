@@ -19,6 +19,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include "modules_list.h"
+
 #ifdef DEBUG
 #define CLIENTLOGPATH "../data/client.log"
 #endif

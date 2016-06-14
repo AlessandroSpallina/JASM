@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "modules_list.h"
 #include "logger.h"
 #include "miscellaneous.h"
 
@@ -66,6 +65,7 @@ void log_client (struct ip_node *clist)
 								FILE *fp = fopen(CLIENTLOGPATH, "a+");
 								if (fp == NULL) {
 									/* AVOID SEGFAULT !!! */
+									return;
 								}
 								
 								struct module_running *mlist = NULL;
@@ -80,6 +80,8 @@ void log_client (struct ip_node *clist)
 																clist = clist->next;
 								}
 								fprintf(fp, "=========\n");
-								fclose(fp); /* YOU CANNOT USE FPRINTF AFTER FCLOSE!!! */
+								if(fclose(fp) == -1) {
+								  log_error("[JASM-DAEMON][ERROR][fclose()] Error while closing log_client");
+								}
 }
 #endif
