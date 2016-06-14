@@ -62,8 +62,12 @@ void log_error (const char *message)
 #ifdef DEBUG
 void log_client (struct ip_node *clist)
 {
-
+								//NULLCHECK!!!
 								FILE *fp = fopen(CLIENTLOGPATH, "a+");
+								if (fp == NULL) {
+									/* AVOID SEGFAULT !!! */
+								}
+								
 								struct module_running *mlist = NULL;
 								fprintf(fp, "=========\n[%s]\n", getTime());
 								while(clist != NULL) {
@@ -75,7 +79,7 @@ void log_client (struct ip_node *clist)
 																}
 																clist = clist->next;
 								}
-								fclose(fp);
 								fprintf(fp, "=========\n");
+								fclose(fp); /* YOU CANNOT USE FPRINTF AFTER FCLOSE!!! */
 }
 #endif
