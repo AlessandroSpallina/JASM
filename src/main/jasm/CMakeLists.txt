@@ -12,12 +12,6 @@ configure_file (
 
 find_package(Threads REQUIRED) 
 
-if(UNIX)
-	if(THREADS_HAVE_PTHREAD_ARG)
-		target_compile_options(PUBLIC jasm "-pthread")
-	endif()
-endif()
-
 if(NOT WARNALL)
     message("-- WARNALL NOT SET -- no ")
     set(WARNALL "no")
@@ -27,9 +21,13 @@ if(NOT WARNALL)
     endif()
 endif()
 
-if(NOT BUILDARCH)
-    message("-- BUILDARCH NOT SET -- native")
-    set(BUILDARCH "native")
+set(CMAKE_C_COMPILER "clang")
+
+if(NATIVE STREQUAL "yes")
+    message("-- MTUNESW NOT SET -- native")
+    set(MTUNESW "-mtune=native")
+else()
+	set(MTUNESW "")
 endif()
 
 if(NOT WNOEXCLUDE)
@@ -37,9 +35,22 @@ if(NOT WNOEXCLUDE)
     set(WNOEXCLUDE "no")
 endif()
 
+if(NOT BUILDARCH)
+    message("-- BUILDARCH NOT SET -- using default")
+    set(BUILDARCH "")
+else()
+    message("-- BUILDARCH SET -- ${BUILDARCH}")
+    set(BUILDARCH "-m${BUILDARCH}")
+endif()
+
+if(NOT CFLAGSADD)
+    message("-- CFLAGSADD NOT SET -- using just default")
+    set(CFLAGSADD "")
+endif()
+
 message("-- Setting CFLAGS ")
-set(CMAKE_C_FLAGS_RELEASE "-O2 -pipe -mtune=${BUILDARCH} -std=c11 -D__BSD_VISIBLE -D_GNU_SOURCE")
-set(CMAKE_C_FLAGS_DEBUG "-DDEBUG -g -mtune=${BUILDARCH} -std=c11 -Wall -D__BSD_VISIBLE -D_GNU_SOURCE ")
+set(CMAKE_C_FLAGS_RELEASE "${CFLAGSADD} -O2 ${BUILDARCH} ${MTUNESW} -std=c11 ")
+set(CMAKE_C_FLAGS_DEBUG "${CFLAGSADD} -DDEBUG -g ${BUILDARCH} -mtune=${MTUNESW} -std=c11 -Wall ")
 
 if(WARNALL STREQUAL "yes")
     message("-- WARNALL ENABLED ")
@@ -66,23 +77,27 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BUILDFLAGS ${CMAKE_C_FLAGS_DEBUG})
 endif()
 
-message("-- Preparing sources...")
+message("-- Looking for sources...")
 
-set(CORESRCS core/configfile.c core/getter.c core/ipc.c core/logger.c 
- core/miscellaneous.c core/modules.c core/modules_list.c core/signals.c)
-set(MODSRCS modules/module_logsender.c)
+file(GLOB_RECURSE CORESRCS "core/*.c")
+file(GLOB_RECURSE MODSRCS "modules/*.c")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG  ${MAINDIR}/bin-debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${MAINDIR}/bin)
 
-#timedate definition
-add_definitions(-D_XOPEN_SOURCE=700)
+#
+# __BSD_SOURCE : required for FreeBSD
+#
+add_definitions(-D_XOPEN_SOURCE=700 -D_GNU_SOURCE -D__BSD_VISIBLE)
 
-add_library(jasmcore STATIC ${CORESRCS})#libjasmcore.a (linked)
-add_library(jasmmodules STATIC ${MODSRCS})#libjasmmodules.a (linked)
-add_executable(jasm core/jasm.c) 
-
-target_link_libraries(jasm jasmcore jasmmodules ${CMAKE_THREAD_LIBS_INIT})
+if(CORESRCS AND MODSRCS)
+    add_library(jasmcore STATIC ${CORESRCS})#libjasmcore.a (linked)
+    add_library(jasmmodules STATIC ${MODSRCS})#libjasmmodules.a (linked)
+    add_executable(jasm core/jasm.c) 
+    target_link_libraries(jasm jasmcore jasmmodules ${CMAKE_THREAD_LIBS_INIT})
+else()
+    message("-- Error: Core sources and Modules sources not found!!")
+endif()
 
 message("<<< CMake: src/main/jasm/CMakeLists.txt ; DONE!")
 message("* BUILDFLAGS: ${BUILDFLAGS}")

@@ -18,18 +18,16 @@
 ****************************************************************************/
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 #ifdef __unix__
-#include <pthread.h>
 #include <errno.h>
 #endif
 
-#include "miscellaneous.h"
 #include "modules.h"
 #include "logger.h"
 #include "../modules/module_logsender.h"
+#include "ipc.h"
 
 char errlog[BUFSIZ];
 char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
@@ -38,8 +36,8 @@ void (*moduleStart[NMODULE]) (void) = {start_logsender};
 
 void getModule (int fd)
 {
-        int count = 0;
-        int nmodule = NMODULE;
+        size_t count = 0;
+        int nmodule = NMODULE; //check itoa
         ssize_t ret_val = 0;
 
         ret_val = write (fd, &nmodule, sizeof (nmodule) );
@@ -60,12 +58,6 @@ void getModule (int fd)
                 if (ret_val == 0 || ret_val == -1) {
                         fprintf (stderr, "Error in the write() operation on fd");
                 }
-                if (write (fd, moduleName[i], count) <0) {
-#ifdef DEBUG
-                        sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error: %s",strerror(errno));
-                        log_error(errlog);
-#endif
-                        log_error("[JASM-DAEMON][ERROR][write()] Error while sending module list");
-                }
+                sendMsg(fd,moduleName[i]);
         }
 }

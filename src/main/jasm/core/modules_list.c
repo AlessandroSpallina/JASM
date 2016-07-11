@@ -28,14 +28,14 @@
 #include <string.h>
 
 #ifdef __unix__
-#include <errno.h>
+//todo
 #endif
 
 #include "modules_list.h"
 
 #ifdef DEBUG
-  #include "logger.h"
-char deblog[BUFSIZ];
+//#include "logger.h" //NEVER USED
+//char deblog[BUFSIZ]; //NEVER USED
 #endif //DEBUG
 
 /*

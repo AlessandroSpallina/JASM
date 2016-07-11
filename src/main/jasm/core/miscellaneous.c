@@ -24,15 +24,11 @@
 #include <time.h>
 
 #ifdef __unix__
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
 #include <syslog.h>
 #include <errno.h>
 #endif
 
 #include "jasmbuild_info.h"
-#include "configfile.h"
 #include "miscellaneous.h"
 #include "logger.h"
 
@@ -90,7 +86,6 @@ void start_daemon()
                 syslog (LOG_ERR, "Process spawning failed!");
                 closelog();
                 exit (ERR_SET_PROCESS_SPAWN);
-                break;
 
         case 0:
                 log_string ("[PROCESS-SPAWN][fork()] success");
@@ -98,18 +93,17 @@ void start_daemon()
 
         default:
                 exit (_EXIT_SUCCESS);
-                break;
         }
         if (setsid() < 0) {
-                log_error ("[PROCESS-BACKGROUND][setsid()] failed");
-                sprintf (errlog, "[PROCESS-BACKGROUND]Error: %s\n", strerror (errno) );
+                log_error ("[PROCESS-SID][setsid()] failed");
+                sprintf (errlog, "[PROCESS-SID]Error: %s\n", strerror (errno) );
                 log_error (errlog);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
-                syslog (LOG_ERR, "Put process background failed!");
+                syslog (LOG_ERR, "Setting sid for new process failed!");
                 closelog();
                 exit (ERR_SET_PROCESS_BACKGROUND);
         } else {
-            log_string ("[PROCESS-BACKGROUND][setsid()] success");
+            log_string ("[PROCESS-SID][setsid()] success");
         }
 
         //closes fd: stdin, stdout, stderr

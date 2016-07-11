@@ -20,23 +20,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "modules_list.h"
 #include "logger.h"
 #include "miscellaneous.h"
 
-
-char homedir[BUFSIZ];
-char LOGPATH[BUFSIZ];
+char LOGPATH[256];
+char homedir[256];
 
 void set_logpath(void)
 {
 								strcpy(homedir,getenv("HOME"));
-#ifdef DEBUG
-								strcpy(LOGPATH,"../data/jasm.log");
-#else
 								strcpy(LOGPATH,homedir);
 								strcat(LOGPATH,"/.jasm.log");
-#endif //DEBUG
 }
 
 void log_string (const char *message)
@@ -44,6 +38,7 @@ void log_string (const char *message)
 								FILE *fp;
 
 								if ( (fp = fopen (LOGPATH, "a+") ) == NULL) {
+
 																fprintf (fp, "[%s][INFO]This file is created now.", getTime() );
 								} else {
 																fprintf (fp, "[%s][INFO] %s\n", getTime(), message);
@@ -56,7 +51,7 @@ void log_error (const char *message)
 								FILE *fp;
 
 								if ( (fp = fopen (LOGPATH, "a+") ) == NULL) {
-																fprintf (fp, "[%s][INFO] This file is created now.", getTime() );
+                                                                fprintf (fp, "[%s][INFO] This file is created now.", getTime() );
 								} else {
 																fprintf (fp, "[%s][ERROR] %s!\n", getTime(), message);
 																fclose (fp);
@@ -66,8 +61,13 @@ void log_error (const char *message)
 #ifdef DEBUG
 void log_client (struct ip_node *clist)
 {
-
+								//NULLCHECK!!!
 								FILE *fp = fopen(CLIENTLOGPATH, "a+");
+								if (fp == NULL) {
+									/* AVOID SEGFAULT !!! */
+									return;
+								}
+								
 								struct module_running *mlist = NULL;
 								fprintf(fp, "=========\n[%s]\n", getTime());
 								while(clist != NULL) {
@@ -79,7 +79,9 @@ void log_client (struct ip_node *clist)
 																}
 																clist = clist->next;
 								}
-								fclose(fp);
 								fprintf(fp, "=========\n");
+								if(fclose(fp) == -1) {
+								  log_error("[JASM-DAEMON][ERROR][fclose()] Error while closing log_client");
+								}
 }
 #endif

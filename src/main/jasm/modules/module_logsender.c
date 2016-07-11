@@ -19,16 +19,20 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <arpa/inet.h>
 #include <string.h>
-#include <sys/utsname.h>
-#include <sys/types.h>
-#include <pthread.h>
+/*#include <sys/utsname.h>
+#include <pthread.h>*/
 #include <errno.h>
 
-#include "../core/modules.h"
+//#include "../core/modules.h"
 #include "../core/logger.h"
+#include "../core/ipc.h"
+
 #include "module_logsender.h"
+
+/*
+ * BUGGY!
+ */
 
 char errlog[BUFSIZ];
 
@@ -48,19 +52,13 @@ static int sendNextLine(FILE **fp)
         }
 
         if(write(fd, &ret, sizeof(ret)) < 0){
-          #ifdef DEBUG
+#ifdef DEBUG
           sprintf(errlog,"[MODULE][Logsender] Error in first write : %s",strerror(errno));
           log_error(errlog);
-          #endif
+#endif
           log_error("[MODULE][Logsender] Error while sending!");
         }
-        if(write(fd, line, strlen(line)) < 0){
-          #ifdef DEBUG
-          sprintf(errlog,"[MODULE][Logsender] Error in second write : %s",strerror(errno));
-          log_error(errlog);
-          #endif 
-          log_error("[MODULE][Logsender] Error while sending lines!");
-        }
+        sendMsg(fd,line);
         free(line);
         return 0;
 }
@@ -91,7 +89,7 @@ void start_logsender()
         //sends all log file
         while(sendNextLine(&fp) != -1) ;
 
-        while(1) {
+        while(1) { /* ENDLESS LOOP */
                 //and wait n sec before updating :)
                 //The sleep() function shall cause the calling thread to be suspended from execution [POSIX Doc]
                 sleep(sec);
