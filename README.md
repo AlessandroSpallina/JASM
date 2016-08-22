@@ -63,6 +63,25 @@ We use C11
   ~~~
   $ cd buildenv/
   ~~~
+  It is a very good idea to use separate directory for building, 
+
+  you will find binary inside JASM/bin
+
+  you can use buildenv/ , but consider using a directory like this:
+
+  ../jasm-build
+
+  ~~~
+  $ mkdir -v ../jasm-build
+  ~~~
+
+  then, you must say CMake where the CMakeLists.txt file is:
+
+  ~~~
+  $ cd ../jasm-build
+  $ cmake ../JASM #other opts
+  ~~~
+
   ... configure via cmake
   ~~~
   $ cmake .. -DBUILDARCH="x86-64" -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
