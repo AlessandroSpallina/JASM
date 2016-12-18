@@ -149,10 +149,10 @@ void getVersion (int fd)
                 log_error ("[JASM-DAEMON][getVersion][write()] Error!");
                 log_error (error);
         }
-        
+
         else
         {
-            
+
                 if ( n < strlen (VERSION) )
                 {
                         sprintf (error, "[JASM-DAEMON][getVersion][write()] sent %d byte, correct num byte is %zu", n, strlen (VERSION) );
@@ -177,7 +177,7 @@ void getCopyright (int fd)
                 log_error ("[JASM-DAEMON][getCopyright][write()] Error!");
                 log_error (error);
         }
-        
+
         else
         {
                 if ( n < strlen (COPYRIGHT) )
@@ -213,7 +213,7 @@ void getHostname (int fd)
                         log_error ("[JASM-DAEMON][getHostname][write()] Error!");
                         log_error (error);
                 }
-                
+
                 else
                 {
                         if ( n < strlen (buf) )
@@ -250,7 +250,7 @@ void getKernelName (int fd)
                         log_error ("[JASM-DAEMON][getKernelName][write()] Error!");
                         log_error (error);
                 }
-                
+
                 else
                 {
                         if (n < strlen (buf) )
@@ -264,7 +264,7 @@ void getKernelName (int fd)
                                 log_string (error);
                         }
                 }
-                
+
         }
 }
 
@@ -1153,7 +1153,7 @@ void getCHRDevices (int fd)
         }
 
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
             if((strncmp(devices,"Block",5))==0) break;
             lines++;
@@ -1180,11 +1180,11 @@ void getCHRDevices (int fd)
         {
           if (i==0)
           {
-            res=read_line(file,devices,length);
+            res=read_line(file,devices,lenght);
           }
           else
           {
-                res=read_line(file,devices,length);
+                res=read_line(file,devices,lenght);
 
                 ret_val = write (fd, devices, strlen(devices));
 
@@ -1205,11 +1205,11 @@ void getCHRDevices (int fd)
  */
 void getBLKDevices (int fd)
 {
-        int length=50;
+        int lenght=50;
         int file,res;
         int lines=0,i=0,j=0,k=0;
         char *path="/proc/devices";
-        char devices[length];
+        char devices[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1221,7 +1221,7 @@ void getBLKDevices (int fd)
           return;
         }
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
 
             if((strncmp(devices,"Block",5))==0)
@@ -1261,15 +1261,15 @@ void getBLKDevices (int fd)
         lseek(file,0,SEEK_SET);
         for(i=0;i<k;i++)
         {
-          res=read_line(file,devices,length);
+          res=read_line(file,devices,lenght);
         }
         for (i = 0; i < lines; i++)
         {
           if (i==0)
           {
-            res=read_line(file,devices,length);
+            res=read_line(file,devices,lenght);
           }
-                    res=read_line(file,devices,length);
+                    res=read_line(file,devices,lenght);
                     ret_val = write (fd, devices, strlen(devices));
 
                     if (ret_val == 0 || ret_val == -1)
@@ -1289,11 +1289,11 @@ void getBLKDevices (int fd)
  */
 void getEmulatedFSDevices (int fd)
 {
-        int length=50;
+        int lenght=50;
         int file,res;
         int lines=0,i=0,j=0,k=0;
         char *path="/proc/filesystems";
-        char devices[length];
+        char devices[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1304,7 +1304,7 @@ void getEmulatedFSDevices (int fd)
           return;
         }
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
 
             if((strncmp(devices,"nodev",5))==0)
@@ -1332,7 +1332,7 @@ void getEmulatedFSDevices (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
             if((strncmp(devices,"nodev",5))==0)
             {
@@ -1358,11 +1358,11 @@ void getEmulatedFSDevices (int fd)
  */
 void getRealFSDevices (int fd)
 {
-        int length=50;
+        int lenght=50;
         int file,res;
         int lines=0,i=0,j=0,k=0;
         char *path="/proc/filesystems";
-        char devices[length];
+        char devices[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1374,7 +1374,7 @@ void getRealFSDevices (int fd)
           return;
         }
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
 
             if((strncmp(devices,"nodev",5))==0);
@@ -1400,7 +1400,7 @@ void getRealFSDevices (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
             if((strncmp(devices,"nodev",5))==0);
             else
@@ -1426,11 +1426,11 @@ void getRealFSDevices (int fd)
  */
 void getMeminfo (int fd)
 {
-        int length=50;
+        int lenght=50;
         int file,res;
         int lines=0,i=0,j=0,k=0;
         char *path="/proc/meminfo";
-        char devices[length];
+        char devices[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1442,7 +1442,7 @@ void getMeminfo (int fd)
           return;
         }
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
             lines++;
         }
@@ -1466,7 +1466,7 @@ void getMeminfo (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
 
               ret_val = write (fd, devices, strlen(devices));
@@ -1490,11 +1490,11 @@ void getMeminfo (int fd)
  */
 void getModules (int fd)
 {
-        int length=100;
+        int lenght=100;
         int file,res;
         int lines=0,i=0,j=0,k=0;
         char *path="/proc/modules";
-        char devices[length];
+        char devices[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1506,7 +1506,7 @@ void getModules (int fd)
           return;
         }
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
             lines++;
         }
@@ -1530,7 +1530,7 @@ void getModules (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,devices,length))!=0)
+        while((res=read_line(file,devices,lenght))!=0)
         {
 
               ret_val = write (fd, devices, strlen(devices));
@@ -1553,11 +1553,11 @@ void getModules (int fd)
  */
 void getBuddyinfo (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=0;
         char *path="/proc/buddyinfo";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1569,7 +1569,7 @@ void getBuddyinfo (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1592,7 +1592,7 @@ void getBuddyinfo (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1615,11 +1615,11 @@ void getBuddyinfo (int fd)
  */
 void getDma (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=0;
         char *path="/proc/dma";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1631,7 +1631,7 @@ void getDma (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1655,7 +1655,7 @@ void getDma (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1678,11 +1678,11 @@ void getDma (int fd)
  */
 void getIOmem (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=0;
         char *path="/proc/iomem";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1694,7 +1694,7 @@ void getIOmem (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1717,7 +1717,7 @@ void getIOmem (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1740,11 +1740,11 @@ void getIOmem (int fd)
  */
 void getKeyUsr (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=0;
         char *path="/proc/key-users";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1756,7 +1756,7 @@ void getKeyUsr (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1780,7 +1780,7 @@ void getKeyUsr (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1803,11 +1803,11 @@ void getKeyUsr (int fd)
  */
 void getMtrr (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=0;
         char *path="/proc/mtrr";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1819,7 +1819,7 @@ void getMtrr (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1843,7 +1843,7 @@ void getMtrr (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1866,11 +1866,11 @@ void getMtrr (int fd)
  */
 void getMisc (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=1;
         char *path="/proc/misc";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1882,7 +1882,7 @@ void getMisc (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1905,7 +1905,7 @@ void getMisc (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1928,11 +1928,11 @@ void getMisc (int fd)
  */
 void getInterrupts (int fd)
 {
-        int length=120;
+        int lenght=120;
         int file,res;
         int lines=0;
         char *path="/proc/interrupts";
-        char riga[length];
+        char riga[lenght];
         int ret_val = -1;
 
         file=open(path,O_RDONLY);
@@ -1944,7 +1944,7 @@ void getInterrupts (int fd)
           return;
         }
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
             lines++;
         }
@@ -1968,7 +1968,7 @@ void getInterrupts (int fd)
 
         lseek(file,0,SEEK_SET);
 
-        while((res=read_line(file,riga,length))!=0)
+        while((res=read_line(file,riga,lenght))!=0)
         {
 
               ret_val = write (fd, riga, strlen(riga));
@@ -1984,4 +1984,3 @@ void getInterrupts (int fd)
         close(file);
         return;
 }
-
