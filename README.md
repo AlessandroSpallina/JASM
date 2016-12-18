@@ -22,7 +22,7 @@ Unix-like operating systems are supported, but we are planning to use GNU C Libr
 
 We just switched *CMake* build automation tool!
 Configure this project almost everywhere!
-Follow instructions below (as we suggest) 
+Follow instructions below (as we suggest)
 
 *Compiler*
 
@@ -34,7 +34,7 @@ We use GCC with -O2 -pipe -Wall -std=c11 flags which can be changed inside Makef
 We use C11
 
 ### USE CMAKE (IMPORTANT)
- 
+
  As you read above, we just switched to cmake, now you can configure this project even on Windows, but we will give you instruction for GNU/Linux (and almost UNIX and Unix-like OS)
 
  CMake is a build-automation tool, with it you can build project files (from XCode to VS) and Makefiles! (Cross-platform Make)
@@ -54,7 +54,7 @@ We use C11
  * Well, you are in JASM directory... Now?
  We already created a directory called "buildenv", CMakeFiles are configured to use it
  ~~~
- $ ls buildenv 
+ $ ls buildenv
  ~~~
  *probably it is empty, if no output, then it is right*
 
@@ -63,7 +63,7 @@ We use C11
   ~~~
   $ cd buildenv/
   ~~~
-  It is a very good idea to use separate directory for building, 
+  It is a very good idea to use separate directory for building,
 
   you will find binary inside JASM/bin
 
@@ -84,7 +84,7 @@ We use C11
 
   ... configure via cmake
   ~~~
-  $ cmake .. -DBUILDARCH="x86-64" -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
+  $ cmake .. -DWARNALL="yes" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_SYSTEM_NAME=$(uname)-$(uname -m)
   ~~~
   *Explaination: cmake checks for CMakeLists.txt in the '..' directory*
   * -DWARNALL="yes" : Enables full-warning verbosing (by default it does not verbose many things)
@@ -99,7 +99,7 @@ We use C11
   * CMAKE_BUILD_TYPE : "Release" by default
   * CMAKE_C_COMPILER : looks for default compiler in environment variable (WinNT / UNIX)
   * CMAKE_INSTALL_PREFIX : depends on OS: if UNIX is "/usr/local" by default, on Windows... I don't remember! :D
-  * CMAKE_SYSTEM_NAME : keeps undefined 
+  * CMAKE_SYSTEM_NAME : keeps undefined
   * BUILDARCH : native by default
 
   ~~~
@@ -116,7 +116,7 @@ We use C11
   ~~~
   $ make VERBOSE=1 -j2
   ~~~
-  
+
   Now, go below to the install parameter, jumping instructions below
 
  * Now, you may want to delete buildenv content, just use
@@ -126,16 +126,16 @@ We use C11
  *Inside buildenv/*
 
  * You can also use clean rule
- ... if you want to rebuild 
+ ... if you want to rebuild
  ~~~
  $ make clean
  ~~~
  *Inside buildenv/*
- 
+
  *NOTE: YOU CAN SWITCH TARGET USING -DCMAKE_BUILD_TYPE=Debug, re-using cmake*
- 
+
  *Don't delete jasmbuild_info.h.in*
- 
+
  *Change version number using CMakeLists.txtx (howto in file)*
 
 ### Versions
@@ -196,7 +196,7 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
 
 ### Platform
 
- * JASM Core: Development 
+ * JASM Core: Development
  * JASM CLI: Current release marked as deprecated! Will be replaced soon...
  * JASM Qt: Development
  * JASM Swing: Starting...
@@ -211,12 +211,12 @@ As I said before, JASM wants to be easily hackable, so we are providing tools to
  On main repository we are going to create new branch "stable"
  * master : main-development branch
  * stable : stable releases (less bugs, more functions)
- 
+
 ### Slack
 
- We use Slack platform to communicate 
+ We use Slack platform to communicate
  https://jasm-team.slack.com
- 
+
 ### Licensing
 
 This project is licensed under the GPL version 3, this is free software, you can get it, redistribuite, share and more!
