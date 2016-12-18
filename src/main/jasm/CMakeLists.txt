@@ -50,7 +50,7 @@ endif()
 
 message("-- Setting CFLAGS ")
 set(CMAKE_C_FLAGS_RELEASE "${CFLAGSADD} -O2 ${BUILDARCH} ${MTUNESW} -std=c11 ")
-set(CMAKE_C_FLAGS_DEBUG "${CFLAGSADD} -DDEBUG -g ${BUILDARCH} -mtune=${MTUNESW} -std=c11 -Wall ")
+set(CMAKE_C_FLAGS_DEBUG "${CFLAGSADD} -DDEBUG -g ${BUILDARCH} ${MTUNESW} -std=c11 -Wall ")
 
 if(WARNALL STREQUAL "yes")
     message("-- WARNALL ENABLED ")
