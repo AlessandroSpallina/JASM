@@ -225,6 +225,9 @@ Thanks to Free Software! Avoiding proprietary software! See LICENSE to get more 
 ### Developers
 
  * Alessandro Spallina: Main founder of this project [https://github.com/AlessandroSpallina]
- * Stefano Belli: main contributor [https://github.com/StefanoBelli]
- * Emanuele Pirruccio: contributor [https://github.com/etneo90]
- * Francesco Pistritto : contributor [https://github.com/piFra]
+ * Stefano Belli: main contributor <3 [https://github.com/StefanoBelli]
+ * Francesco Pistritto [https://github.com/piFra]
+ * Ennio Nasca [https://github.com/ennnas]
+ * Pierluca D'Oro [https://github.com/Bellamy442]
+ * Emanuele Virgillito [https://github.com/EmaVirg]
+ * Orazio Scavo [https://github.com/orazioscavo13]
