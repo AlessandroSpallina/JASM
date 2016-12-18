@@ -260,8 +260,8 @@ static _Bool isCorrectPassword(int client_sockfd)
 
 void start_server()
 {
-    strncpy (PASSWD_ENC_FILE, getenv ("HOME"),strlen(getenv("HOME")));
-    strncat (PASSWD_ENC_FILE, "/.jpwd",strlen("/.jpwd"));
+    strncpy (PASSWD_ENC_FILE, getenv ("HOME"), strlen(getenv("HOME")));
+    strncat (PASSWD_ENC_FILE, "/.jpwd", strlen("/.jpwd"));
 
         int server_sockfd, client_sockfd;
         int server_len;
@@ -389,14 +389,14 @@ void start_server()
                                                 chkfile = check_passwd_file(PASSWD_ENC_FILE);
 
                                                 if (chkfile == 0) {
-                                                        sleep(1);
+                                                        // sleep(1);
                                                         rcval = sendMsg(client_sockfd, "nochk-pwdfile");
                                                         if (rcval == 0 || rcval == -1) {
                                                                 break;
                                                         }
                                                 }
                                                 else if (chkfile == 1) {
-                                                        sleep(1);
+                                                        // sleep(1);
                                                         FILE *pswfp;
                                                         char buf_in_passwd[256];
 

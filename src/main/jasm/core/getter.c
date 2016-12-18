@@ -110,7 +110,7 @@ void getGetter (int fd)
         //start from an error condition, to make sure we do not miss anything
         ssize_t ret_val = -1;
 
-        ret_val = write (fd, &n_getter, sizeof (n_getter) );
+        ret_val = sendMsg (fd, &n_getter, sizeof (n_getter) );
 
         if (ret_val == 0 || ret_val == -1)
         {
@@ -121,14 +121,14 @@ void getGetter (int fd)
         for (i = 0; i < NGETTER; i++)
         {
                 count = strlen (getterName[i]);
-                ret_val = write (fd, &count, sizeof (count) );
+                ret_val = sendMsg (fd, &count, sizeof (count) );
 
                 if (ret_val == 0 || ret_val == -1)
                 {
                         log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
                         log_error (error);
                 }
-                ret_val = write (fd, getterName[i], count);
+                ret_val = sendMsg (fd, getterName[i], count);
 
                 if (ret_val == 0 || ret_val == -1)
                 {
@@ -142,7 +142,7 @@ void getVersion (int fd)
 {
         int n;
 
-        n = write (fd, VERSION, strlen (VERSION) );
+        n = sendMsg (fd, VERSION, strlen (VERSION) );
         if (n < 0)
         {
                 sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -170,7 +170,7 @@ void getCopyright (int fd)
 {
         int n;
 
-        n = write (fd, COPYRIGHT, strlen (COPYRIGHT) );
+        n = sendMsg (fd, COPYRIGHT, strlen (COPYRIGHT) );
         if (n < 0)
         {
                 sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -206,7 +206,7 @@ void getHostname (int fd)
         else
         {
                 strcpy (buf, info.nodename);
-                int n = write (fd, buf, strlen (buf) );
+                int n = sendMsg (fd, buf, strlen (buf) );
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -243,7 +243,7 @@ void getKernelName (int fd)
         else
         {
                 strcpy (buf, info.sysname);
-                int n = write (fd, buf, strlen (buf) );
+                int n = sendMsg (fd, buf, strlen (buf) );
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -281,7 +281,7 @@ void getKernelRelease (int fd)
         else
         {
                 strcpy (buf, info.release);
-                int n = write (fd, buf, strlen (buf) );
+                int n = sendMsg (fd, buf, strlen (buf) );
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -317,7 +317,7 @@ void getKernelVersion (int fd)
         else
         {
                 strcpy (buf, info.version);
-                int n = write (fd, buf, strlen (buf) );
+                int n = sendMsg (fd, buf, strlen (buf) );
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -352,7 +352,7 @@ void getMachine (int fd)
         else
         {
                 strcpy (buf, info.machine);
-                int n = write (fd, buf, strlen (buf) );
+                int n = sendMsg (fd, buf, strlen (buf) );
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -399,7 +399,7 @@ void getUpTime (int fd)
             sec = (sys_info.uptime) - (min * 60) - (hours * 3600) - (days * 86400);
             sprintf(buf,"%02d:%02d:%02d:%02d",days,hours,min,sec);
       }
-      n = write (fd, buf, strlen (buf) );
+      n = sendMsg (fd, buf, strlen (buf) );
         if (n < 0)
         {
             sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -444,7 +444,7 @@ void getTotalRAM (int fd)
       else
       {
             sprintf (buf,"%lu MB",sys_info.totalram/megabyte);
-            n = write (fd, buf, strlen (buf) );
+            n = sendMsg (fd, buf, strlen (buf) );
             if (n < 0)
             {
                   sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -487,7 +487,7 @@ void getFreeRAM (int fd)
       else
       {
             sprintf (buf,"%lu MB",sys_info.freeram/megabyte);
-            n = write (fd, buf, strlen (buf) );
+            n = sendMsg (fd, buf, strlen (buf) );
             if (n < 0)
             {
                   sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -528,7 +528,7 @@ void getProcesses (int fd)
       else
       {
             sprintf(buf,"%u",sys_info.procs);
-            n = write(fd,buf,strlen(buf));
+            n = sendMsg(fd,buf,strlen(buf));
             if (n < 0)
             {
                   sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -567,7 +567,7 @@ void getCpuProcessor (int fd)
             return;
       }
       sprintf(buf,"Number of CPU configured: %d Online: %d",numCPU,onCPU);
-      n = write(fd,buf,strlen(buf));
+      n = sendMsg(fd,buf,strlen(buf));
       if (n < 0)
       {
             sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -603,7 +603,7 @@ void getPosixVersion (int fd)
       else
       {
             sprintf(buf,"Version: %ld (YYYYMML)",version);
-            n = write(fd, buf, strlen(buf));
+            n = sendMsg(fd, buf, strlen(buf));
             if(n < 0)
             {
                 sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -640,7 +640,7 @@ void getCpuNumber (int fd)
       else
       {
             sprintf(buf,"The process is running on cpu: %d ",cpu_num);
-            n = write(fd, buf, strlen(buf));
+            n = sendMsg(fd, buf, strlen(buf));
             if(n < 0)
             {
                 sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -691,7 +691,7 @@ void getSchedulerVersion (int fd)
             i++;
       }
       buf[i]='\0';
-      n = write(fd, buf, strlen(buf));
+      n = sendMsg(fd, buf, strlen(buf));
       if(n < 0)
       {
           sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -761,7 +761,7 @@ void getSchedulerInfo (int fd)
       close(file);
       slice = atoi(temp);
       sprintf(buf,"Latency:%d Granularity:%d Timeslice:%d ",lat,gran,slice);
-      n = write(fd, buf, strlen(buf));
+      n = sendMsg(fd, buf, strlen(buf));
       if(n < 0)
       {
           sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
@@ -798,7 +798,7 @@ void getCpuName (int fd) //Returns the name of the Cpu
 		string = &strstr(buf, "model name	: ")[strlen("model name	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
-		n = write (fd, buf, strlen(buf));
+		n = sendMsg (fd, buf, strlen(buf));
 		close(cpu_fd);
         if (n < 0) {
                 sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
@@ -833,7 +833,7 @@ void getCacheSize (int fd) //Returns the cache size of the cpu
 		string = &strstr(buf, "cache size	: ")[strlen("cache size	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il modello del processore
-		n = write (fd, buf, strlen(buf));
+		n = sendMsg (fd, buf, strlen(buf));
 		close(cpu_fd);
 		if (n < 0)
     {
@@ -875,7 +875,7 @@ void getCoreNum (int fd) //Returns the number of physical cores
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i; //conta i caratteri
 		sprintf(buf, "%.*s", i, string); //ora buf contiene il numero di core
-		n = write (fd, buf, strlen(buf));
+		n = sendMsg (fd, buf, strlen(buf));
 		close(cpu_fd);
 		if (n < 0)
     {
@@ -936,7 +936,7 @@ void getCoreSpeeds (int fd) //Returns the core speeds
 	}
 
 	close(cpu_fd);
-	n = write (fd, final_string, strlen(final_string));
+	n = sendMsg (fd, final_string, strlen(final_string));
 
 	if (n < 0)
   	{
@@ -978,7 +978,7 @@ void getAddressSizes (int fd) //Returns cpu address size
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i;
 		sprintf(buf, "%.*s", i, string);
-		n = write (fd, buf, strlen(buf));
+		n = sendMsg (fd, buf, strlen(buf));
 		close(cpu_fd);
 		if (n < 0)
     {
@@ -1020,7 +1020,7 @@ void getCreatedProcNum (int fd) //Returns the number of created processes since 
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i;
 		sprintf(buf, "%.*s", i, string);
-		n = write (fd, buf, strlen(buf));
+		n = sendMsg (fd, buf, strlen(buf));
 		close(proc_fd);
 		if (n < 0)
     {
@@ -1066,7 +1066,7 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 			strcpy(result, "yes");
 		}
 
-		n = write (fd, result, strlen(result));
+		n = sendMsg (fd, result, strlen(result));
 		close(swaps_fd);
 		if (n < 0)
     {
@@ -1107,7 +1107,7 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
 		while(buf[i] != '\t') ++i;
 		sprintf(result, "%.*s", i, buf);
 
-		n = write (fd, result, strlen(result));
+		n = sendMsg (fd, result, strlen(result));
 		close(file_fd);
 		if (n < 0)
     {
@@ -1166,7 +1166,7 @@ void getCHRDevices (int fd)
           log_error (error);
           return;
         }
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1186,7 +1186,7 @@ void getCHRDevices (int fd)
           {
                 res=read_line(file,devices,lenght);
 
-                ret_val = write (fd, devices, strlen(devices));
+                ret_val = sendMsg (fd, devices, strlen(devices));
 
                 if (ret_val == 0 || ret_val == -1)
                 {
@@ -1250,7 +1250,7 @@ void getBLKDevices (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1270,7 +1270,7 @@ void getBLKDevices (int fd)
             res=read_line(file,devices,lenght);
           }
                     res=read_line(file,devices,lenght);
-                    ret_val = write (fd, devices, strlen(devices));
+                    ret_val = sendMsg (fd, devices, strlen(devices));
 
                     if (ret_val == 0 || ret_val == -1)
                     {
@@ -1322,7 +1322,7 @@ void getEmulatedFSDevices (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1338,7 +1338,7 @@ void getEmulatedFSDevices (int fd)
             {
 
 
-                    ret_val = write (fd, devices, strlen(devices));
+                    ret_val = sendMsg (fd, devices, strlen(devices));
 
                     if (ret_val == 0 || ret_val == -1)
                     {
@@ -1390,7 +1390,7 @@ void getRealFSDevices (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1405,7 +1405,7 @@ void getRealFSDevices (int fd)
             if((strncmp(devices,"nodev",5))==0);
             else
             {
-              ret_val = write (fd, devices, strlen(devices));
+              ret_val = sendMsg (fd, devices, strlen(devices));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1456,7 +1456,7 @@ void getMeminfo (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1469,7 +1469,7 @@ void getMeminfo (int fd)
         while((res=read_line(file,devices,lenght))!=0)
         {
 
-              ret_val = write (fd, devices, strlen(devices));
+              ret_val = sendMsg (fd, devices, strlen(devices));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1520,7 +1520,7 @@ void getModules (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1533,7 +1533,7 @@ void getModules (int fd)
         while((res=read_line(file,devices,lenght))!=0)
         {
 
-              ret_val = write (fd, devices, strlen(devices));
+              ret_val = sendMsg (fd, devices, strlen(devices));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1583,7 +1583,7 @@ void getBuddyinfo (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1595,7 +1595,7 @@ void getBuddyinfo (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1645,7 +1645,7 @@ void getDma (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
 
         if (ret_val == 0 || ret_val == -1)
         {
@@ -1658,7 +1658,7 @@ void getDma (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1708,7 +1708,7 @@ void getIOmem (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1720,7 +1720,7 @@ void getIOmem (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1770,7 +1770,7 @@ void getKeyUsr (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
 
         if (ret_val == 0 || ret_val == -1)
         {
@@ -1783,7 +1783,7 @@ void getKeyUsr (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1833,7 +1833,7 @@ void getMtrr (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
 
         if (ret_val == 0 || ret_val == -1)
         {
@@ -1846,7 +1846,7 @@ void getMtrr (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1896,7 +1896,7 @@ void getMisc (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
         if (ret_val == 0 || ret_val == -1)
         {
                 log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
@@ -1908,7 +1908,7 @@ void getMisc (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
@@ -1958,7 +1958,7 @@ void getInterrupts (int fd)
           return;
         }
 
-        ret_val = write (fd, &lines, sizeof (lines));
+        ret_val = sendMsg (fd, &lines, sizeof (lines));
 
         if (ret_val == 0 || ret_val == -1)
         {
@@ -1971,7 +1971,7 @@ void getInterrupts (int fd)
         while((res=read_line(file,riga,lenght))!=0)
         {
 
-              ret_val = write (fd, riga, strlen(riga));
+              ret_val = sendMsg (fd, riga, strlen(riga));
 
               if (ret_val == 0 || ret_val == -1)
               {
