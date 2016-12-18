@@ -138,3 +138,16 @@ int check_passwd_file (const char* __pwdf)
             return 1;
         }
 }
+
+int read_line(int file, char *buffer,int length) {
+  int count = 0, run = 1;
+  int res;
+  while(run) {
+    res = read(file, &(buffer[count]), 1);
+    if(res == 0 && count == 0) return 0;
+    if(res == 0 || buffer[count] == '\n' || count == length) run = 0;
+    count++;
+  }
+  buffer[count-1] = '\0';
+  return count;
+}

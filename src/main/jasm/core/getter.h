@@ -21,7 +21,7 @@
 
 #define MAX_CORE 16
 #define CPU_FILE_SIZE 65536 //dimensione massima del file cpuinfo
-#define NGETTER 24
+#define NGETTER 37
 
 extern char getterName[NGETTER][BUFSIZ];
 extern void (*getterFunction[NGETTER]) (int);
@@ -51,5 +51,19 @@ extern void getFreeRAM (int fd);
 extern void getProcesses (int fd);
 extern void getSchedulerVersion (int fd);
 extern void getSchedulerInfo (int fd);
+extern void getCHRDevices (int fd);
+extern void getBLKDevices (int fd);
+extern void getEmulatedFSDevices (int fd);
+extern void getRealFSDevices (int fd);
+extern void getMeminfo (int fd);
+extern void getModules (int fd);
+extern void getBuddyinfo (int fd);
+extern void getDma (int fd);
+extern void getIOmem (int fd);
+extern void getKeyUsr (int fd);
+extern void getMtrr (int fd);
+extern void getMisc (int fd);
+extern void getInterrupts (int fd);
+
 
 #endif
