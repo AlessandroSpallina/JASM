@@ -32,9 +32,14 @@
 #include "miscellaneous.h"
 #include "logger.h"
 
-char errlog[BUFSIZ]; // pattern to follow: [SECTION][ERROR]Errno: %s ...
+static char errlog[BUFSIZ]; // pattern to follow: [SECTION][ERROR]Errno: %s ...
 
-char buildate[256] = "null";
+static char buildate[256] = "null";
+
+void get_buildate(char *dest)
+{
+    strncpy(dest,buildate,strlen(buildate)+1);
+}
 
 char *getTime()
 {
@@ -53,9 +58,9 @@ char *getTime()
 void check_buildate()
 {
 #ifdef BUILD_DATE_CORE
-        strcpy (buildate, BUILD_DATE_CORE);
+        strncpy (buildate, BUILD_DATE_CORE);
 #else
-        strcpy (buildate, "not availible");
+        strncpy (buildate, "not availible");
 #endif
 }
 

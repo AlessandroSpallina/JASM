@@ -23,39 +23,11 @@
 #include "logger.h"
 #include "miscellaneous.h"
 
-char LOGPATH[256];
-char homedir[256];
+static char LOGPATH[256] = NULL;
 
-void set_logpath(void)
+void wlogev(const enum evtype ev, const char* strmsg)
 {
-								strcpy(homedir,getenv("HOME"));
-								strcpy(LOGPATH,homedir);
-								strcat(LOGPATH,"/.jasm.log");
-}
 
-void log_string (const char *message)
-{
-								FILE *fp;
-
-								if ( (fp = fopen (LOGPATH, "a+") ) == NULL) {
-
-																fprintf (fp, "[%s][INFO]This file is created now.", getTime() );
-								} else {
-																fprintf (fp, "[%s][INFO] %s\n", getTime(), message);
-																fclose (fp);
-								}
-}
-
-void log_error (const char *message)
-{
-								FILE *fp;
-
-								if ( (fp = fopen (LOGPATH, "a+") ) == NULL) {
-                                                                fprintf (fp, "[%s][INFO] This file is created now.", getTime() );
-								} else {
-																fprintf (fp, "[%s][ERROR] %s!\n", getTime(), message);
-																fclose (fp);
-								}
 }
 
 #ifdef DEBUG

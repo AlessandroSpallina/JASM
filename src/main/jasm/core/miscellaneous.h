@@ -30,8 +30,7 @@
 #define ERR_SET_PROCESS_SPAWN 141
 #define LOCALHOST "127.0.0.1"
 
-extern char buildate[256];
-
+extern void get_buildate(char* dest);
 extern char *getTime (void);
 extern void start_daemon (void);
 extern _Bool login_required (const char *clientaddr);

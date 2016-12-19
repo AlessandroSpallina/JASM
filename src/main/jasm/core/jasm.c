@@ -19,20 +19,12 @@
 #include "miscellaneous.h"
 #include "ipc.h"
 #include "signals.h"
-#include "logger.h"
-#include "cfgparser.h"
-
 int main (void)
 {
-	struct configval cfgvalues;
-
-	set_logpath(); //sets path where to log..
 	start_daemon(); //starts background daemon
 	set_signals_feel(); //logs a set of signals
-    if(get_values(&cfgvalues) == -1) {
-        log_string("[JASM-DAEMON][CONFIG] Configuration file doesn't exist!");
-    }
-
     //starts server after the daemon (ready to get commands)
 	start_server();
+
+    return 0;
 }
