@@ -31,78 +31,70 @@
 #include "jasmbuild_info.h"
 #include "miscellaneous.h"
 #include "logger.h"
+#include "macros.h"
 
-static char errlog[BUFSIZ]; // pattern to follow: [SECTION][ERROR]Errno: %s ...
-
+static char errlog[MAX_LOG_CHARS];
 static char buildate[256] = "null";
 
 void get_buildate(char *dest)
 {
+    if(!strncmp(buildate,"null",4))
+#ifdef BUILD_DATE_CORE
+        strncpy(buildate,BUILD_DATE_CORE,strlen(BUILD_DATE_CORE));
+#endif 
     strncpy(dest,buildate,strlen(buildate)+1);
 }
 
-char *getTime()
+void get_time(const char* format, char* dest)
 {
-        time_t curtime;
-        struct tm *loctime;
-        static char *ret;
+    char dest_time[256];
+    memset(dest,0,strlen(dest));
 
-        curtime = time (NULL);
-        loctime = localtime (&curtime);
-        ret = asctime (loctime);
-        ret[24] = '\0';
+    time_t curtime;
+    struct tm *loctime;
 
-        return ret;
-}
+    curtime = time (NULL);
+    loctime = localtime (&curtime);
 
-void check_buildate()
-{
-#ifdef BUILD_DATE_CORE
-        strncpy (buildate, BUILD_DATE_CORE);
-#else
-        strncpy (buildate, "not availible");
-#endif
+    if(!loctime)
+        return;
+
+    if(!strftime(dest_time,sizeof(dest_time),format,loctime))
+        return;
+
+    strncpy(dest,dest_time,strlen(dest_time)); //not null-terminated
 }
 
 void start_daemon()
 {
-        check_buildate();
-
         pid_t pid;
-        char buf[BUFSIZ];
-        char buf_intro[BUFSIZ];
 
-        sprintf (buf_intro, "[START]JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
+        snprintf (errlog, MAX_LOG_CHARS, "JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
+        wlogev(EV_INFO,errlog);
 
-        log_string ("=======================================");
 #ifdef DEBUG
-        log_string ("[BUILD] You are using JASM debug build!");
+        wlogev(EV_WARN,"You are using JASM debug build");
 #endif
 
-        log_string (buf_intro);
-        log_string ("[JASM-DAEMON] Creating new process...");
         pid = fork();
         switch (pid) {
         case -1:
-                sprintf (errlog, "[PROCESS-SPAWN]Error: %s\n", strerror (errno) );
-                log_error ("[PROCESS-SPAWN][fork()] failed");
-                log_error (errlog);
+                snprintf (errlog, MAX_LOG_CHARS, "forking error: %s\n", strerror (errno) );
+                wlogev(EV_ERROR,errlog);
+
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "Process spawning failed!");
                 closelog();
                 exit (ERR_SET_PROCESS_SPAWN);
-
         case 0:
-                log_string ("[PROCESS-SPAWN][fork()] success");
                 break;
-
         default:
                 exit (_EXIT_SUCCESS);
         }
+
         if (setsid() < 0) {
-                log_error ("[PROCESS-SID][setsid()] failed");
-                sprintf (errlog, "[PROCESS-SID]Error: %s\n", strerror (errno) );
-                log_error (errlog);
+                snprintf (errlog, MAX_LOG_CHARS,"getting new sid failure: %s\n", strerror (errno) );
+                wlogev(EV_ERROR,errlog);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "Setting sid for new process failed!");
                 closelog();
@@ -116,43 +108,24 @@ void start_daemon()
         close (1);
         close (2);
 
-        sprintf (buf, "[JASM-DAEMON][START] PID: %d , Parent PID: %d", getpid(), getppid() );
-        log_string (buf);
-        log_string ("[JASM-DAEMON][START] Start phase successfully completed!");
-        log_string ("[JASM-DAEMON][STATUS] Ready!");
+        snprintf (errlog, MAX_LOG_CHARS,"PID: %d , Parent PID: %d", getpid(), getppid() );
+        wlogev(EV_INFO,errlog);
+        wlogev(EV_INFO,"JASM is now ready to get commands! :)");
+
         openlog ("JASM", LOG_PID, LOG_DAEMON);
         syslog (LOG_INFO, "SUCCESS! New jasm process created! READY!");
         closelog();
 }
 
-/*LOGIN SECTION*/
 _Bool login_required (const char* clientaddr)
 {
-        if (strcmp (clientaddr, LOCALHOST) == 0) {
-            return false;
-        } else {
-            return true;
-        }
+    if(!clientaddr)
+        return false;
+
+    return strncmp(clientaddr,LOCALHOST,strlen(clientaddr)) > 0 ? true : false;
 }
 
-int check_passwd_file (const char* __pwdf)
+_Bool check_passwd_file (const char* __pwdf)
 {
-        if (access (__pwdf, F_OK) != -1) {
-            return 0;
-        } else {
-            return 1;
-        }
-}
-
-int read_line(int file, char *buffer,int length) {
-  int count = 0, run = 1;
-  int res;
-  while(run) {
-    res = read(file, &(buffer[count]), 1);
-    if(res == 0 && count == 0) return 0;
-    if(res == 0 || buffer[count] == '\n' || count == length) run = 0;
-    count++;
-  }
-  buffer[count-1] = '\0';
-  return count;
+    return access(__pwdf,F_OK) != -1 ? true : false;
 }

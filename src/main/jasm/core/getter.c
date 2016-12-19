@@ -39,49 +39,10 @@
 #include "miscellaneous.h"
 #include "logger.h"
 
-char error[BUFSIZ];
+#define MAX_CORE 16
+#define CPU_FILE_SIZE 65536
 
-//TODO: checks + errno
-
-void getVersion (int fd);
-void getCopyright (int fd);
-void getHostname (int fd);
-void getKernelName (int fd);
-void getKernelRelease (int fd);
-void getKernelVersion (int fd);
-void getPosixVersion (int fd);
-void getMachine (int fd);
-void getGetter (int fd);
-void getCpuName (int fd);
-void getCacheSize (int fd);
-void getCoreNum (int fd);
-void getCoreSpeeds (int fd);
-void getAddressSizes (int fd);
-void getCreatedProcNum (int fd);
-void getIfSwap (int fd);
-void getFileHandlesNum (int fd);
-void getCpuProcessor (int fd);
-void getUpTime (int fd);
-void getTotalRAM (int fd);
-void getFreeRAM (int fd);
-void getProcesses (int fd);
-void getCpuNumber (int fd);
-void getSchedulerVersion (int fd);
-void getSchedulerInfo (int fd);
-void getCHRDevices (int fd);
-void getBLKDevices (int fd);
-void getEmulatedFSDevices (int fd);
-void getRealFSDevices (int fd);
-void getMeminfo (int fd);
-void getModules (int fd);
-void getBuddyinfo (int fd);
-void getDma (int fd);
-void getIOmem (int fd);
-void getKeyUsr (int fd);
-void getMtrr (int fd);
-void getMisc (int fd);
-void getInterrupts (int fd);
-
+static char errlog[MAX_LOG_CHARS];
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",

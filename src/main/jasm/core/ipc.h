@@ -21,11 +21,6 @@
 
 #include <sys/types.h>
 
-#define MAX_LENGHT_RECV 256
-#define MAX_LENGHT_SEND 256
-
-#define SERVER_PORT 9734
-
 extern void start_server (void);
 
 extern struct ip_node *client_list;

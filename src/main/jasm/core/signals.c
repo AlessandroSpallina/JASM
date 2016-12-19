@@ -21,13 +21,14 @@
 
 #include "logger.h"
 #include "signals.h"
+#include "macros.h"
 
 static void generic_signal_log (int sig)
 {
-        char buf[BUFSIZ];
+        char errlog[MAX_LOG_CHARS];
 
-        sprintf (buf, "Received signal number %d", sig);
-        log_string (buf);
+        snprintf(errlog,MAX_LOG_CHARS,"Received signal number %d", sig);
+        wlogev(EV_WARN,errlog);
 }
 
 void set_signals_feel()

@@ -19,7 +19,7 @@
 #ifndef _MODULES_H
 #define _MODULES_H
 
-#define NMODULE 1
+#include "macros.h"
 
 extern char moduleName[NMODULE][BUFSIZ];
 extern void (*moduleInit[NMODULE]) (int, int);

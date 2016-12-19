@@ -19,7 +19,6 @@
 #ifndef _MODULES_LIST_H
 #define _MODULES_LIST_H
 
-#include <stdio.h>
 #include <pthread.h>
 
 /*

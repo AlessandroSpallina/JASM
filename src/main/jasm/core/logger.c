@@ -23,13 +23,42 @@
 #include "logger.h"
 #include "miscellaneous.h"
 
-static char LOGPATH[256] = NULL;
+//???
+#ifdef DEBUG
+#define CLIENTLOGPATH "../data/client.log"
+#endif
+
+static char LOGPATH[256] = "null";
 
 void wlogev(const enum evtype ev, const char* strmsg)
 {
+	if(!strncmp(LOGPATH,"null",4)) {
+		const char* home = getenv("HOME");
+		strncpy(LOGPATH,home,strlen(home));
+		strncat(LOGPATH,"/jasm.log",9);
+	}
 
+	FILE* flog = NULL;
+	if(!(flog=fopen(LOGPATH,"a+")))
+		return;
+
+	char logtype[20];
+	if(ev == EV_ERROR)
+		strncpy(logtype,"ERROR",5);
+	else if(ev == EV_WARN)
+		strncpy(logtype,"WARNING",7);
+	else 
+		strncpy(logtype,"INFO",4);
+
+	char curtime[256] = "null";
+	get_time("%a %F %r",curtime);
+
+	fprintf(flog,"[%s][%s] %s",logtype,curtime,strmsg);
+
+	fclose(flog);
 }
 
+// ???
 #ifdef DEBUG
 void log_client (struct ip_node *clist)
 {

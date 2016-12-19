@@ -19,6 +19,7 @@
 #include "miscellaneous.h"
 #include "ipc.h"
 #include "signals.h"
+
 int main (void)
 {
 	start_daemon(); //starts background daemon

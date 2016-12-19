@@ -19,21 +19,30 @@
 #ifndef _MISCELLANEOUS_H
 #define _MISCELLANEOUS_H
 
-#define _EXIT_SUCCESS 0
-#define SOCKET_CREATION_FAILED 120
-#define SOCKET_CLIENT_CONNECTION_FAILED 121
-#define SOCKET_BINDING_FAILED 122
-#define SOCKET_SELECT_FAILED 123
-#define SOCKET_LISTENING_CONNECTION_FAILED 124
-#define NOFILE_ERROR 5
-#define ERR_SET_PROCESS_BACKGROUND 140
-#define ERR_SET_PROCESS_SPAWN 141
-#define LOCALHOST "127.0.0.1"
+#include <sys/types.h>
+
+ssize_t read(int fd, void* buf, size_t length);
 
 extern void get_buildate(char* dest);
-extern char *getTime (void);
+extern void get_time (const char* format, char* dest);
 extern void start_daemon (void);
 extern _Bool login_required (const char *clientaddr);
-extern int check_passwd_file (const char* __pwdf);
-extern int read_line(int file, char *buffer,int length);
+extern _Bool check_passwd_file (const char* __pwdf);
+extern inline int read_line(const int file, char *buffer, const int length) {
+    int count = 0, run=1;
+    ssize_t res;
+
+    while(run) {
+        res = read(file, &(buffer[count]), 1);
+        if(res == 0 && count == 0) 
+            return 0;
+        if(res == 0 || buffer[count] == '\n' || count == length) 
+            run = 0;
+        count++;
+    }
+
+    buffer[count-1] = '\0';
+    return count;
+}
+
 #endif
