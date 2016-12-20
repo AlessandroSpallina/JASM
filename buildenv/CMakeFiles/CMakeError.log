@@ -1,0 +1,61 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_6c725/fast"
+/usr/bin/make -f CMakeFiles/cmTC_6c725.dir/build.make CMakeFiles/cmTC_6c725.dir/build
+make[1]: ingresso nella directory "/home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp"
+/usr/bin/cmake: /usr/local/lib/libcurl.so.4: no version information available (required by /usr/bin/cmake)
+Building C object CMakeFiles/cmTC_6c725.dir/CheckSymbolExists.c.obj
+/usr/bin/gcc     -o CMakeFiles/cmTC_6c725.dir/CheckSymbolExists.c.obj   -c /home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+/usr/bin/cmake: /usr/local/lib/libcurl.so.4: no version information available (required by /usr/bin/cmake)
+Linking C executable cmTC_6c725
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6c725.dir/link.txt --verbose=1
+/usr/bin/cmake: /usr/local/lib/libcurl.so.4: no version information available (required by /usr/bin/cmake)
+/usr/bin/gcc       CMakeFiles/cmTC_6c725.dir/CheckSymbolExists.c.obj  -o cmTC_6c725  
+CMakeFiles/cmTC_6c725.dir/CheckSymbolExists.c.obj: nella funzione "main":
+CheckSymbolExists.c:(.text+0x16): riferimento non definito a "pthread_create"
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_6c725.dir/build.make:97: set di istruzioni per l'obiettivo "cmTC_6c725" non riuscito
+make[1]: *** [cmTC_6c725] Errore 1
+make[1]: uscita dalla directory "/home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp"
+Makefile:126: set di istruzioni per l'obiettivo "cmTC_6c725/fast" non riuscito
+make: *** [cmTC_6c725/fast] Errore 2
+
+File /home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_cb689/fast"
+/usr/bin/make -f CMakeFiles/cmTC_cb689.dir/build.make CMakeFiles/cmTC_cb689.dir/build
+make[1]: ingresso nella directory "/home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp"
+/usr/bin/cmake: /usr/local/lib/libcurl.so.4: no version information available (required by /usr/bin/cmake)
+Building C object CMakeFiles/cmTC_cb689.dir/CheckFunctionExists.c.obj
+/usr/bin/gcc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_cb689.dir/CheckFunctionExists.c.obj   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+/usr/bin/cmake: /usr/local/lib/libcurl.so.4: no version information available (required by /usr/bin/cmake)
+Linking C executable cmTC_cb689
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cb689.dir/link.txt --verbose=1
+/usr/bin/cmake: /usr/local/lib/libcurl.so.4: no version information available (required by /usr/bin/cmake)
+/usr/bin/gcc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_cb689.dir/CheckFunctionExists.c.obj  -o cmTC_cb689  -lpthreads 
+/usr/bin/ld: impossibile trovare -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_cb689.dir/build.make:97: set di istruzioni per l'obiettivo "cmTC_cb689" non riuscito
+make[1]: *** [cmTC_cb689] Errore 1
+make[1]: uscita dalla directory "/home/skela/Scrivania/@DEVELOPZONE@/2_Github/JASM/buildenv/CMakeFiles/CMakeTmp"
+Makefile:126: set di istruzioni per l'obiettivo "cmTC_cb689/fast" non riuscito
+make: *** [cmTC_cb689/fast] Errore 2
+
+
