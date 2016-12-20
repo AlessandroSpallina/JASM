@@ -43,6 +43,7 @@
 #define CPU_FILE_SIZE 65536
 
 static char errlog[MAX_LOG_CHARS];
+static char error[BUFSIZ];
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
@@ -78,8 +79,8 @@ void getGetter (int fd)
 
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
         }
 
         for (i = 0; i < NGETTER; i++)
@@ -90,15 +91,15 @@ void getGetter (int fd)
 
                 if (ret_val == 0 || ret_val == -1)
                 {
-                        log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                        log_error (error);
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                        wlogev(EV_ERROR, error);
                 }
                 ret_val = sendMsg (fd, getterName[i]);
 
                 if (ret_val == 0 || ret_val == -1)
                 {
-                        log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                        log_error (error);
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
+                        wlogev(EV_ERROR, error);
                 }
         }
 }
@@ -111,8 +112,8 @@ void getVersion (int fd)
         if (n < 0)
         {
                 sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                log_error ("[JASM-DAEMON][getVersion][write()] Error!");
-                log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getVersion][write()] Error!");
+                wlogev(EV_ERROR, error);
         }
 
         else
@@ -121,12 +122,13 @@ void getVersion (int fd)
                 if ( n < strlen (VERSION) )
                 {
                         sprintf (error, "[JASM-DAEMON][getVersion][write()] sent %d byte, correct num byte is %zu", n, strlen (VERSION) );
-                        log_error (error);
+                        wlogev(EV_WARN, error);
+
                 }
                 else
                 {
                         sprintf (error, "[JASM-DAEMON][getVersion][write()] sent %d byte", n);
-                        log_string (error);
+                        wlogev(EV_INFO, error);
                 }
         }
 }
@@ -139,8 +141,8 @@ void getCopyright (int fd)
         if (n < 0)
         {
                 sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                log_error ("[JASM-DAEMON][getCopyright][write()] Error!");
-                log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getCopyright][write()] Error!");
+                wlogev(EV_ERROR, error);
         }
 
         else
@@ -148,12 +150,12 @@ void getCopyright (int fd)
                 if ( n < strlen (COPYRIGHT) )
                 {
                         sprintf (error, "[JASM-DAEMON][getCopyright][write()] sent %d byte, correct num byte is %zu", n, strlen (COPYRIGHT) );
-                        log_error (error);
+                        wlogev(EV_WARN, error);
                 }
                 else
                 {
                         sprintf (error, "[JASM-DAEMON][getCopyright][write()] sent %d byte", n);
-                        log_string (error);
+                        wlogev(EV_INFO, error);
                 }
         }
 }
@@ -165,7 +167,7 @@ void getHostname (int fd)
 
         if (uname (&info) == -1)
         {
-                log_error ("getHostname() [uname] failed");
+                wlogev(EV_ERROR, "getHostname() [uname] failed");
                 return;
         }
         else
@@ -175,8 +177,8 @@ void getHostname (int fd)
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                        log_error ("[JASM-DAEMON][getHostname][write()] Error!");
-                        log_error (error);
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getHostname][write()] Error!");
+                        wlogev(EV_ERROR, error);
                 }
 
                 else
@@ -184,12 +186,12 @@ void getHostname (int fd)
                         if ( n < strlen (buf) )
                         {
                                 sprintf (error, "[JASM-DAEMON][getHostname][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                                log_error (error);
+                                wlogev(EV_WARN, error);
                         }
                         else
                         {
                                 sprintf (error, "[JASM-DAEMON][getHostname][write()] sent %d byte", n);
-                                log_string (error);
+                                wlogev(EV_INFO, error);
                         }
                 }
         }
@@ -202,7 +204,8 @@ void getKernelName (int fd)
 
         if (uname (&info) == -1)
         {
-                log_error ("getKernelName() [uname] failed");
+
+                wlogev(EV_ERROR, "getKernelName() [uname] failed");
                 return;
         }
         else
@@ -212,8 +215,9 @@ void getKernelName (int fd)
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                        log_error ("[JASM-DAEMON][getKernelName][write()] Error!");
-                        log_error (error);
+
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getKernelName][write()] Error!");
+                        wlogev(EV_ERROR, error);
                 }
 
                 else
@@ -221,12 +225,12 @@ void getKernelName (int fd)
                         if (n < strlen (buf) )
                         {
                                 sprintf (error, "[JASM-DAEMON][getKernelName][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                                log_error (error);
+                                wlogev(EV_WARN, error);
                         }
                         else
                         {
                                 sprintf (error, "[JASM-DAEMON][getKernelName][write()] sent %d byte", n);
-                                log_string (error);
+                                wlogev(EV_INFO, error);
                         }
                 }
 
@@ -240,7 +244,8 @@ void getKernelRelease (int fd)
 
         if (uname (&info) == -1)
         {
-                log_error ("getKernelRelease() [uname] failed");
+                wlogev(EV_ERROR, "getKernelRelease() [uname] failed");
+
                 return;
         }
         else
@@ -250,20 +255,21 @@ void getKernelRelease (int fd)
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                        log_error ("[JASM-DAEMON][getKernelRelease][write()] Error!");
-                        log_error (error);
+
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getKernelRelease][write()] Error!");
+                        wlogev(EV_ERROR, error);
                 }
                 else
                 {
                         if (n < strlen (buf) )
                         {
                                 sprintf (error, "[JASM-DAEMON][getKernelRelease][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                                log_error (error);
+                                wlogev(EV_WARN, error);
                         }
                         else
                         {
                                 sprintf (error, "[JASM-DAEMON][getKernelRelease][write()] sent %d byte", n);
-                                log_string (error);
+                                wlogev(EV_INFO, error);
                         }
                 }
         }
@@ -276,7 +282,8 @@ void getKernelVersion (int fd)
 
         if (uname (&info) == -1)
         {
-                log_error ("getKernelVersion() [uname] failed");
+                wlogev(EV_ERROR, "getKernelVersion() [uname] failed");
+
                 return;
         }
         else
@@ -286,20 +293,22 @@ void getKernelVersion (int fd)
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                        log_error ("[JASM-DAEMON][getKernelVersion][write()] Error!");
-                        log_error (error);
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getKernelVersion][write()] Error!");
+                        wlogev(EV_ERROR, error);
+
                 }
                 else
                 {
                         if (n < strlen (buf) )
                         {
                                 sprintf (error, "[JASM-DAEMON][getKernelVersion][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                                log_error (error);
+                                wlogev(EV_WARN, error);
                         }
                         else
                         {
                                 sprintf (error, "[JASM-DAEMON][getKernelVersion][write()] sent %d byte", n);
-                                log_string (error);
+
+                                wlogev(EV_INFO, error);
                         }
                 }
         }
@@ -311,7 +320,8 @@ void getMachine (int fd)
         char buf[BUFSIZ];
         if (uname (&info) == -1)
         {
-                log_error ("getMachine() [uname]  failed");
+                wlogev(EV_ERROR, "getMachine() [uname]  failed");
+
                 return;
         }
         else
@@ -321,20 +331,21 @@ void getMachine (int fd)
                 if (n < 0)
                 {
                         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                        log_error ("[JASM-DAEMON][getMachine][write()] Error!");
-                        log_error (error);
+                        wlogev(EV_ERROR, "[JASM-DAEMON][getMachine][write()] Error!");
+                        wlogev(EV_ERROR, error);
                 }
                 else
                 {
                         if (n < strlen (buf) )
                         {
                                 sprintf (error, "[JASM-DAEMON][getMachine][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                                log_error (error);
+                                wlogev(EV_WARN, error);
                         }
                         else
                         {
                                 sprintf (error, "[JASM-DAEMON][getMachine][write()] sent %d byte", n);
-                                log_string (error);
+
+                                wlogev(EV_INFO, error);
                         }
                 }
         }
@@ -354,7 +365,8 @@ void getUpTime (int fd)
 
       if( sysinfo (&sys_info) != 0)
       {
-            log_error ("getUpTime() Failed");
+            wlogev(EV_ERROR, "getUpTime() Failed");
+
             return;
       }
       else{
@@ -368,24 +380,24 @@ void getUpTime (int fd)
         if (n < 0)
         {
             sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-            log_error ("[JASM-DAEMON][getUptime][write()] Error!");
-            log_error (error);
+            wlogev(EV_ERROR, "[JASM-DAEMON][getUptime][write()] Error!");
+            wlogev(EV_ERROR, error);
         }
         else
         {
             if (n < strlen (buf) )
             {
                 sprintf (error, "[JASM-DAEMON][getUptime][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                log_error (error);
+                wlogev(EV_WARN, error);
             }
             else
             {
                 sprintf (error, "[JASM-DAEMON][getUptime][write()] sent %d byte", n);
-                log_string (error);
+                wlogev(EV_INFO, error);
             }
         }
 #else
-        log_string("[INFO]Support for getUpTime() not availible! ");
+        wlogev(EV_WARN, "[INFO]Support for getUpTime() not availible! ");
 #endif
 }
 
@@ -403,7 +415,8 @@ void getTotalRAM (int fd)
 
       if( sysinfo (&sys_info) != 0)
       {
-            log_error ("getTotalRAM() Failed");
+            wlogev(EV_ERROR, "getTotalRAM() Failed");
+
             return;
       }
       else
@@ -413,22 +426,24 @@ void getTotalRAM (int fd)
             if (n < 0)
             {
                   sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-                  log_error ("[JASM-DEAMON][getTotalRAM][write()] Error!");
-                  log_error (error);
+                  wlogev(EV_ERROR, "[JASM-DEAMON][getTotalRAM][write()] Error!");
+                  wlogev(EV_ERROR, error);
+
             }
             if (n <strlen(buf))
             {
                   sprintf (error, "[JASM-DAEMON][getTotalRAM][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                  log_error (error);
+                  wlogev(EV_WARN, error);
+
             }
             else
             {
                   sprintf (error, "[JASM-DAEMON][getTotalRAM][write()] sent %d byte", n);
-                  log_string (error);
+                  wlogev(EV_INFO, error);
             }
       }
 #else
-    log_string("[INFO] Support for getTotalRAM() not availible! ");
+    wlogev(EV_WARN, "[INFO] Support for getTotalRAM() not availible! ");
 #endif
 }
 
@@ -446,7 +461,7 @@ void getFreeRAM (int fd)
 
       if( sysinfo (&sys_info) != 0)
       {
-            log_error ("getFreeRAM() Failed");
+            wlogev(EV_ERROR, "getFreeRAM() Failed");
             return;
       }
       else
@@ -456,22 +471,23 @@ void getFreeRAM (int fd)
             if (n < 0)
             {
                   sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-                  log_error ("[JASM-DEAMON][getFreeRAM][write()] Error!");
-                  log_error (error);
+                  wlogev(EV_ERROR, "[JASM-DEAMON][getFreeRAM][write()] Error!");
+                  wlogev(EV_ERROR, error);
+
             }
             if (n < strlen(buf))
             {
                   sprintf (error, "[JASM-DAEMON][getFreeRAM][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                  log_error (error);
+                  wlogev(EV_WARN, error);
             }
             else
             {
                   sprintf (error, "[JASM-DAEMON][getFreeRAM][write()] sent %d byte", n);
-                  log_string (error);
+                  wlogev(EV_INFO, error);
             }
       }
 #else
-    log_string("[INFO]Support for getFreeRAM() not availible");
+    wlogev(EV_WARN, "[INFO]Support for getFreeRAM() not availible");
 #endif
 }
 
@@ -487,7 +503,7 @@ void getProcesses (int fd)
       struct sysinfo sys_info;
       if( sysinfo(&sys_info) != 0)
       {
-            log_error("getProcesses() Failed");
+            wlogev(EV_ERROR, "getProcesses() Failed");
             return;
       }
       else
@@ -497,22 +513,22 @@ void getProcesses (int fd)
             if (n < 0)
             {
                   sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-                  log_error ("[JASM-DEAMON][getProceses][write()] Error!");
-                  log_error (error);
+                  wlogev(EV_ERROR, "[JASM-DEAMON][getProceses][write()] Error!");
+                  wlogev(EV_ERROR, error);
             }
             if (n < strlen(buf) )
             {
                   sprintf (error, "[JASM-DAEMON][getProcesses][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                  log_error (error);
+                  wlogev(EV_WARN, error);
             }
             else
             {
                   sprintf (error, "[JASM-DAEMON][getProcesses][write()] sent %d byte", n);
-                  log_string (error);
+                  wlogev(EV_INFO, error);
             }
       }
 #else
-    log_string("[INFO]Support for getProcesses not availible!");
+    wlogev(EV_WARN, "[INFO]Support for getProcesses not availible!");
 #endif
 }
 
@@ -528,7 +544,7 @@ void getCpuProcessor (int fd)
       //TODO error checking
       if( (numCPU=sysconf(_SC_NPROCESSORS_CONF))==-1 || (onCPU=sysconf(_SC_NPROCESSORS_ONLN))==-1)
       {
-            log_error("getCpuProcessor() Failed");
+            wlogev(EV_ERROR, "getCpuProcessor() Failed");
             return;
       }
       sprintf(buf,"Number of CPU configured: %d Online: %d",numCPU,onCPU);
@@ -536,18 +552,18 @@ void getCpuProcessor (int fd)
       if (n < 0)
       {
             sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-            log_error ("[JASM-DEAMON][getCpuProcessor][write()] Error!");
-            log_error (error);
+            wlogev(EV_ERROR, "[JASM-DEAMON][getCpuProcessor][write()] Error!");
+            wlogev(EV_ERROR, error);
       }
       if (n < strlen(buf) )
       {
             sprintf (error, "[JASM-DAEMON][getCpuProcessor][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            wlogev(EV_WARN, error);
       }
       else
       {
             sprintf (error, "[JASM-DAEMON][getCpuProcessor][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
       }
 }
 
@@ -562,7 +578,8 @@ void getPosixVersion (int fd)
       char buf[BUFSIZ];
       if( (version=sysconf(_SC_2_VERSION))==-1)
       {
-            log_error("getPosixVersion() Failed");
+            wlogev(EV_ERROR, "getPosixVersion() Failed");
+
             return;
       }
       else
@@ -572,18 +589,18 @@ void getPosixVersion (int fd)
             if(n < 0)
             {
                 sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-                  log_error ("[JASM-DEAMON][getPosixVersion][write()] Error!");
-                  log_error (error);
+                  wlogev(EV_ERROR, "[JASM-DEAMON][getPosixVersion][write()] Error!");
+                  wlogev(EV_ERROR, error);
             }
             if (n < strlen(buf) )
             {
                   sprintf (error, "[JASM-DAEMON][getPosixVersion][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-                  log_error (error);
+                  wlogev(EV_WARN, error);
             }
             else
             {
                   sprintf (error, "[JASM-DAEMON][getPosixVersion][write()] sent %d byte", n);
-                  log_string (error);
+                  wlogev(EV_INFO, error);
             }
       }
 }
@@ -599,7 +616,7 @@ void getCpuNumber (int fd)
       char buf[BUFSIZ];
       if( (cpu_num = sched_getcpu()) == -1 )
       {
-            log_error("getCpuNumber() Failed");
+            wlogev(EV_ERROR, "getCpuNumber() Failed");
             return;
       }
       else

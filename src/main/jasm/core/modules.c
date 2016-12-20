@@ -29,9 +29,9 @@
 #include "ipc.h"
 
 char errlog[BUFSIZ];
-char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
-void (*moduleInit[NMODULE]) (int, int) = {init_logsender};
-void (*moduleStart[NMODULE]) (void) = {start_logsender};
+char moduleName[NMODULE][BUFSIZ] = {};
+void (*moduleInit[NMODULE]) (int, int) = {};
+void (*moduleStart[NMODULE]) (void) = {};
 
 void getModule (int fd)
 {

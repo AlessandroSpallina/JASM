@@ -28,21 +28,6 @@ extern void get_time (const char* format, char* dest);
 extern void start_daemon (void);
 extern _Bool login_required (const char *clientaddr);
 extern _Bool check_passwd_file (const char* __pwdf);
-extern inline int read_line(const int file, char *buffer, const int length) {
-    int count = 0, run=1;
-    ssize_t res;
-
-    while(run) {
-        res = read(file, &(buffer[count]), 1);
-        if(res == 0 && count == 0) 
-            return 0;
-        if(res == 0 || buffer[count] == '\n' || count == length) 
-            run = 0;
-        count++;
-    }
-
-    buffer[count-1] = '\0';
-    return count;
-}
+extern int read_line(const int file, char *buffer, const int length);
 
 #endif

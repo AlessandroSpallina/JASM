@@ -58,7 +58,7 @@ static void excecute_command (int fd, char *ip, char *command)
                 getModule (fd);
                 //getOther
 
-                log_string ("[CMD] help exec");
+                wlogev (EV_ERROR, "[CMD] help exec");
                 return;
         }
 
@@ -104,32 +104,32 @@ static void excecute_command (int fd, char *ip, char *command)
                                                 if (pthread_create (&tid, NULL, (void *) moduleStart[i], NULL) != 0) {
                                                         char buf[BUFSIZ];
                                                         sprintf (buf, "pthread_create fail: %s", strerror (errno) );
-                                                        log_error (buf);
+                                                        wlogev (EV_ERROR, buf);
                                                         return;
 
                                                 } else {
                                                         memset (command, 0, BUFSIZ);
                                                         sprintf (command, "module <%s> started correctly", moduleName[i]);
-                                                        log_string (command);
+                                                        wlogev (EV_INFO, command);
                                                         add_module_running(&client->modules_list, command, tid);
                                                         return;
                                                 }
 
                                         } else {
                                                 sprintf(errlog, "[ERROR] unable to load <%s> module, no double modules are allow", command);
-                                                log_string(errlog);
+                                                wlogev (EV_ERROR, errlog);
                                                 sendMsg(fd,"fail");
                                                 return;
                                         }
                                 } else {
                                         sprintf(errlog, "[ERROR] client ip not found in client_list");
-                                        log_error(errlog);
+                                        wlogev (EV_ERROR, errlog);
                                         return;
                                 }
                         }
                 }
 
-                log_error ("Start NOT found :(");
+                wlogev (EV_ERROR, "Start NOT found :(");
                 sendMsg(fd,"ModNotFound");
                 return;
         }
@@ -144,30 +144,31 @@ static void excecute_command (int fd, char *ip, char *command)
                                 if (aus != NULL) {
 
                                         if (pthread_key_delete((pthread_key_t)aus->tid) == 0) {
-                                                log_string("[STOPPER] JASM stopped the module successfully");
+                                                wlogev(EV_INFO, "[STOPPER] JASM stopped the module successfully");
                                                 rem_module_running(&(client->modules_list), command);
                                                 sendMsg(fd,"success");
                                                 return;
 
                                         } else {
-                                                log_error("[STOPPER] Unable to delete module's thread, pthread_key_delete fail");
+                                                wlogev(EV_ERROR, "[STOPPER] Unable to delete module's thread, pthread_key_delete fail");
+
                                                 sendMsg(fd,"fail");
                                                 return;
                                         }
                                 } else {
-                                        log_error("[STOPPER] Unable to find module to stop!");
+                                        wlogev(EV_ERROR, "[STOPPER] Unable to find module to stop!");
                                         sendMsg(fd,"fail");
                                         return;
                                 }
 
                         } else {
-                                log_error("[STOPPER] Client haven't any module running: unable to stop");
+                                wlogev(EV_ERROR, "[STOPPER] Client haven't any module running: unable to stop");
                                 sendMsg(fd,"fail");
                                 return;
                         }
 
                 } else {
-                        log_error("[STOPPER] Unable to find client - in heap - node");
+                        wlogev(EV_ERROR, "[STOPPER] Unable to find client - in heap - node");
                         sendMsg(fd,"fail");
                         return;
                 }
@@ -176,7 +177,7 @@ static void excecute_command (int fd, char *ip, char *command)
 
         // ************************** miscellaneous ********************************
         if (strcmp ("halt", command) == 0) { //turn off jasm
-                log_string ("[CMD] halt exec");
+                wlogev(EV_INFO, "[CMD] halt exec");
                 sendMsg(fd,"jhalt");
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_INFO, "exiting as requested from client...");
@@ -185,7 +186,7 @@ static void excecute_command (int fd, char *ip, char *command)
                 exit (_EXIT_SUCCESS);
         }
 
-        log_error ("[CMD] Command not found!");
+        wlogev(EV_ERROR, "[CMD] Command not found!");
         sendMsg(fd,"NotFound");
 }
 
@@ -194,7 +195,7 @@ static _Bool goodLoginRoutine(char *client_ipaddr, int client_sockfd)
         char buf[BUFSIZ];
 
         sprintf (buf, "[CLIENT-CONNECT] sockfd: %d, IP Address: %s", client_sockfd, client_ipaddr);
-        log_string (buf);
+        wlogev(EV_INFO, buf);
         add_clientIp(&client_list, client_ipaddr);
 #ifdef DEBUG
         log_client(client_list);
@@ -211,7 +212,7 @@ static _Bool isCorrectPassword(int client_sockfd)
 
         FILE* source_passwd=NULL;
 
-        log_string ("[CLIENT-AUTH]Authentication required!");
+        wlogev(EV_INFO, "[CLIENT-AUTH]Authentication required!");
         ssize_t rcval;
 
         rcval = sendMsg(client_sockfd,"auth-required");
@@ -227,21 +228,20 @@ static _Bool isCorrectPassword(int client_sockfd)
         if ((source_passwd = fopen(PASSWD_ENC_FILE, "r")) != NULL) {
             char *ret_value = fgets(passwd_from_client, 256, source_passwd);
             if (ret_value == NULL) {
-                log_error("fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                wlogev(EV_ERROR, "fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
                 fclose(source_passwd);
                 close(client_sockfd);
                 exit(NOFILE_ERROR);
             }
         } else {
-            log_error(strerror(errno));
+            wlogev(EV_ERROR, strerror(errno));
             fclose(source_passwd);
             close(client_sockfd);
             exit(NOFILE_ERROR);
         }
 
         if (strcmp (getpasswd, passwd_from_client) == 0) {
-                log_string ("[PWD][OK]Password accepted!");
-                log_string ("[PWD][OK]Authorized!");
+                wlogev(EV_INFO, "[PWD][OK]Password accepted and client authorized!");
                 rcval = sendMsg(client_sockfd,"granted");
                 if(rcval == 0 || rcval == -1) {
                     return false;
@@ -250,7 +250,7 @@ static _Bool isCorrectPassword(int client_sockfd)
                 return true;
 
         } else  {
-                log_error ("[PWD][DEN]Wrong password!");
+                wlogev(EV_WARN, "[PWD][DEN]Wrong password!");
                 rcval = sendMsg(client_sockfd,"denied");
                 if(rcval == 0 || rcval == -1) {
                         return false;
@@ -279,8 +279,8 @@ void start_server()
         server_sockfd = socket (AF_INET, SOCK_STREAM, 0);
         if (server_sockfd < 0) {
                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                log_error ("[JASM-DAEMON][socket()]Failed to create new socket! Exiting...");
-                log_error (errlog);
+                wlogev(EV_ERROR, "[JASM-DAEMON][socket()]Failed to create new socket! Exiting...");
+                wlogev(EV_ERROR, errlog);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "socket creation failed!! Exiting!");
                 closelog();
@@ -290,7 +290,7 @@ void start_server()
         int y=1;
         if(setsockopt(server_sockfd,SOL_SOCKET,SO_REUSEADDR,(char*)&y,sizeof(y)) < 0) {
                 sprintf(errlog,"[JASM-DAEMON][errno][WARN][NOT FATAL][setsockopt()] Failed: %s",strerror(errno));
-                log_error(errlog);
+                wlogev(EV_ERROR, errlog);
         }
 
         server_address.sin_family = AF_INET;
@@ -300,9 +300,9 @@ void start_server()
 
         if (bind (server_sockfd, (struct sockaddr *) &server_address, (socklen_t)server_len) < 0) {
                 sprintf (errlog, "[JASM-DAEMON][bind()]Error: %s\n", strerror (errno) );
-                log_error ("[JASM-DAEMON][bind()]Failed to bind socket");
-                log_error (errlog);
-                log_error ("[JASM-DAEMON] Exiting !");
+                wlogev(EV_ERROR, "[JASM-DAEMON][bind()]Failed to bind socket");
+                wlogev(EV_ERROR, errlog);
+                wlogev(EV_ERROR, "[JASM-DAEMON] Exiting !");
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "socket not correctly binded... exiting!");
                 closelog();
@@ -311,8 +311,8 @@ void start_server()
 
         if (listen (server_sockfd, 5) < 0) {
                 sprintf (errlog, "[JASM-DAEMON][errno] Errno: %s", strerror (errno) );
-                log_error ("[JASM-DAEMON][listen()]Failed to put socket in listening mode!");
-                log_error (errlog);
+                wlogev(EV_ERROR, "[JASM-DAEMON][listen()]Failed to put socket in listening mode!");
+                wlogev(EV_ERROR, errlog);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "FATAL! socket was not put to listening mode! Exiting...");
                 closelog();
@@ -322,7 +322,7 @@ void start_server()
         FD_ZERO (&readfds);
         FD_SET (server_sockfd, &readfds);
 
-        log_string ("[JASM-DAEMON]Server started");
+        wlogev(EV_INFO, "[JASM-DAEMON]Server started");
 
         while (1) {
                 //char *ret_value = NULL;
@@ -338,8 +338,9 @@ void start_server()
 
                 if (result < 1) {
                         sprintf(errlog, "[JASM-DAEMON]Error: %s\n", strerror(errno));
-                        log_error("[JASM-DAEMON][select()]Server failed");
-                        log_error(errlog);
+                        wlogev(EV_ERROR, "[JASM-DAEMON][select()]Server failed");
+                        wlogev(EV_ERROR, errlog);
+
                         exit(SOCKET_SELECT_FAILED);
                 }
 
@@ -351,8 +352,8 @@ void start_server()
                                                                &client_len);
                                         if (client_sockfd < 0) {
                                                 sprintf(errlog, "[JASM-DAEMON][errno] Errno: %s", strerror(errno));
-                                                log_error("[JASM-DAEMON][accept()]Failed to accept socket connection!");
-                                                log_error(errlog);
+                                                wlogev(EV_ERROR, "[JASM-DAEMON][accept()]Failed to accept socket connection!");
+                                                wlogev(EV_ERROR, errlog);
                                                 openlog("JASM", LOG_PID, LOG_DAEMON);
                                                 syslog(LOG_ERR,
                                                        "FATAL! Failed to accept client incoming connection! Exiting...");
@@ -376,7 +377,8 @@ void start_server()
                                                         shutdown(client_sockfd, 2);
                                                         sprintf(errlog, "[WARNING] Client %s disconnected!",
                                                                 client_ipaddr);
-                                                        log_string(errlog);
+
+                                                        wlogev(EV_INFO, errlog);
                                                 }
                                         } else {
                                                 int chkfile;
@@ -385,8 +387,7 @@ void start_server()
                                                 if (rcval == 0 || rcval == -1) {
                                                         break;
                                                 }
-
-                                                log_string("[CLIENT-AUTH]Authentication NOT required!");
+                                                wlogev(EV_INFO, "[CLIENT-AUTH]Authentication NOT required!");
                                                 chkfile = check_passwd_file(PASSWD_ENC_FILE);
 
                                                 if (chkfile == 0) {
@@ -428,7 +429,8 @@ void start_server()
                                                 FD_CLR (fd, &readfds);
                                                 sprintf(buf, "[CLIENT-DISCONNECT] sockfd: %d, IP Address: %s",
                                                         client_sockfd, client_ipaddr);
-                                                log_string(buf);
+
+                                                wlogev(EV_INFO, buf);
                                                 rem_clientIp(&client_list, client_ipaddr);
 
 #ifdef DEBUG
@@ -440,7 +442,8 @@ void start_server()
                                                 if (rcval != -1) {
                                                         sprintf(buf, "[CMD-GET] Got command from %d: <%s>", fd,
                                                                 received);
-                                                        log_string(buf);
+
+                                                        wlogev(EV_INFO, buf);
                                                         excecute_command(fd, client_ipaddr, received);
                                                 }
                                         }
@@ -453,7 +456,7 @@ void start_server()
 ssize_t recvMsg(int sockfd, char *__dest)
 {
     if(sockfd < 0) {
-        log_error("[JASM-DAEMON][recvMsg()]Passed sockfd is invalid!");
+        wlogev(EV_ERROR, "[JASM-DAEMON][recvMsg()]Passed sockfd is invalid!");
         return -3;
     }
 
@@ -469,11 +472,12 @@ ssize_t recvMsg(int sockfd, char *__dest)
         }
         memset(__dest,'\0',strlen(__dest));
         sprintf(fmtErr,"[JASM-DAEMON][recvMsg()][recv()] FAIL: %s",strerror(errno));
-        log_error(fmtErr);
+        wlogev(EV_ERROR, fmtErr);
+
         return -1;
     } else if (rcval == 0) {
         memset(__dest,'\0',strlen(__dest));
-        log_string("[JASM-DAEMON][recvMsg()] Client disconnected!");
+        wlogev(EV_WARN, "[JASM-DAEMON][recvMsg()] Client disconnected!");
         shutdown(sockfd,2);
         return 0;
     } else {
@@ -486,7 +490,8 @@ ssize_t recvMsg(int sockfd, char *__dest)
 ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
 {
     if (sockfd < 0) {
-        log_error("[JASM-DAEMON][sendMsg()]Passed sockfd is invalid!");
+        wlogev(EV_ERROR, "[JASM-DAEMON][sendMsg()]Passed sockfd is invalid!");
+
         return -3;
     }
 
@@ -497,9 +502,9 @@ ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
     if(strlen(__src)+1 > MAX_LENGHT_SEND) {
         if((rcval=send(sockfd,"0verfl0w\0",strlen("0verfl0w")+1,0)) == -1) {
             sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
-            log_error(fmtErr);
+            wlogev(EV_ERROR, fmtErr);
         } else if (rcval == 0) {
-            log_string("[JASM-DAEMON][sendMsg()] Client disconnected!");
+            wlogev(EV_WARN, "[JASM-DAEMON][sendMsg()] Client disconnected!");
             shutdown(sockfd,2);
         }
         return -2;
@@ -509,10 +514,11 @@ ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
     strncpy(__final_src,__src,strlen(__src)+1);
     if((rcval=send(sockfd,__final_src,strlen(__final_src)+1,0)) == -1) {
         sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
-        log_error(fmtErr);
+        wlogev(EV_ERROR, fmtErr);
         return -1;
     } else if (rcval == 0) {
-        log_string("[JASM-DAEMON][sendMsg()] Client disconnected!");
+        wlogev(EV_WARN, "[JASM-DAEMON][sendMsg()] Client disconnected!");
+
         shutdown(sockfd,2);
         return 0;
     } else {
