@@ -19,9 +19,7 @@
 #ifndef _GETTER_H
 #define _GETTER_H
 
-#define MAX_CORE 16
-#define CPU_FILE_SIZE 65536 //dimensione massima del file cpuinfo
-#define NGETTER 37
+#include "macros.h"
 
 extern char getterName[NGETTER][BUFSIZ];
 extern void (*getterFunction[NGETTER]) (int);

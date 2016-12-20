@@ -37,12 +37,13 @@
 #include "modules.h"
 #include "modules_list.h"
 #include "logger.h"
+#include "macros.h"
 
 struct ip_node *client_list = NULL;
 
 /* TODO */
 static char PASSWD_ENC_FILE[256];
-char errlog[BUFSIZ];
+char errlog[MAX_LOG_CHARS];
 
 
 //NOTE: Error codes defined @ miscellaneous.h

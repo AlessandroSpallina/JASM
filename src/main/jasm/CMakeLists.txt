@@ -21,7 +21,9 @@ if(NOT WARNALL)
     endif()
 endif()
 
-set(CMAKE_C_COMPILER "clang")
+if(NOT CMAKE_C_COMPILER)
+	set(CMAKE_C_COMPILER "gcc")
+endif()
 
 if(NATIVE STREQUAL "yes")
     message("-- MTUNESW NOT SET -- native")
@@ -80,21 +82,18 @@ endif()
 message("-- Looking for sources...")
 
 file(GLOB_RECURSE CORESRCS "core/*.c")
-file(GLOB_RECURSE MODSRCS "modules/*.c")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG  ${MAINDIR}/bin-debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${MAINDIR}/bin)
 
 #
-# __BSD_SOURCE : required for FreeBSD
+# __BSD_VISIBLE : required for FreeBSD
 #
 add_definitions(-D_XOPEN_SOURCE=700 -D_GNU_SOURCE -D__BSD_VISIBLE)
 
-if(CORESRCS AND MODSRCS)
-    add_library(jasmcore STATIC ${CORESRCS})#libjasmcore.a (linked)
-    add_library(jasmmodules STATIC ${MODSRCS})#libjasmmodules.a (linked)
-    add_executable(jasm core/jasm.c) 
-    target_link_libraries(jasm jasmcore jasmmodules ${CMAKE_THREAD_LIBS_INIT})
+if(CORESRCS)
+	add_executable(jasm ${CORESRCS}) 
+   target_link_libraries(jasm ${CMAKE_THREAD_LIBS_INIT})
 else()
     message("-- Error: Core sources and Modules sources not found!!")
 endif()

@@ -23,41 +23,42 @@
 #include "logger.h"
 #include "miscellaneous.h"
 
-char LOGPATH[256];
-char homedir[256];
+//???
+#ifdef DEBUG
+#define CLIENTLOGPATH "../data/client.log"
+#endif
 
-void set_logpath(void)
+static char LOGPATH[256] = "null";
+
+void wlogev(const enum evtype ev, const char* strmsg)
 {
-								strcpy(homedir,getenv("HOME"));
-								strcpy(LOGPATH,homedir);
-								strcat(LOGPATH,"/.jasm.log");
+	if(!strncmp(LOGPATH,"null",4)) {
+		const char* home = getenv("HOME");
+		strncpy(LOGPATH,home,strlen(home));
+		strncat(LOGPATH,"/jasm.log",9);
+	}
+
+	FILE* flog = NULL;
+	if(!(flog=fopen(LOGPATH,"a+")))
+		return;
+
+	char logtype[20];
+	if(ev == EV_ERROR)
+		strncpy(logtype,"ERROR",5);
+	else if(ev == EV_WARN)
+		strncpy(logtype,"WARNING",7);
+	else 
+		strncpy(logtype,"INFO",4);
+
+	char curtime[256] = "null";
+	get_time("%a %F %r",curtime);
+
+	fprintf(flog,"[%s][%s] %s",logtype,curtime,strmsg);
+
+	fclose(flog);
 }
 
-void log_string (const char *message)
-{
-								FILE *fp;
-
-								if ( (fp = fopen (LOGPATH, "a+") ) == NULL) {
-
-																fprintf (fp, "[%s][INFO]This file is created now.", getTime() );
-								} else {
-																fprintf (fp, "[%s][INFO] %s\n", getTime(), message);
-																fclose (fp);
-								}
-}
-
-void log_error (const char *message)
-{
-								FILE *fp;
-
-								if ( (fp = fopen (LOGPATH, "a+") ) == NULL) {
-                                                                fprintf (fp, "[%s][INFO] This file is created now.", getTime() );
-								} else {
-																fprintf (fp, "[%s][ERROR] %s!\n", getTime(), message);
-																fclose (fp);
-								}
-}
-
+// ???
 #ifdef DEBUG
 void log_client (struct ip_node *clist)
 {

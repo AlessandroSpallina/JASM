@@ -26,7 +26,6 @@
 
 #include "modules.h"
 #include "logger.h"
-#include "../modules/module_logsender.h"
 #include "ipc.h"
 
 char errlog[BUFSIZ];

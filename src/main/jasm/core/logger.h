@@ -19,19 +19,17 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "modules_list.h"
+struct ip_node;
 
-#ifdef DEBUG
-#define CLIENTLOGPATH "../data/client.log"
-#endif
+enum evtype {
+    EV_ERROR,
+    EV_INFO,
+    EV_WARN
+};
 
-extern char LOGPATH[256];
-extern char homedir[256];
+extern void wlogev(const enum evtype ev, const char* strmsg);
 
-extern void log_string(const char * message);
-extern void log_error(const char * message);
-extern void set_logpath(void);
-
+//???
 #ifdef DEBUG
 extern void log_client (struct ip_node *clist);
 #endif
