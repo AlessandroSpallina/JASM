@@ -50,9 +50,8 @@ char errlog[MAX_LOG_CHARS];
 
 static void excecute_command (int fd, char *ip, char *command)
 {
-    //rcval
         // write on fd a list of commands
-        if (strncmp ("help", command, strlen ("help") ) == 0) {
+        if (strncmp ("help", command, 4) == 0) {
 
                 getGetter (fd);
                 getModule (fd);
@@ -63,7 +62,7 @@ static void excecute_command (int fd, char *ip, char *command)
         }
 
         // ************************** getter ***************************************
-        if (strncmp ("get", command, strlen ("get") ) == 0) { //if recv get command
+        if (strncmp ("get", command, 3) == 0) { //if recv get command
                 int i;
 
                 strcpy (command, &command[3]);
