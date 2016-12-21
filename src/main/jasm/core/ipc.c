@@ -216,34 +216,34 @@ static _Bool isCorrectPassword(int client_sockfd)
 
         rcval = sendMsg(client_sockfd,"auth-required");
         if(rcval == 0 || rcval == -1) {
-            return false;
+                return false;
         }
 
         rcval = recvMsg(client_sockfd,getpasswd);
         if(rcval == 0 || rcval == -1) {
-            return false;
+                return false;
         }
 
         if ((source_passwd = fopen(PASSWD_ENC_FILE, "r")) != NULL) {
-            char *ret_value = fgets(passwd_from_client, 256, source_passwd);
-            if (ret_value == NULL) {
-                wlogev(EV_ERROR, "fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                char *ret_value = fgets(passwd_from_client, 256, source_passwd);
+                if (ret_value == NULL) {
+                        wlogev(EV_ERROR, "fgets in PASSWD_ENC_FILE failed. returned NULL value: exiting");
+                        fclose(source_passwd);
+                        close(client_sockfd);
+                        exit(NOFILE_ERROR);
+                }
+        } else {
+                wlogev(EV_ERROR, strerror(errno));
                 fclose(source_passwd);
                 close(client_sockfd);
                 exit(NOFILE_ERROR);
-            }
-        } else {
-            wlogev(EV_ERROR, strerror(errno));
-            fclose(source_passwd);
-            close(client_sockfd);
-            exit(NOFILE_ERROR);
         }
 
         if (strcmp (getpasswd, passwd_from_client) == 0) {
                 wlogev(EV_INFO, "[PWD][OK]Password accepted and client authorized!");
                 rcval = sendMsg(client_sockfd,"granted");
                 if(rcval == 0 || rcval == -1) {
-                    return false;
+                        return false;
                 }
 
                 return true;
@@ -260,8 +260,8 @@ static _Bool isCorrectPassword(int client_sockfd)
 
 void start_server()
 {
-    strncpy (PASSWD_ENC_FILE, getenv ("HOME"), strlen(getenv("HOME")));
-    strncat (PASSWD_ENC_FILE, "/.jpwd", strlen("/.jpwd"));
+        strncpy (PASSWD_ENC_FILE, getenv ("HOME"), strlen(getenv("HOME")));
+        strncat (PASSWD_ENC_FILE, "/.jpwd", strlen("/.jpwd"));
 
         int server_sockfd, client_sockfd;
         int server_len;
@@ -361,10 +361,10 @@ void start_server()
                                         }
                                         FD_SET (client_sockfd, &readfds);
                                         sprintf(client_ipaddr, "%d.%d.%d.%d", \
-                                                 client_address.sin_addr.s_addr & 0xFF, \
-                                                 (client_address.sin_addr.s_addr & 0xFF00) >> 8, \
-                                                 (client_address.sin_addr.s_addr & 0xFF0000) >> 16, \
-                                                 (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
+                                                client_address.sin_addr.s_addr & 0xFF, \
+                                                (client_address.sin_addr.s_addr & 0xFF00) >> 8, \
+                                                (client_address.sin_addr.s_addr & 0xFF0000) >> 16, \
+                                                (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
 
                                         //************************************************
                                         if (login_required(client_ipaddr)) {
@@ -454,73 +454,73 @@ void start_server()
 
 ssize_t recvMsg(int sockfd, char *__dest)
 {
-    if(sockfd < 0) {
-        wlogev(EV_ERROR, "[JASM-DAEMON][recvMsg()]Passed sockfd is invalid!");
-        return -3;
-    }
-
-    ssize_t rcval;
-    char __pre_dest[BUFSIZ], fmtErr[100];
-
-    memset(__pre_dest,'\0',strlen(__pre_dest));
-    if((rcval=recv(sockfd,__pre_dest,sizeof(__pre_dest),0)) == -1) {
-        /* OVERFLOW PROTECTION */
-        if(strlen(__pre_dest)+1 > MAX_LENGHT_RECV) {
-           memset(__dest,'\0',strlen(__dest));
-            return -2;
+        if(sockfd < 0) {
+                wlogev(EV_ERROR, "[JASM-DAEMON][recvMsg()]Passed sockfd is invalid!");
+                return -3;
         }
-        memset(__dest,'\0',strlen(__dest));
-        sprintf(fmtErr,"[JASM-DAEMON][recvMsg()][recv()] FAIL: %s",strerror(errno));
-        wlogev(EV_ERROR, fmtErr);
 
-        return -1;
-    } else if (rcval == 0) {
-        memset(__dest,'\0',strlen(__dest));
-        wlogev(EV_WARN, "[JASM-DAEMON][recvMsg()] Client disconnected!");
-        shutdown(sockfd,2);
-        return 0;
-    } else {
-        memset(__dest,'\0',strlen(__dest));
-        strncpy(__dest,__pre_dest,sizeof(__pre_dest));
-        return rcval;
-    }
+        ssize_t rcval;
+        char __pre_dest[BUFSIZ], fmtErr[100];
+
+        memset(__pre_dest,'\0',strlen(__pre_dest));
+        if((rcval=recv(sockfd,__pre_dest,sizeof(__pre_dest),0)) == -1) {
+                /* OVERFLOW PROTECTION */
+                if(strlen(__pre_dest)+1 > MAX_LENGHT_RECV) {
+                        memset(__dest,'\0',strlen(__dest));
+                        return -2;
+                }
+                memset(__dest,'\0',strlen(__dest));
+                sprintf(fmtErr,"[JASM-DAEMON][recvMsg()][recv()] FAIL: %s",strerror(errno));
+                wlogev(EV_ERROR, fmtErr);
+
+                return -1;
+        } else if (rcval == 0) {
+                memset(__dest,'\0',strlen(__dest));
+                wlogev(EV_WARN, "[JASM-DAEMON][recvMsg()] Client disconnected!");
+                shutdown(sockfd,2);
+                return 0;
+        } else {
+                memset(__dest,'\0',strlen(__dest));
+                strncpy(__dest,__pre_dest,sizeof(__pre_dest));
+                return rcval;
+        }
 }
 
 ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
 {
-    if (sockfd < 0) {
-        wlogev(EV_ERROR, "[JASM-DAEMON][sendMsg()]Passed sockfd is invalid!");
+        if (sockfd < 0) {
+                wlogev(EV_ERROR, "[JASM-DAEMON][sendMsg()]Passed sockfd is invalid!");
 
-        return -3;
-    }
-
-    ssize_t rcval;
-    char __final_src[MAX_LENGHT_SEND],fmtErr[100];
-
-    /* OVERFLOW PROTECTION */
-    if(strlen(__src)+1 > MAX_LENGHT_SEND) {
-        if((rcval=send(sockfd,"0verfl0w\0",strlen("0verfl0w")+1,0)) == -1) {
-            sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
-            wlogev(EV_ERROR, fmtErr);
-        } else if (rcval == 0) {
-            wlogev(EV_WARN, "[JASM-DAEMON][sendMsg()] Client disconnected!");
-            shutdown(sockfd,2);
+                return -3;
         }
-        return -2;
-    }
 
-    memset(__final_src,'\0',strlen(__final_src));
-    strncpy(__final_src,__src,strlen(__src)+1);
-    if((rcval=send(sockfd,__final_src,strlen(__final_src)+1,0)) == -1) {
-        sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
-        wlogev(EV_ERROR, fmtErr);
-        return -1;
-    } else if (rcval == 0) {
-        wlogev(EV_WARN, "[JASM-DAEMON][sendMsg()] Client disconnected!");
+        ssize_t rcval;
+        char __final_src[MAX_LENGHT_SEND],fmtErr[100];
 
-        shutdown(sockfd,2);
-        return 0;
-    } else {
-        return rcval;
-    }
+        /* OVERFLOW PROTECTION */
+        if(strlen(__src)+1 > MAX_LENGHT_SEND) {
+                if((rcval=send(sockfd,"0verfl0w\0",strlen("0verfl0w")+1,0)) == -1) {
+                        sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
+                        wlogev(EV_ERROR, fmtErr);
+                } else if (rcval == 0) {
+                        wlogev(EV_WARN, "[JASM-DAEMON][sendMsg()] Client disconnected!");
+                        shutdown(sockfd,2);
+                }
+                return -2;
+        }
+
+        memset(__final_src,'\0',strlen(__final_src));
+        strncpy(__final_src,__src,strlen(__src)+1);
+        if((rcval=send(sockfd,__final_src,strlen(__final_src)+1,0)) == -1) {
+                sprintf(fmtErr,"[JASM-DAEMON][sendMsg()][send()] FAIL: %s",strerror(errno));
+                wlogev(EV_ERROR, fmtErr);
+                return -1;
+        } else if (rcval == 0) {
+                wlogev(EV_WARN, "[JASM-DAEMON][sendMsg()] Client disconnected!");
+
+                shutdown(sockfd,2);
+                return 0;
+        } else {
+                return rcval;
+        }
 }

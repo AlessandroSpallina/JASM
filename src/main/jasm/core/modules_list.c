@@ -1,5 +1,5 @@
 /****************************************************************************
-* Copyright ?? 2015 Alessandro Spallina
+* Copyright © 2015 Alessandro Spallina
 * email: alessandrospallina1@gmail.com
 * github: https://github.com/AlessandroSpallina
 *
@@ -109,24 +109,24 @@ int add_clientIp(struct ip_node **head, char *ip)
  */
 int rem_clientIp(struct ip_node **listP, char *ip)
 {
-  struct ip_node *currP, *prevP;
+        struct ip_node *currP, *prevP;
 
-  prevP = NULL;
+        prevP = NULL;
 
-  for (currP = (*listP); currP != NULL; prevP = currP, currP = currP->next) {
+        for (currP = (*listP); currP != NULL; prevP = currP, currP = currP->next) {
 
-    if (strcmp(currP->client_ip, ip) == 0) {
-      if (prevP == NULL) {
-        *listP = currP->next;
-      } else {
-        prevP->next = currP->next;
-      }
-      free(currP);
-      return 0;
-    }
-  }
+                if (strcmp(currP->client_ip, ip) == 0) {
+                        if (prevP == NULL) {
+                                *listP = currP->next;
+                        } else {
+                                prevP->next = currP->next;
+                        }
+                        free(currP);
+                        return 0;
+                }
+        }
 
-  return -1;
+        return -1;
 }
 
 void print_ipList (struct ip_node *head)
