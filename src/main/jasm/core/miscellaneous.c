@@ -34,15 +34,15 @@
 #include "macros.h"
 
 static char errlog[MAX_LOG_CHARS];
-static char buildate[256] = "null";
+static char buildate[256];
 
-void get_buildate(char *dest)
+static void get_buildate()
 {
-    if(!strncmp(buildate,"null",4))
-#ifdef BUILD_DATE_CORE
-        strncpy(buildate,BUILD_DATE_CORE,strlen(BUILD_DATE_CORE));
-#endif
-    strncpy(dest,buildate,strlen(buildate)+1);
+  #ifdef BUILD_DATE_CORE
+    strncpy(buildate, BUILD_DATE_CORE, strlen(BUILD_DATE_CORE)+1);
+  #else
+    strncpy(buildate, "NotDefined", 11);
+  #endif
 }
 
 void get_time(const char* format, char* dest)
@@ -69,6 +69,7 @@ void start_daemon()
 {
         pid_t pid;
 
+        get_buildate();
         snprintf (errlog, MAX_LOG_CHARS, "JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
         wlogev(EV_INFO,errlog);
 

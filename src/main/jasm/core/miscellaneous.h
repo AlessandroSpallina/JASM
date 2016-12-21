@@ -23,7 +23,7 @@
 
 ssize_t read(int fd, void* buf, size_t length);
 
-extern void get_buildate(char* dest);
+//extern void get_buildate(void);
 extern void get_time (const char* format, char* dest);
 extern void start_daemon (void);
 extern _Bool login_required (const char *clientaddr);

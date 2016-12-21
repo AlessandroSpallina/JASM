@@ -20,7 +20,7 @@
 #include "ipc.h"
 #include "signals.h"
 
-int main (void)
+int main ()
 {
 	start_daemon(); //starts background daemon
 	set_signals_feel(); //logs a set of signals
