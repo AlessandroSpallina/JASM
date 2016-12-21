@@ -42,8 +42,8 @@
 #define MAX_CORE 16
 #define CPU_FILE_SIZE 65536
 
-static char errlog[MAX_LOG_CHARS];
-static char error[BUFSIZ];
+//static char errlog[MAX_LOG_CHARS];
+static char error[MAX_LOG_CHARS];
 
 char getterName[NGETTER][BUFSIZ] = {"Version", "Copyright", "Hostname", "KernelName",
                                     "KernelRelease", "KernelVersion","PosixVersion", "Machine",
@@ -626,22 +626,22 @@ void getCpuNumber (int fd)
             if(n < 0)
             {
                 sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-                  log_error ("[JASM-DEAMON][getCpuNumber][write()] Error!");
-                  log_error (error);
+                wlogev(EV_ERROR, "[JASM-DEAMON][getCpuNumber][write()] Error!");
+                wlogev(EV_ERROR, error);
             }
             if (n < strlen(buf) )
             {
                   sprintf (error, "[JASM-DAEMON][getCpuNumber][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-                  log_error (error);
+                  wlogev(EV_WARN, error);
             }
             else
             {
                   sprintf (error, "[JASM-DAEMON][getCpuNumber][write()] sent %d byte", n);
-                  log_string (error);
+                  wlogev(EV_INFO, error);
             }
       }
 #else
-    log_string("[INFO] Support for getCpuNumber() not availible!");
+    wlogev(EV_WARN, "[INFO] Support for getCpuNumber() not availible!");
 #endif
 }
 
@@ -657,12 +657,12 @@ void getSchedulerVersion (int fd)
       char buf[BUFSIZ];
       if ( (file = open("/proc/sched_debug",O_RDONLY))==-1)
       {
-            log_error("getSchedulerVersion() Unable to open /proc/sched_debug");
+            wlogev(EV_ERROR, "getSchedulerVersion() Unable to open /proc/sched_debug");
             return;
       }
       if( (read(file, temp, BUFSIZ))<=0 )
       {
-            log_error("getSchedulerVersion() Failed to read");
+            wlogev(EV_ERROR, "getSchedulerVersion() Failed to read");
             close(file);
             return;
       }
@@ -677,18 +677,18 @@ void getSchedulerVersion (int fd)
       if(n < 0)
       {
           sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-            log_error ("[JASM-DEAMON][getSchedulerVersion][write()] Error!");
-            log_error (error);
+          wlogev(EV_ERROR, "[JASM-DEAMON][getSchedulerVersion][write()] Error!");
+          wlogev(EV_ERROR, error);
       }
       if (n < strlen(buf) )
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-            log_error (error);
+            wlogev(EV_WARN, error);
       }
       else
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerVersion][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
       }
 }
 
@@ -705,38 +705,38 @@ void getSchedulerInfo (int fd)
       char temp[BUFSIZ];
       if ( (file = open("/proc/sys/kernel/sched_latency_ns",O_RDONLY))==-1)
       {
-            log_error("getSchedulerInfo() Unable to open /proc/sys/kernel/sched_latency_ns");
+            wlogev(EV_ERROR, "getSchedulerInfo() Unable to open /proc/sys/kernel/sched_latency_ns");
             return;
       }
       if( (read(file, temp, BUFSIZ))<=0 )
       {
-            log_error("getSchedulerInfo() Failed to read");
+            wlogev(EV_ERROR, "getSchedulerInfo() Failed to read");
             close(file);
             return;
       }
       close(file);
       lat = atoi(temp);
-      if ( (file = open("/proc/sys/kernel/sched_min_granularity_ns",O_RDONLY))==-1)
+      if ((file = open("/proc/sys/kernel/sched_min_granularity_ns",O_RDONLY))==-1)
       {
-            log_error("getSchedulerInfo() Unable to open /proc/sys/kernel/sched_min_granularity_ns");
+            wlogev(EV_ERROR, "getSchedulerInfo() Unable to open /proc/sys/kernel/sched_min_granularity_ns");
             return;
       }
       if( (read(file, temp, BUFSIZ))<=0 )
       {
-            log_error("getSchedulerInfo() Failed to read");
+            wlogev(EV_ERROR, "getSchedulerInfo() Failed to read");
             close(file);
             return;
       }
       close(file);
       gran = atoi(temp);
-      if ( (file = open("/proc/sys/kernel/sched_rr_timeslice_ms",O_RDONLY))==-1)
+      if ((file = open("/proc/sys/kernel/sched_rr_timeslice_ms",O_RDONLY))==-1)
       {
-            log_error("getSchedulerInfo() Unable to open /proc/sys/kernel/sched_rr_timeslice_ms");
+            wlogev(EV_ERROR, "getSchedulerInfo() Unable to open /proc/sys/kernel/sched_rr_timeslice_ms");
             return;
       }
       if( (read(file, temp, BUFSIZ))<=0 )
       {
-            log_error("getSchedulerInfo() Failed to read");
+            wlogev(EV_ERROR, "getSchedulerInfo() Failed to read");
             close(file);
             return;
       }
@@ -747,18 +747,18 @@ void getSchedulerInfo (int fd)
       if(n < 0)
       {
           sprintf (error, "[JASM-DEAMON][errno] %s", strerror (errno) );
-            log_error ("[JASM-DEAMON][getSchedulerInfo][write()] Error!");
-            log_error (error);
+          wlogev(EV_ERROR, "[JASM-DEAMON][getSchedulerInfo][write()] Error!");
+          wlogev(EV_ERROR, error);
       }
       if (n < strlen(buf) )
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerInfo][write()] sent %d byte, correct num byte is %zu",n,strlen(buf));
-            log_error (error);
+            wlogev(EV_WARN, error);
       }
       else
       {
             sprintf (error, "[JASM-DAEMON][getSchedulerInfo][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
       }
 }
 
@@ -774,8 +774,8 @@ void getCpuName (int fd) //Returns the name of the Cpu
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
                 sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                log_error ("[JASM-DAEMON][getCpuName][read()] Error!");
-                log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getCpuName][read()] Error!");
+                wlogev(EV_ERROR, error);
 		}
 		string = &strstr(buf, "model name	: ")[strlen("model name	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
@@ -783,16 +783,16 @@ void getCpuName (int fd) //Returns the name of the Cpu
 		n = sendMsg (fd, buf);
 		close(cpu_fd);
         if (n < 0) {
-                sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-                log_error ("[JASM-DAEMON][getCpuName][write()] Error!");
-                log_error (error);
+                sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno));
+                wlogev(EV_ERROR, "[JASM-DAEMON][getCpuName][write()] Error!");
+                wlogev(EV_ERROR, error);
         } else {
             if (n < strlen (buf) ) {
                 sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-                log_error (error);
+                wlogev(EV_WARN, error);
             } else {
                 sprintf (error, "[JASM-DAEMON][getCpuName][write()] sent %d byte", n);
-                log_string (error);
+                wlogev(EV_INFO, error);
             }
         }
 }
@@ -809,8 +809,8 @@ void getCacheSize (int fd) //Returns the cache size of the cpu
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCacheSize][read()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getCacheSize][read()] Error!");
+        wlogev(EV_ERROR, error);
 		}
 		string = &strstr(buf, "cache size	: ")[strlen("cache size	: ")];
 		while(string[i] != '\n') ++i; //conta i caratteri della descrizione della cpu
@@ -819,21 +819,21 @@ void getCacheSize (int fd) //Returns the cache size of the cpu
 		close(cpu_fd);
 		if (n < 0)
     {
-        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCacheSize][write()] Error!");
-        log_error (error);
+        sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno));
+        wlogev(EV_ERROR, "[JASM-DAEMON][getCacheSize][write()] Error!");
+        wlogev(EV_ERROR, error);
     }
     else
     {
         if (n < strlen (buf) )
         {
             sprintf (error, "[JASM-DAEMON][getCacheSize][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            wlogev(EV_WARN, error);
         }
         else
         {
             sprintf (error, "[JASM-DAEMON][getCacheSize][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
         }
     }
 }
@@ -851,8 +851,8 @@ void getCoreNum (int fd) //Returns the number of physical cores
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCoreNum][read()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getCoreNum][read()] Error!");
+        wlogev(EV_ERROR, error);
 		}
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i; //conta i caratteri
@@ -862,20 +862,21 @@ void getCoreNum (int fd) //Returns the number of physical cores
 		if (n < 0)
     {
         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCoreNum][write()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getCoreNum][write()] Error!");
+        wlogev(EV_ERROR, error);
     }
     else
     {
         if (n < strlen (buf) )
         {
             sprintf (error, "[JASM-DAEMON][getCoreNum][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            wlogev(EV_WARN, error);
+
         }
         else
         {
             sprintf (error, "[JASM-DAEMON][getCoreNum][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
         }
     }
 }
@@ -923,20 +924,20 @@ void getCoreSpeeds (int fd) //Returns the core speeds
 	if (n < 0)
   	{
   	     sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-  	     log_error ("[JASM-DAEMON][getCoreSpeeds][write()] Error!");
-  	     log_error (error);
+         wlogev(EV_ERROR, "[JASM-DAEMON][getCoreSpeeds][write()] Error!");
+         wlogev(EV_ERROR, error);
     }
     else
     {
-       if (n < strlen (buf) )
+       if (n < strlen (final_string))
        {
-          sprintf (error, "[JASM-DAEMON][getCoreSpeeds][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-          log_error (error);
+          sprintf (error, "[JASM-DAEMON][getCoreSpeeds][write()] sent %d byte, correct num byte is %zu", n, strlen (final_string));
+          wlogev(EV_WARN, error);
        }
        else
        {
           sprintf (error, "[JASM-DAEMON][getCoreSpeeds][write()] sent %d byte", n);
-          log_string (error);
+          wlogev(EV_INFO, error);
        }
    }
 }
@@ -954,8 +955,8 @@ void getAddressSizes (int fd) //Returns cpu address size
 		cpu_fd = open("/proc/cpuinfo", O_RDONLY);
 		if(read(cpu_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getAddressSizes][read()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getAddressSizes][read()] Error!");
+        wlogev(EV_ERROR, error);
 		}
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i;
@@ -965,20 +966,20 @@ void getAddressSizes (int fd) //Returns cpu address size
 		if (n < 0)
     {
         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getAddressSizes][write()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getAddressSizes][write()] Error!");
+        wlogev(EV_ERROR, error);
     }
     else
     {
         if (n < strlen (buf) )
         {
             sprintf (error, "[JASM-DAEMON][getAddressSizes][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            wlogev(EV_WARN, error);
         }
         else
         {
             sprintf (error, "[JASM-DAEMON][getAddressSizes][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
         }
     }
 }
@@ -996,8 +997,8 @@ void getCreatedProcNum (int fd) //Returns the number of created processes since 
 		proc_fd = open("/proc/stat", O_RDONLY);
 		if(read(proc_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCreatedProcNum][read()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getCreatedProcNum][read()] Error!");
+        wlogev(EV_ERROR, error);
 		}
 		string = &strstr(buf, info)[strlen(info)];
 		while(string[i] != '\n') ++i;
@@ -1007,20 +1008,20 @@ void getCreatedProcNum (int fd) //Returns the number of created processes since 
 		if (n < 0)
     {
         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getCreatedProcNum][write()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getCreatedProcNum][write()] Error!");
+        wlogev(EV_ERROR, error);
     }
     else
     {
         if (n < strlen (buf) )
         {
             sprintf (error, "[JASM-DAEMON][getCreatedProcNum][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            wlogev(EV_WARN, error);
         }
         else
         {
             sprintf (error, "[JASM-DAEMON][getCreatedProcNum][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
         }
     }
 }
@@ -1037,8 +1038,8 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 		swaps_fd = open("/proc/swaps", O_RDONLY);
 		if(read(swaps_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getIfSwap][read()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getIfSwap][read()] Error!");
+        wlogev(EV_ERROR, error);
 		}
 		while(buf[i] != '\n') ++i;
 		if(buf[i+1] == EOF){
@@ -1053,20 +1054,20 @@ void getIfSwap (int fd) //Check for the existence of swap partitions
 		if (n < 0)
     {
         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getIfSwap][write()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getIfSwap][write()] Error!");
+        wlogev(EV_ERROR, error);
     }
     else
     {
-        if (n < strlen (buf) )
+        if (n < strlen (result) )
         {
-            sprintf (error, "[JASM-DAEMON][getIfSwap][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            sprintf (error, "[JASM-DAEMON][getIfSwap][write()] sent %d byte, correct num byte is %zu", n, strlen (result) );
+            wlogev(EV_WARN, error);
         }
         else
         {
             sprintf (error, "[JASM-DAEMON][getIfSwap][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
         }
     }
 }
@@ -1083,8 +1084,8 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
 		file_fd = open("/proc/sys/fs/file-nr", O_RDONLY);
 		if(read(file_fd, buf, BUFSIZ) <= 0){
 				sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getFileHandlesNum][read()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getFileHandlesNum][read()] Error!");
+        wlogev(EV_ERROR, error);
 		}
 		while(buf[i] != '\t') ++i;
 		sprintf(result, "%.*s", i, buf);
@@ -1094,20 +1095,20 @@ void getFileHandlesNum (int fd) //Returns opened file handles (and file descript
 		if (n < 0)
     {
         sprintf (error, "[JASM-DAEMON][errno] %s", strerror (errno) );
-        log_error ("[JASM-DAEMON][getFileHandlesNum][write()] Error!");
-        log_error (error);
+        wlogev(EV_ERROR, "[JASM-DAEMON][getFileHandlesNum][write()] Error!");
+        wlogev(EV_ERROR, error);
     }
     else
     {
-        if (n < strlen (buf) )
+        if (n < strlen (result) )
         {
-            sprintf (error, "[JASM-DAEMON][getFileHandlesNum][write()] sent %d byte, correct num byte is %zu", n, strlen (buf) );
-            log_error (error);
+            sprintf (error, "[JASM-DAEMON][getFileHandlesNum][write()] sent %d byte, correct num byte is %zu", n, strlen (result) );
+            wlogev(EV_WARN, error);
         }
         else
         {
             sprintf (error, "[JASM-DAEMON][getFileHandlesNum][write()] sent %d byte", n);
-            log_string (error);
+            wlogev(EV_INFO, error);
         }
     }
 }
@@ -1122,15 +1123,15 @@ void getCHRDevices (int fd)
         int file,res;
         int lines=0,i=0;
         char *path="/proc/devices";
-        char devices[lenght]; //qui ci stava un * in piu, tolto
+        char devices[lenght];
         ssize_t ret_val = -1;
 
 
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1144,8 +1145,8 @@ void getCHRDevices (int fd)
         lines=lines-2;
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getCHRDevices][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1155,8 +1156,8 @@ void getCHRDevices (int fd)
 
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getCHRDevices][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
                 return;
         }
 
@@ -1176,8 +1177,8 @@ void getCHRDevices (int fd)
 
                 if (ret_val == 0 || ret_val == -1)
                 {
-                        log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                        log_error (error);
+                  wlogev(EV_ERROR, "[JASM-DAEMON][getCHRDevices][write()] Error! ret_val is 0 or -1");
+                  wlogev(EV_ERROR, error);
                         return;
                 }
         }
@@ -1201,9 +1202,8 @@ void getBLKDevices (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getBLKDevices][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1230,9 +1230,8 @@ void getBLKDevices (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getBLKDevices][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1241,9 +1240,9 @@ void getBLKDevices (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-               log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-               log_error (error);
-               return;
+              wlogev(EV_ERROR, "[JASM-DAEMON][getBLKDevices][write()] Error! ret_val is 0 or -1");
+              wlogev(EV_ERROR, error);
+              return;
         }
 
         lseek(file,0,SEEK_SET);
@@ -1262,9 +1261,9 @@ void getBLKDevices (int fd)
 
                     if (ret_val == 0 || ret_val == -1)
                     {
-                            log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                            log_error (error);
-                            return;
+                      wlogev(EV_ERROR, "[JASM-DAEMON][getBLKDevices][write()] Error! ret_val is 0 or -1");
+                      wlogev(EV_ERROR, error);
+                      return;
                     }
         }
         close(file);
@@ -1279,7 +1278,7 @@ void getEmulatedFSDevices (int fd)
 {
         int lenght=50;
         int file,res;
-        int lines=0,i=0,j=0,k=0;
+        int lines=0;
         char *path="/proc/filesystems";
         char devices[lenght];
         int ret_val = -1;
@@ -1287,8 +1286,8 @@ void getEmulatedFSDevices (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getEmulatedFSDevices][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1304,9 +1303,8 @@ void getEmulatedFSDevices (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getEmulatedFSDevices][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1315,9 +1313,9 @@ void getEmulatedFSDevices (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
-                return;
+          wlogev(EV_ERROR, "[JASM-DAEMON][getEmulatedFSDevices][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
+          return;
         }
 
         lseek(file,0,SEEK_SET);
@@ -1326,15 +1324,13 @@ void getEmulatedFSDevices (int fd)
         {
             if((strncmp(devices,"nodev",5))==0)
             {
-
-
                     ret_val = sendMsg (fd, devices);
 
                     if (ret_val == 0 || ret_val == -1)
                     {
-                            log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                            log_error (error);
-                            return;
+                      wlogev(EV_ERROR, "[JASM-DAEMON][getEmulatedFSDevices][write()] Error! ret_val is 0 or -1");
+                      wlogev(EV_ERROR, error);
+                      return;
                     }
             }
         }
@@ -1350,7 +1346,7 @@ void getRealFSDevices (int fd)
 {
         int lenght=50;
         int file,res;
-        int lines=0,i=0,j=0,k=0;
+        int lines=0;
         char *path="/proc/filesystems";
         char devices[lenght];
         int ret_val = -1;
@@ -1358,9 +1354,8 @@ void getRealFSDevices (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getRealFSDevices][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1374,9 +1369,8 @@ void getRealFSDevices (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getRealFSDevices][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1385,8 +1379,8 @@ void getRealFSDevices (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getRealFSDevices][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
                 return;
         }
 
@@ -1401,8 +1395,8 @@ void getRealFSDevices (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                      wlogev(EV_ERROR, "[JASM-DAEMON][getRealFSDevices][write()] Error! ret_val is 0 or -1");
+                      wlogev(EV_ERROR, error);
                       return;
               }
 
@@ -1420,7 +1414,7 @@ void getMeminfo (int fd)
 {
         int lenght=50;
         int file,res;
-        int lines=0,i=0,j=0,k=0;
+        int lines=0;
         char *path="/proc/meminfo";
         char devices[lenght];
         int ret_val = -1;
@@ -1428,9 +1422,8 @@ void getMeminfo (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMeminfo][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1442,9 +1435,8 @@ void getMeminfo (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMeminfo][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1453,9 +1445,9 @@ void getMeminfo (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-               log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-               log_error (error);
-               return;
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMeminfo][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
+          return;
         }
 
         lseek(file,0,SEEK_SET);
@@ -1467,9 +1459,9 @@ void getMeminfo (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                     log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                     log_error (error);
-                     return;
+                wlogev(EV_ERROR, "[JASM-DAEMON][getMeminfo][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
+                return;
               }
 
 
@@ -1486,7 +1478,7 @@ void getModules (int fd)
 {
         int lenght=100;
         int file,res;
-        int lines=0,i=0,j=0,k=0;
+        int lines=0;
         char *path="/proc/modules";
         char devices[lenght];
         int ret_val = -1;
@@ -1494,9 +1486,8 @@ void getModules (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getModules][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1508,9 +1499,8 @@ void getModules (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getModules][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1519,9 +1509,9 @@ void getModules (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
-                return;
+          wlogev(EV_ERROR, "[JASM-DAEMON][getModules][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
+          return;
         }
 
         lseek(file,0,SEEK_SET);
@@ -1533,12 +1523,10 @@ void getModules (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
-                      return;
+                wlogev(EV_ERROR, "[JASM-DAEMON][getModules][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
+                return;
               }
-
-
         }
         close(file);
         return;
@@ -1559,9 +1547,8 @@ void getBuddyinfo (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getBuddyinfo][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1573,9 +1560,8 @@ void getBuddyinfo (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getBuddyinfo][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1584,8 +1570,8 @@ void getBuddyinfo (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getBuddyinfo][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
@@ -1597,11 +1583,9 @@ void getBuddyinfo (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getBuddyinfo][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;
@@ -1623,9 +1607,8 @@ void getDma (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getDma][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1637,9 +1620,8 @@ void getDma (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getDma][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1649,24 +1631,21 @@ void getDma (int fd)
 
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getDma][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
 
         while((res=read_line(file,riga,lenght))!=0)
         {
-
               ret_val = sendMsg (fd, riga);
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getDma][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;
@@ -1688,9 +1667,8 @@ void getIOmem (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getIOmem][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1702,9 +1680,8 @@ void getIOmem (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getIOmem][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1713,8 +1690,8 @@ void getIOmem (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getIOmem][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
@@ -1726,11 +1703,9 @@ void getIOmem (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getIOmem][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;
@@ -1752,9 +1727,8 @@ void getKeyUsr (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getKeyUsr][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1763,12 +1737,10 @@ void getKeyUsr (int fd)
             lines++;
         }
 
-
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getKeyUsr][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
         char conv_buffer[BUFSIZ];
@@ -1777,8 +1749,8 @@ void getKeyUsr (int fd)
 
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getKeyUsr][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
@@ -1790,11 +1762,9 @@ void getKeyUsr (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getKeyUsr][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;
@@ -1816,9 +1786,8 @@ void getMtrr (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMtrr][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1830,9 +1799,8 @@ void getMtrr (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMtrr][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
         char conv_buffer[BUFSIZ];
@@ -1841,24 +1809,21 @@ void getMtrr (int fd)
 
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMtrr][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
 
         while((res=read_line(file,riga,lenght))!=0)
         {
-
               ret_val = sendMsg (fd, riga);
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getMtrr][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;
@@ -1880,9 +1845,8 @@ void getMisc (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMisc][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1894,9 +1858,8 @@ void getMisc (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMisc][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1905,8 +1868,8 @@ void getMisc (int fd)
         ret_val = sendMsg (fd, conv_buffer);
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getMisc][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
@@ -1918,11 +1881,9 @@ void getMisc (int fd)
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getMisc][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;
@@ -1944,9 +1905,8 @@ void getInterrupts (int fd)
         file=open(path,O_RDONLY);
         if(file==-1)
         {
-          log_error ("[JASM-DAEMON][getCHRDevices][open()] Error! file is -1");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getInterrupts][open()] Error! file is -1");
+          wlogev(EV_ERROR, error);
           return;
         }
 
@@ -1958,9 +1918,8 @@ void getInterrupts (int fd)
 
         if (lines == 0)
         {
-          log_error ("[JASM-DAEMON][getGetter][write()] Error! lines is 0");
-          log_error (error);
-
+          wlogev(EV_ERROR, "[JASM-DAEMON][getInterrupts][write()] Error! lines is 0");
+          wlogev(EV_ERROR, error);
           return;
         }
         char conv_buffer[BUFSIZ];
@@ -1969,24 +1928,21 @@ void getInterrupts (int fd)
 
         if (ret_val == 0 || ret_val == -1)
         {
-                log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                log_error (error);
+          wlogev(EV_ERROR, "[JASM-DAEMON][getInterrupts][write()] Error! ret_val is 0 or -1");
+          wlogev(EV_ERROR, error);
         }
 
         lseek(file,0,SEEK_SET);
 
         while((res=read_line(file,riga,lenght))!=0)
         {
-
               ret_val = sendMsg (fd, riga);
 
               if (ret_val == 0 || ret_val == -1)
               {
-                      log_error ("[JASM-DAEMON][getGetter][write()] Error! ret_val is 0 or -1");
-                      log_error (error);
+                wlogev(EV_ERROR, "[JASM-DAEMON][getInterrupts][write()] Error! ret_val is 0 or -1");
+                wlogev(EV_ERROR, error);
               }
-
-
         }
         close(file);
         return;

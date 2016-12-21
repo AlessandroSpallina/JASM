@@ -44,9 +44,9 @@ void getModule (int fd)
         {
 #ifdef DEBUG
                 sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error: %s",strerror(errno));
-                log_error(errlog);
+                wlogev(EV_ERROR, errlog);
 #endif
-                log_error("[JASM-DAEMON][ERROR][write()] Error while sending module list");
+                wlogev(EV_ERROR, "[JASM-DAEMON][ERROR][write()] Error while sending module list");
         }
 
         for (int i = 0; i < NMODULE; i++)

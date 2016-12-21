@@ -35,25 +35,25 @@ void wlogev(const enum evtype ev, const char* strmsg)
 	if(!strncmp(LOGPATH,"null",4)) {
 		const char* home = getenv("HOME");
 		strncpy(LOGPATH,home,strlen(home));
-		strncat(LOGPATH,"/jasm.log",9);
+		strncat(LOGPATH,"/.jasm.log", 10);
 	}
 
 	FILE* flog = NULL;
 	if(!(flog=fopen(LOGPATH,"a+")))
 		return;
 
-	char logtype[20];
+	char logtype[20]="null";
 	if(ev == EV_ERROR)
 		strncpy(logtype,"ERROR",5);
 	else if(ev == EV_WARN)
 		strncpy(logtype,"WARNING",7);
-	else 
+	else
 		strncpy(logtype,"INFO",4);
 
 	char curtime[256] = "null";
 	get_time("%a %F %r",curtime);
 
-	fprintf(flog,"[%s][%s] %s",logtype,curtime,strmsg);
+	fprintf(flog,"[%s][%s] %s\n",logtype,curtime,strmsg);
 
 	fclose(flog);
 }
@@ -68,7 +68,7 @@ void log_client (struct ip_node *clist)
 									/* AVOID SEGFAULT !!! */
 									return;
 								}
-								
+
 								struct module_running *mlist = NULL;
 								fprintf(fp, "=========\n[%s]\n", getTime());
 								while(clist != NULL) {

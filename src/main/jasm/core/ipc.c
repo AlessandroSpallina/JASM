@@ -58,7 +58,7 @@ static void excecute_command (int fd, char *ip, char *command)
                 getModule (fd);
                 //getOther
 
-                wlogev (EV_ERROR, "[CMD] help exec");
+                wlogev (EV_INFO, "[CMD] help exec");
                 return;
         }
 
@@ -437,7 +437,7 @@ void start_server()
                                                 log_client(client_list);
 #endif
                                         } else {
-                                                memset(received, '\0', strlen(received));
+                                                memset(received, '\0', BUFSIZ);
                                                 rcval = recvMsg(fd, received);
                                                 if (rcval != -1) {
                                                         sprintf(buf, "[CMD-GET] Got command from %d: <%s>", fd,

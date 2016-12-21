@@ -100,7 +100,7 @@ void start_daemon()
                 closelog();
                 exit (ERR_SET_PROCESS_BACKGROUND);
         } else {
-            log_string ("[PROCESS-SID][setsid()] success");
+          wlogev(EV_INFO, "[PROCESS-SID][setsid()] success");
         }
 
         //closes fd: stdin, stdout, stderr
