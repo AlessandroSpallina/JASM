@@ -20,13 +20,14 @@
 #define _MISCELLANEOUS_H
 
 #include <sys/types.h>
+#include <stdbool.h>
 
 ssize_t read(int fd, void* buf, size_t length);
 
 extern void get_time (const char* format, char* dest);
 extern void start_daemon (void);
-extern _Bool login_required (const char *clientaddr);
-extern _Bool check_passwd_file (const char* __pwdf);
+extern bool login_required (const char *clientaddr);
+extern bool check_passwd_file (const char* __pwdf);
 extern int read_line(const int file, char *buffer, const int length);
 
 #endif

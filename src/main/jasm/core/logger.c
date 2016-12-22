@@ -23,10 +23,11 @@
 #include "logger.h"
 #include "miscellaneous.h"
 
-//???
+/*
 #ifdef DEBUG
 #define CLIENTLOGPATH "../data/client.log"
 #endif
+*/
 
 static char LOGPATH[256] = "null";
 
@@ -58,14 +59,14 @@ void wlogev(const enum evtype ev, const char* strmsg)
 								fclose(flog);
 }
 
-// ???
+/*
 #ifdef DEBUG
 void log_client (struct ip_node *clist)
 {
 								//NULLCHECK!!!
 								FILE *fp = fopen(CLIENTLOGPATH, "a+");
 								if (fp == NULL) {
-																/* AVOID SEGFAULT !!! */
+																 AVOID SEGFAULT !!!
 																return;
 								}
 
@@ -86,3 +87,4 @@ void log_client (struct ip_node *clist)
 								}
 }
 #endif
+*/
