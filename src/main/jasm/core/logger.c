@@ -32,30 +32,30 @@ static char LOGPATH[256] = "null";
 
 void wlogev(const enum evtype ev, const char* strmsg)
 {
-	if(!strncmp(LOGPATH,"null",4)) {
-		const char* home = getenv("HOME");
-		strncpy(LOGPATH,home,strlen(home));
-		strncat(LOGPATH,"/jasm.log",9);
-	}
+								if(!strncmp(LOGPATH,"null",4)) {
+																const char* home = getenv("HOME");
+																strncpy(LOGPATH,home,strlen(home));
+																strncat(LOGPATH,"/.jasm.log", 10);
+								}
 
-	FILE* flog = NULL;
-	if(!(flog=fopen(LOGPATH,"a+")))
-		return;
+								FILE* flog = NULL;
+								if(!(flog=fopen(LOGPATH,"a+")))
+																return;
 
-	char logtype[20];
-	if(ev == EV_ERROR)
-		strncpy(logtype,"ERROR",5);
-	else if(ev == EV_WARN)
-		strncpy(logtype,"WARNING",7);
-	else 
-		strncpy(logtype,"INFO",4);
+								char logtype[20];
+								if(ev == EV_ERROR)
+																strncpy(logtype,"ERROR", 6);
+								else if(ev == EV_WARN)
+																strncpy(logtype,"WARNING", 8);
+								else
+																strncpy(logtype,"INFO", 5);
 
-	char curtime[256] = "null";
-	get_time("%a %F %r",curtime);
+								char curtime[256] = "null";
+								get_time("%a %F %r",curtime);
 
-	fprintf(flog,"[%s][%s] %s",logtype,curtime,strmsg);
+								fprintf(flog,"[%s][%s] %s\n",logtype,curtime,strmsg);
 
-	fclose(flog);
+								fclose(flog);
 }
 
 // ???
@@ -65,10 +65,10 @@ void log_client (struct ip_node *clist)
 								//NULLCHECK!!!
 								FILE *fp = fopen(CLIENTLOGPATH, "a+");
 								if (fp == NULL) {
-									/* AVOID SEGFAULT !!! */
-									return;
+																/* AVOID SEGFAULT !!! */
+																return;
 								}
-								
+
 								struct module_running *mlist = NULL;
 								fprintf(fp, "=========\n[%s]\n", getTime());
 								while(clist != NULL) {
@@ -82,7 +82,7 @@ void log_client (struct ip_node *clist)
 								}
 								fprintf(fp, "=========\n");
 								if(fclose(fp) == -1) {
-								  log_error("[JASM-DAEMON][ERROR][fclose()] Error while closing log_client");
+																log_error("[JASM-DAEMON][ERROR][fclose()] Error while closing log_client");
 								}
 }
 #endif

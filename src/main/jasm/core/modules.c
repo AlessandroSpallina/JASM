@@ -29,31 +29,35 @@
 #include "ipc.h"
 
 char errlog[BUFSIZ];
-char moduleName[NMODULE][BUFSIZ] = {"Logsender"};
-void (*moduleInit[NMODULE]) (int, int) = {init_logsender};
-void (*moduleStart[NMODULE]) (void) = {start_logsender};
+char moduleName[NMODULE][BUFSIZ] = {};
+void (*moduleInit[NMODULE]) (int, int) = {};
+void (*moduleStart[NMODULE]) (void) = {};
+void (*moduleEnd[NMODULE]) (void) = {};
 
 void getModule (int fd)
 {
         size_t count = 0;
-        int nmodule = NMODULE; //check itoa
+        int nmodule = NMODULE;
         ssize_t ret_val = 0;
+        char conv_value[NMODULE];
 
-        ret_val = write (fd, &nmodule, sizeof (nmodule) );
+        sprintf(conv_value, "%d", nmodule);
+        ret_val = sendMsg (fd, conv_value);
         if (ret_val == 0 || ret_val == -1)
         {
 #ifdef DEBUG
                 sprintf(errlog,"[JASM-DAEMON][ERROR][write()] Error: %s",strerror(errno));
-                log_error(errlog);
+                wlogev(EV_ERROR, errlog);
 #endif
-                log_error("[JASM-DAEMON][ERROR][write()] Error while sending module list");
+                wlogev(EV_ERROR, "[JASM-DAEMON][ERROR][write()] Error while sending module list");
         }
 
         for (int i = 0; i < NMODULE; i++)
         {
                 count = strlen (moduleName[i]);
 
-                ret_val = write (fd, &count, sizeof (count) );
+                sprintf(conv_value, "%d", count);
+                ret_val = sendMsg (fd, conv_value);
                 if (ret_val == 0 || ret_val == -1) {
                         fprintf (stderr, "Error in the write() operation on fd");
                 }

@@ -29,15 +29,15 @@
  *  client_ip and correctly close all sockets when jasm ends.
  */
 struct module_running {
-    pthread_t tid;
-    char name[BUFSIZ];
-    struct module_running *next;
+        pthread_t tid;
+        char name[BUFSIZ];
+        struct module_running *next;
 };
 
 struct ip_node {
-    char client_ip[BUFSIZ];
-    struct module_running *modules_list;
-    struct ip_node *next;
+        char client_ip[BUFSIZ];
+        struct module_running *modules_list;
+        struct ip_node *next;
 };
 
 extern int add_clientIp(struct ip_node **head, char *ip);

@@ -34,41 +34,42 @@
 #include "macros.h"
 
 static char errlog[MAX_LOG_CHARS];
-static char buildate[256] = "null";
+static char buildate[256];
 
-void get_buildate(char *dest)
+static void get_buildate()
 {
-    if(!strncmp(buildate,"null",4))
-#ifdef BUILD_DATE_CORE
-        strncpy(buildate,BUILD_DATE_CORE,strlen(BUILD_DATE_CORE));
-#endif 
-    strncpy(dest,buildate,strlen(buildate)+1);
+  #ifdef BUILD_DATE_CORE
+        strncpy(buildate, BUILD_DATE_CORE, strlen(BUILD_DATE_CORE)+1);
+  #else
+        strncpy(buildate, "NotDefined", 11);
+  #endif
 }
 
 void get_time(const char* format, char* dest)
 {
-    char dest_time[256];
-    memset(dest,0,strlen(dest));
+        char dest_time[256];
+        memset(dest,0,strlen(dest));
 
-    time_t curtime;
-    struct tm *loctime;
+        time_t curtime;
+        struct tm *loctime;
 
-    curtime = time (NULL);
-    loctime = localtime (&curtime);
+        curtime = time (NULL);
+        loctime = localtime (&curtime);
 
-    if(!loctime)
-        return;
+        if(!loctime)
+                return;
 
-    if(!strftime(dest_time,sizeof(dest_time),format,loctime))
-        return;
+        if(!strftime(dest_time,sizeof(dest_time),format,loctime))
+                return;
 
-    strncpy(dest,dest_time,strlen(dest_time)); //not null-terminated
+        strncpy(dest,dest_time,strlen(dest_time)); //not null-terminated
 }
 
 void start_daemon()
 {
         pid_t pid;
 
+        get_buildate();
         snprintf (errlog, MAX_LOG_CHARS, "JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
         wlogev(EV_INFO,errlog);
 
@@ -100,7 +101,7 @@ void start_daemon()
                 closelog();
                 exit (ERR_SET_PROCESS_BACKGROUND);
         } else {
-            log_string ("[PROCESS-SID][setsid()] success");
+                wlogev(EV_INFO, "[PROCESS-SID][setsid()] success");
         }
 
         //closes fd: stdin, stdout, stderr
@@ -119,13 +120,31 @@ void start_daemon()
 
 _Bool login_required (const char* clientaddr)
 {
-    if(!clientaddr)
-        return false;
+        if(!clientaddr)
+                return false;
 
-    return strncmp(clientaddr,LOCALHOST,strlen(clientaddr)) > 0 ? true : false;
+        return strncmp(clientaddr,LOCALHOST,strlen(clientaddr)) > 0 ? true : false;
 }
 
 _Bool check_passwd_file (const char* __pwdf)
 {
-    return access(__pwdf,F_OK) != -1 ? true : false;
+        return access(__pwdf,F_OK) != -1 ? true : false;
+}
+
+int read_line(const int file, char *buffer, const int length)
+{
+        int count = 0, run=1;
+        ssize_t res;
+
+        while(run) {
+                res = read(file, &(buffer[count]), 1);
+                if(res == 0 && count == 0)
+                        return 0;
+                if(res == 0 || buffer[count] == '\n' || count == length)
+                        run = 0;
+                count++;
+        }
+
+        buffer[count-1] = '\0';
+        return count;
 }

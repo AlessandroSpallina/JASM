@@ -2,8 +2,6 @@
 
 *NEWS: Switch to CMake, read below for instructions*
 
-*URGENT: JASMCLI marked as deprecated, will be replaced soon*
-
 JustAnotherSystemMonitor
 
 *What is this?*
