@@ -54,7 +54,7 @@ static void excecute_command (int fd, char *ip, char *command)
         if (strncmp ("help", command, 4) == 0) {
 
                 getGetter (fd);
-                getModule (fd);
+                //getModule (fd);
                 //getOther
 
                 wlogev (EV_INFO, "[CMD] help exec");
