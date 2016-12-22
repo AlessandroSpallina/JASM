@@ -21,10 +21,6 @@
 
 #include <sys/types.h>
 
-
-
-extern struct ip_node *client_list;
-
 extern void start_server (void);
 extern ssize_t recvMsg(int sockfd, char *__dest);
 extern ssize_t sendMsg(int sockfd, const char __src[256]);

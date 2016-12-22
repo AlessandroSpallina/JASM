@@ -29,9 +29,9 @@ enum evtype {
 
 extern void wlogev(const enum evtype ev, const char* strmsg);
 
-//???
+/*
 #ifdef DEBUG
 extern void log_client (struct ip_node *clist);
 #endif
-
+*/
 #endif //LOGGER_H

@@ -36,13 +36,13 @@
 static char errlog[MAX_LOG_CHARS];
 static char buildate[256];
 
-static void get_buildate()
+static void sset_buildate()
 {
-  #ifdef BUILD_DATE_CORE
+#ifdef BUILD_DATE_CORE
         strncpy(buildate, BUILD_DATE_CORE, strlen(BUILD_DATE_CORE)+1);
-  #else
+#else
         strncpy(buildate, "NotDefined", 11);
-  #endif
+#endif
 }
 
 void get_time(const char* format, char* dest)
@@ -69,7 +69,7 @@ void start_daemon()
 {
         pid_t pid;
 
-        get_buildate();
+        sset_buildate();
         snprintf (errlog, MAX_LOG_CHARS, "JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
         wlogev(EV_INFO,errlog);
 
@@ -100,8 +100,6 @@ void start_daemon()
                 syslog (LOG_ERR, "Setting sid for new process failed!");
                 closelog();
                 exit (ERR_SET_PROCESS_BACKGROUND);
-        } else {
-                wlogev(EV_INFO, "[PROCESS-SID][setsid()] success");
         }
 
         //closes fd: stdin, stdout, stderr
@@ -111,14 +109,13 @@ void start_daemon()
 
         snprintf (errlog, MAX_LOG_CHARS,"PID: %d , Parent PID: %d", getpid(), getppid() );
         wlogev(EV_INFO,errlog);
-        wlogev(EV_INFO,"JASM is now ready to get commands! :)");
 
         openlog ("JASM", LOG_PID, LOG_DAEMON);
         syslog (LOG_INFO, "SUCCESS! New jasm process created! READY!");
         closelog();
 }
 
-_Bool login_required (const char* clientaddr)
+bool login_required (const char* clientaddr)
 {
         if(!clientaddr)
                 return false;
@@ -126,9 +123,9 @@ _Bool login_required (const char* clientaddr)
         return strncmp(clientaddr,LOCALHOST,strlen(clientaddr)) > 0 ? true : false;
 }
 
-_Bool check_passwd_file (const char* __pwdf)
+bool check_passwd_file (const char* __pwdf)
 {
-        return access(__pwdf,F_OK) != -1 ? true : false;
+        return access(__pwdf,F_OK) != -1 ? false : true;
 }
 
 int read_line(const int file, char *buffer, const int length)
