@@ -39,29 +39,34 @@
 #include "logger.h"
 #include "macros.h"
 
-struct ip_node *client_list = NULL;
+static const char valid_data_types[2][MAX_DATA_TYPE_STRSIZE+5] = {
+  DATA_TEXT, DATA_IMAGE
+};
 
-/* TODO */
-static char passwd_target_file[256]; //replacement
+static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data_type);
+static inline ssize_t jasm_read(int sockfd, char* body);
+static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header);
+
+//static struct ip_node *client_list = NULL;
 static char errlog[MAX_LOG_CHARS];
 
 static void excecute_command (int fd, char *ip, char *command)
 {
         // write on fd a list of commands
         if (!strncmp (command,"help",4)) {
-                sendMsg(fd,"HelpRequested");
+                jasm_write(fd,"HelpRequested",DATA_TEXT);
                 return;
         }
         else if (!strncmp(command,"halt",4)) { //turn off jasm
                 wlogev(EV_INFO, "Halting as requested... Bye bye");
-                sendMsg(fd,"HaltingOperationRunning");
+                jasm_write(fd,"HaltingOperationRunning",DATA_TEXT);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_INFO, "exiting as requested from client...");
                 closelog();
                 shutdown(fd,2);
                 exit (_EXIT_SUCCESS);
         }
-        sendMsg(fd,"NotFound");
+        jasm_write(fd,"NotFound",DATA_TEXT);
 
         /*
         // ************************** getter ***************************************
@@ -176,62 +181,8 @@ static void excecute_command (int fd, char *ip, char *command)
         */
 }
 
-static _Bool isCorrectPassword(int client_sockfd)
-{
-        char passwd_from_client[256], getpasswd[256];
-
-        FILE* source_passwd=NULL;
-        ssize_t rcval;
-
-        rcval = sendMsg(client_sockfd,"auth-required");
-        if(rcval == 0 || rcval == -1) {
-                return false;
-        }
-
-        rcval = recvMsg(client_sockfd,getpasswd);
-        if(rcval == 0 || rcval == -1) {
-                return false;
-        }
-
-        if ((source_passwd = fopen(passwd_target_file, "r")) != NULL) {
-                char *ret_value = fgets(passwd_from_client, 256, source_passwd);
-                if (ret_value == NULL) {
-                        wlogev(EV_ERROR, "error while confirming password");
-                        fclose(source_passwd);
-                        close(client_sockfd);
-                        exit(NOFILE_ERROR);
-                }
-        } else {
-                wlogev(EV_ERROR, strerror(errno));
-                fclose(source_passwd);
-                close(client_sockfd);
-                exit(NOFILE_ERROR);
-        }
-
-        if (!strncmp (getpasswd, passwd_from_client,256)){
-                rcval = sendMsg(client_sockfd,"granted");
-                if(rcval == 0 || rcval == -1) {
-                        return false;
-                }
-
-                return true;
-
-        } else  {
-                wlogev(EV_WARN, "wrong password - rejecting request");
-                rcval = sendMsg(client_sockfd,"denied");
-                if(rcval == 0 || rcval == -1) {
-                        return false;
-                }
-        }
-        return false;
-}
-
 void start_server()
 {
-        const char* home = getenv("HOME");
-        strncpy (passwd_target_file, home,strlen(home));
-        strncat (passwd_target_file, "/.jpwd", 6);
-
         int server_sockfd=-1, client_sockfd=-1, server_len, result=-1;
         socklen_t client_len;
         struct sockaddr_in server_address, client_address;
@@ -284,7 +235,7 @@ void start_server()
 
         while (1) {
                 char received[BUFSIZ];
-                int fd=-1,nread=-1;
+                int fd,nread=-1;
                 ssize_t rcval=-1;
 
                 testfds = readfds;
@@ -322,64 +273,16 @@ void start_server()
 
                                         snprintf (errlog, MAX_LOG_CHARS,"Connection incoming, IP Address: %s", client_ipaddr);
                                         wlogev(EV_INFO, errlog);
-
-                                        if (login_required(client_ipaddr)) {
-                                                if (!isCorrectPassword(client_sockfd)) {
-                                                        shutdown(client_sockfd, 2);
-                                                }
-                                        } else {
-                                                bool chkfile;
-
-                                                rcval = sendMsg(client_sockfd, "auth-not-required");
-                                                if (rcval == 0 || rcval == -1) {
-                                                        break;
-                                                }
-                                                chkfile = check_passwd_file(passwd_target_file);
-
-                                                if (!chkfile) {
-                                                        // sleep(1);
-                                                        rcval = sendMsg(client_sockfd, "nochk-pwdfile");
-                                                        if (rcval == 0 || rcval == -1) {
-                                                                break;
-                                                        }
-                                                }
-                                                else if (chkfile) {
-                                                        // sleep(1);
-                                                        FILE *pswfp;
-                                                        char buf_in_passwd[256];
-
-                                                        rcval = sendMsg(client_sockfd, "check-pwd-file");
-                                                        if (rcval == 0 || rcval == -1) {
-                                                                break;
-                                                        }
-
-                                                        rcval = recvMsg(client_sockfd, buf_in_passwd);
-                                                        if (rcval == 0 || rcval == -1) {
-                                                                break;
-                                                        }
-
-                                                        if ((pswfp = fopen(passwd_target_file, "w+")) != NULL) {
-                                                                fputs(buf_in_passwd, pswfp);
-                                                                fclose(pswfp);
-                                                        }
-
-                                                }
-                                        }
-
+                                        //handshake here
+                                        
                                 } else {
                                         ioctl(fd, FIONREAD, &nread);
 
                                         if (nread == 0) {
                                                 close(fd);
                                                 FD_CLR (fd, &readfds);
-                                                //rem_clientIp(&client_list, client_ipaddr);
-                                                /*
-#ifdef DEBUG
-                                                log_client(client_list);
-#endif
-*/
                                         } else {
-                                                rcval = recvMsg(fd, received);
+                                                rcval = jasm_read(fd, received);
                                                 if (rcval != -1) {
                                                         excecute_command(fd, client_ipaddr, received);
                                                 }
@@ -390,7 +293,7 @@ void start_server()
         }
 }
 
-ssize_t recvMsg(int sockfd, char *__dest)
+ssize_t read_from_fd(int sockfd, char *__dest)
 {
         if(sockfd < 0) {
                 wlogev(EV_ERROR, "Invalid file descriptor");
@@ -422,7 +325,7 @@ ssize_t recvMsg(int sockfd, char *__dest)
         }
 }
 
-ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
+ssize_t write_to_fd(int sockfd, const char *__src)
 {
         if (sockfd < 0) {
                 wlogev(EV_ERROR, "Invalid file descriptor");
@@ -455,4 +358,21 @@ ssize_t sendMsg(int sockfd, const char __src[MAX_LENGHT_SEND])
         } else {
                 return rcval;
         }
+}
+
+static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data_type)
+{
+  //check if data_type is a valid data type
+  //compose complete message header
+  return write_to_fd(sockfd, __src);
+}
+
+static inline ssize_t jasm_read(int sockfd, char* body) //alias for read_from_fd
+{
+  return read_from_fd(sockfd, body);
+}
+
+static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header)
+{
+  return -1;
 }

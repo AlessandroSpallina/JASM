@@ -115,19 +115,6 @@ void start_daemon()
         closelog();
 }
 
-bool login_required (const char* clientaddr)
-{
-        if(!clientaddr)
-                return false;
-
-        return strncmp(clientaddr,LOCALHOST,strlen(clientaddr)) > 0 ? true : false;
-}
-
-bool check_passwd_file (const char* __pwdf)
-{
-        return access(__pwdf,F_OK) != -1 ? false : true;
-}
-
 int read_line(const int file, char *buffer, const int length)
 {
         int count = 0, run=1;

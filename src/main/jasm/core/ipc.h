@@ -19,10 +19,6 @@
 #ifndef _IPC_H
 #define _IPC_H
 
-#include <sys/types.h>
-
 extern void start_server (void);
-extern ssize_t recvMsg(int sockfd, char *__dest);
-extern ssize_t sendMsg(int sockfd, const char __src[256]);
 
 #endif
