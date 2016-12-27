@@ -36,5 +36,9 @@
 #define MAX_LENGHT_RECV 256
 #define MAX_LENGHT_SEND 256
 #define SERVER_PORT 9734
+#define MAX_DATA_TYPE_STRSIZE 20
+#define DATA_TEXT "data/text"
+#define DATA_IMAGE "data/image"
+#define PROTO_VERSION "0.0.1"
 
 #endif
