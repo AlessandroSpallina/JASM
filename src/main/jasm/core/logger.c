@@ -30,11 +30,11 @@
  #endif
  */
 
-static char LOGPATH[256] = "null";
+static char LOGPATH[256] = {0};
 
 void wlogev(const enum evtype ev, const char* strmsg,...)
 {
-   if(!strncmp(LOGPATH,"null",4)) {
+   if(!strlen(LOGPATH)) {
       const char* home = getenv("HOME");
       strncpy(LOGPATH,home,strlen(home));
       strncat(LOGPATH,"/.jasm.log", 10);
@@ -52,9 +52,9 @@ void wlogev(const enum evtype ev, const char* strmsg,...)
    else
       strncpy(logtype,"INFO", 5);
 
-   char curtime[256] = "null";
+   char curtime[256];
    get_time("%a %F %r",curtime);
-
+	
    fprintf(flog,"[%s][%s] ",logtype,curtime);
 
    va_list arglst;

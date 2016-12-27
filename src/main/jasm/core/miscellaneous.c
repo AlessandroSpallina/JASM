@@ -62,7 +62,7 @@ void get_time(const char* format, char* dest)
    if(!strftime(dest_time,sizeof(dest_time),format,loctime))
       return;
 
-   strncpy(dest,dest_time,strlen(dest_time));      //not null-terminated
+   strncpy(dest,dest_time,strlen(dest_time)+1);//null-terminated
 }
 
 void start_daemon()
