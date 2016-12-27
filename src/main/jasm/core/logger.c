@@ -34,37 +34,37 @@ static char LOGPATH[256] = "null";
 
 void wlogev(const enum evtype ev, const char* strmsg,...)
 {
-								if(!strncmp(LOGPATH,"null",4)) {
-																const char* home = getenv("HOME");
-																strncpy(LOGPATH,home,strlen(home));
-																strncat(LOGPATH,"/.jasm.log", 10);
-								}
+   if(!strncmp(LOGPATH,"null",4)) {
+      const char* home = getenv("HOME");
+      strncpy(LOGPATH,home,strlen(home));
+      strncat(LOGPATH,"/.jasm.log", 10);
+   }
 
-								FILE* flog = NULL;
-								if(!(flog=fopen(LOGPATH,"a+")))
-																return;
+   FILE* flog = NULL;
+   if(!(flog=fopen(LOGPATH,"a+")))
+      return;
 
-								char logtype[20];
-								if(ev == EV_ERROR)
-																strncpy(logtype,"ERROR", 6);
-								else if(ev == EV_WARN)
-																strncpy(logtype,"WARNING", 8);
-								else
-																strncpy(logtype,"INFO", 5);
+   char logtype[20];
+   if(ev == EV_ERROR)
+      strncpy(logtype,"ERROR", 6);
+   else if(ev == EV_WARN)
+      strncpy(logtype,"WARNING", 8);
+   else
+      strncpy(logtype,"INFO", 5);
 
-								char curtime[256] = "null";
-								get_time("%a %F %r",curtime);
+   char curtime[256] = "null";
+   get_time("%a %F %r",curtime);
 
-								fprintf(flog,"[%s][%s] ",logtype,curtime);
+   fprintf(flog,"[%s][%s] ",logtype,curtime);
 
-								va_list arglst;
-								va_start(arglst,strmsg);
-								vfprintf(flog,strmsg,arglst);
-								va_end(arglst);
+   va_list arglst;
+   va_start(arglst,strmsg);
+   vfprintf(flog,strmsg,arglst);
+   va_end(arglst);
 
-								fprintf(flog,"\n");
+   fprintf(flog,"\n");
 
-								fclose(flog);
+   fclose(flog);
 }
 
 /*
