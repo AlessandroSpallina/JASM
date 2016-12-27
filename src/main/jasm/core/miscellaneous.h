@@ -19,13 +19,8 @@
 #ifndef _MISCELLANEOUS_H
 #define _MISCELLANEOUS_H
 
-#include <sys/types.h>
-#include <stdbool.h>
-
-ssize_t read(int fd, void* buf, size_t length);
-
-extern void get_time (const char* format, char* dest);
-extern void start_daemon (void);
-extern int read_line(const int file, char *buffer, const int length);
+void get_time (const char* format, char* dest);
+void start_daemon (void);
+int read_line(const int file, char *buffer, const int length);
 
 #endif

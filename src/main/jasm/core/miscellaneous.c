@@ -33,7 +33,7 @@
 #include "logger.h"
 #include "macros.h"
 
-static char errlog[MAX_LOG_CHARS];
+//static char errlog[MAX_LOG_CHARS];
 static char buildate[256];
 
 static void sset_buildate()
@@ -70,8 +70,8 @@ void start_daemon()
         pid_t pid;
 
         sset_buildate();
-        snprintf (errlog, MAX_LOG_CHARS, "JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
-        wlogev(EV_INFO,errlog);
+        //snprintf (errlog, MAX_LOG_CHARS, "JASM System Monitor Starting Up... Version: %s , Build Date: %s", VERSION, buildate);
+        //wlogev(EV_INFO,errlog);
 
 #ifdef DEBUG
         wlogev(EV_WARN,"You are using JASM debug build");
@@ -80,8 +80,8 @@ void start_daemon()
         pid = fork();
         switch (pid) {
         case -1:
-                snprintf (errlog, MAX_LOG_CHARS, "forking error: %s\n", strerror (errno) );
-                wlogev(EV_ERROR,errlog);
+                //snprintf (errlog, MAX_LOG_CHARS, "forking error: %s\n", strerror (errno) );
+                //wlogev(EV_ERROR,errlog);
 
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "Process spawning failed!");
@@ -94,8 +94,8 @@ void start_daemon()
         }
 
         if (setsid() < 0) {
-                snprintf (errlog, MAX_LOG_CHARS,"getting new sid failure: %s\n", strerror (errno) );
-                wlogev(EV_ERROR,errlog);
+                //snprintf (errlog, MAX_LOG_CHARS,"getting new sid failure: %s\n", strerror (errno) );
+                //wlogev(EV_ERROR,errlog);
                 openlog ("JASM", LOG_PID, LOG_DAEMON);
                 syslog (LOG_ERR, "Setting sid for new process failed!");
                 closelog();
@@ -107,8 +107,8 @@ void start_daemon()
         close (1);
         close (2);
 
-        snprintf (errlog, MAX_LOG_CHARS,"PID: %d , Parent PID: %d", getpid(), getppid() );
-        wlogev(EV_INFO,errlog);
+        //snprintf (errlog, MAX_LOG_CHARS,"PID: %d , Parent PID: %d", getpid(), getppid() );
+        //wlogev(EV_INFO,errlog);
 
         openlog ("JASM", LOG_PID, LOG_DAEMON);
         syslog (LOG_INFO, "SUCCESS! New jasm process created! READY!");

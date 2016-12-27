@@ -27,7 +27,7 @@ enum evtype {
         EV_WARN
 };
 
-extern void wlogev(const enum evtype ev, const char* strmsg);
+void wlogev(const enum evtype ev, const char* strmsg,...);
 
 /*
 #ifdef DEBUG

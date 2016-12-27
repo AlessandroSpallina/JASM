@@ -19,6 +19,6 @@
 #ifndef _IPC_H
 #define _IPC_H
 
-extern void start_server (void);
+void start_server (void);
 
 #endif

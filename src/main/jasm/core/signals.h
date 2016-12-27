@@ -19,6 +19,6 @@
 #ifndef _SIGNALS_H
 #define _SIGNALS_H
 
-extern void set_signals_feel (void);
+void set_signals_feel (void);
 
 #endif

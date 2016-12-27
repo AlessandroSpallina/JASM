@@ -19,19 +19,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "logger.h"
 #include "miscellaneous.h"
 
 /*
-#ifdef DEBUG
-#define CLIENTLOGPATH "../data/client.log"
-#endif
-*/
+ #ifdef DEBUG
+ #define CLIENTLOGPATH "../data/client.log"
+ #endif
+ */
 
 static char LOGPATH[256] = "null";
 
-void wlogev(const enum evtype ev, const char* strmsg)
+void wlogev(const enum evtype ev, const char* strmsg,...)
 {
 								if(!strncmp(LOGPATH,"null",4)) {
 																const char* home = getenv("HOME");
@@ -54,37 +55,44 @@ void wlogev(const enum evtype ev, const char* strmsg)
 								char curtime[256] = "null";
 								get_time("%a %F %r",curtime);
 
-								fprintf(flog,"[%s][%s] %s\n",logtype,curtime,strmsg);
+								fprintf(flog,"[%s][%s] ",logtype,curtime);
+
+								va_list arglst;
+								va_start(arglst,strmsg);
+								vfprintf(flog,strmsg,arglst);
+								va_end(arglst);
+
+								fprintf(flog,"\n");
 
 								fclose(flog);
 }
 
 /*
-#ifdef DEBUG
-void log_client (struct ip_node *clist)
-{
-								//NULLCHECK!!!
-								FILE *fp = fopen(CLIENTLOGPATH, "a+");
-								if (fp == NULL) {
-																 AVOID SEGFAULT !!!
-																return;
-								}
+ #ifdef DEBUG
+   void log_client (struct ip_node *clist)
+   {
+        //NULLCHECK!!!
+        FILE *fp = fopen(CLIENTLOGPATH, "a+");
+        if (fp == NULL) {
+                 AVOID SEGFAULT !!!
+                return;
+        }
 
-								struct module_running *mlist = NULL;
-								fprintf(fp, "=========\n[%s]\n", getTime());
-								while(clist != NULL) {
-																fprintf(fp, "* %s\n", clist->client_ip);
-																mlist = clist->modules_list;
-																while(mlist != NULL) {
-																								fprintf(fp, "    @ %s\n", mlist->name);
-																								mlist = mlist->next;
-																}
-																clist = clist->next;
-								}
-								fprintf(fp, "=========\n");
-								if(fclose(fp) == -1) {
-																log_error("[JASM-DAEMON][ERROR][fclose()] Error while closing log_client");
-								}
-}
-#endif
-*/
+        struct module_running *mlist = NULL;
+        fprintf(fp, "=========\n[%s]\n", getTime());
+        while(clist != NULL) {
+                fprintf(fp, "* %s\n", clist->client_ip);
+                mlist = clist->modules_list;
+                while(mlist != NULL) {
+                        fprintf(fp, "    @ %s\n", mlist->name);
+                        mlist = mlist->next;
+                }
+                clist = clist->next;
+        }
+        fprintf(fp, "=========\n");
+        if(fclose(fp) == -1) {
+                log_error("[JASM-DAEMON][ERROR][fclose()] Error while closing log_client");
+        }
+   }
+ #endif
+ */
