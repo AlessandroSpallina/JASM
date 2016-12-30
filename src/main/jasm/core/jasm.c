@@ -22,11 +22,11 @@
 
 int main ()
 {
-   start_daemon();                                                              //starts background daemon
-   set_signals_feel();                                                              //logs a set of signals
-   //starts server after the daemon (ready to get commands)
-   start_server();
+	start_daemon();                                                         //starts background daemon
+	set_signals_feel();                                                         //logs a set of signals
+	//starts server after the daemon (ready to get commands)
+	start_server();
 
-   return 0;
+	return 0;
 }
 
