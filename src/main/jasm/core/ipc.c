@@ -39,18 +39,15 @@
 #include "logger.h"
 #include "macros.h"
 
-static const char valid_data_types[2][MAX_DATA_TYPE_STRSIZE+5] = {
-	DATA_TEXT, DATA_IMAGE
-};
-
 static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data_type);
 static inline ssize_t jasm_read(int sockfd, char* body);
 static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header);
+static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, const char* data_type, const char* header);
 
 //static struct ip_node *client_list = NULL;
 //static char errlog[MAX_LOG_CHARS];
 
-static void excecute_command (int fd, char *ip, char *command)
+static void excecute_command (int fd, char *command)
 {
 	// write on fd a list of commands
 	if (!strncmp (command,"help",4)) {
@@ -58,8 +55,8 @@ static void excecute_command (int fd, char *ip, char *command)
 		return;
 	}
 	else if (!strncmp(command,"halt",4)) { //turn off jasm
+        jasm_write(fd,"HaltingOperationRunning",DATA_TEXT);
 		wlogev(EV_INFO, "Halting as requested... Bye bye");
-		jasm_write(fd,"HaltingOperationRunning",DATA_TEXT);
 		openlog ("JASM", LOG_PID, LOG_DAEMON);
 		syslog (LOG_INFO, "exiting as requested from client...");
 		closelog();
@@ -240,9 +237,7 @@ void start_server()
 		result = select(FD_SETSIZE, &testfds, (fd_set *) 0, (fd_set *) 0, (struct timeval *) 0);
 
 		if (result < 1) {
-			//snprintf(errlog, MAX_LOG_CHARS,"Select general failure: %s", strerror(errno));
-			//wlogev(EV_ERROR, errlog);
-
+			wlogev(EV_ERROR,"Select failure: %s",strerror(errno));
 			exit(SOCKET_SELECT_FAILED);
 		}
 
@@ -253,14 +248,11 @@ void start_server()
 					client_sockfd = accept(server_sockfd, (struct sockaddr *) &client_address,
 					                       &client_len);
 					if (client_sockfd < 0) {
-						//snprintf(errlog, MAX_LOG_CHARS,"Accepting new connection failure: %s", strerror(errno));
-						//wlogev(EV_ERROR, errlog);
-						openlog("JASM", LOG_PID, LOG_DAEMON);
-						syslog(LOG_ERR,
-						       "FATAL! Failed to accept client incoming connection! Exiting...");
-						closelog();
-						exit(SOCKET_CLIENT_CONNECTION_FAILED);
+						wlogev(EV_ERROR, "Accepting new connection failure: %s", strerror(errno));
+						wlogev(EV_WARN,"Ignored");
+                        continue;
 					}
+					
 					FD_SET (client_sockfd, &readfds);
 					snprintf(client_ipaddr, 30,"%d.%d.%d.%d", \
 					         client_address.sin_addr.s_addr & 0xFF, \
@@ -280,7 +272,7 @@ void start_server()
 					} else {
 						rcval = jasm_read(fd, received);
 						if (rcval != -1) {
-							excecute_command(fd, client_ipaddr, received);
+							excecute_command(fd, received);
 						}
 					}
 				}
@@ -355,17 +347,22 @@ ssize_t write_to_fd(int sockfd, const char *__src)
 
 static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data_type)
 {
-	//check if data_type is a valid data type
-	//compose complete message header
-	return write_to_fd(sockfd, __src);
+    char final[MAX_LENGHT_SEND];
+    snprintf(final,MAX_LENGHT_SEND,"Data-Type: %s\nData-Size: %ld\n\n%s",data_type,strlen(__src),__src);
+	return write_to_fd(sockfd, final);
 }
 
 static inline ssize_t jasm_read(int sockfd, char* body) //alias for read_from_fd
 {
-	return read_from_fd(sockfd, body);
+    return read_from_fd(sockfd,body);
 }
 
 static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header)
 {
 	return -1;
+}
+
+static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, const char* data_type, const char* header)
+{
+    return -1;
 }
