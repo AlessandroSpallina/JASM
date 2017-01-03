@@ -191,8 +191,7 @@ void start_server()
 	fd_set readfds, testfds;
 	server_sockfd = socket (AF_INET, SOCK_STREAM, 0);
 	if (server_sockfd < 0) {
-		//snprintf (errlog, MAX_LOG_CHARS, "Socket creation failure: %s", strerror (errno) );
-		//wlogev(EV_ERROR, errlog);
+		wlogev(EV_ERROR, "Socket creation failure: %s",strerror(errno));
 		openlog ("JASM", LOG_PID, LOG_DAEMON);
 		syslog (LOG_ERR, "socket creation failed!! Exiting!");
 		closelog();
@@ -201,8 +200,7 @@ void start_server()
 
 	int y=1;
 	if(setsockopt(server_sockfd,SOL_SOCKET,SO_REUSEADDR,(char*)&y,sizeof(y)) < 0) {
-		//snprintf(errlog, MAX_LOG_CHARS,"Socket reusaddr failure: %s",strerror(errno));
-		//wlogev(EV_WARN, errlog);
+		wlogev(EV_WARN, "Sockopt failure: %s",strerror(errno));
 		wlogev(EV_WARN, "This is not critical, as JASM can work as usual");
 	}
 
@@ -212,8 +210,7 @@ void start_server()
 	server_len = sizeof (server_address);
 
 	if (bind (server_sockfd, (struct sockaddr *) &server_address, (socklen_t)server_len) < 0) {
-		//snprintf (errlog, MAX_LOG_CHARS,"Socket binding failure: %s", strerror (errno) );
-		//wlogev(EV_ERROR, errlog);
+		wlogev(EV_ERROR, "Socket binding failure: %s",strerror(errno));
 		openlog ("JASM", LOG_PID, LOG_DAEMON);
 		syslog (LOG_ERR, "socket not correctly binded... exiting!");
 		closelog();
@@ -221,7 +218,7 @@ void start_server()
 	}
 
 	if (listen (server_sockfd, 5) < 0) {
-		//snprintf (errlog, MAX_LOG_CHARS,"Socket listening failure: %s", strerror (errno) );
+		wlogev(EV_ERROR, "Socket listening failure: %s",strerror(errno));
 		openlog ("JASM", LOG_PID, LOG_DAEMON);
 		syslog (LOG_ERR, "FATAL! socket was not put to listening mode! Exiting...");
 		closelog();
@@ -271,8 +268,7 @@ void start_server()
 					         (client_address.sin_addr.s_addr & 0xFF0000) >> 16, \
 					         (client_address.sin_addr.s_addr & 0xFF000000) >> 24);
 
-					//snprintf (errlog, MAX_LOG_CHARS,"Connection incoming, IP Address: %s", client_ipaddr);
-					//wlogev(EV_INFO, errlog);
+					wlogev(EV_INFO, "Incoming connection - IP Address: %s",client_ipaddr);
 					//handshake here
 
 				} else {
@@ -311,8 +307,7 @@ ssize_t read_from_fd(int sockfd, char *__dest)
 			return -2;
 		}
 		memset(__dest,'\0',strlen(__dest));
-		//snprintf(errlog,MAX_LOG_CHARS,"Receiving from client failure: %s",strerror(errno));
-		//wlogev(EV_ERROR, errlog);
+		wlogev(EV_ERROR, "Receiving from client failure: %s",strerror(errno));
 
 		return -1;
 	} else if (rcval == 0) {
@@ -338,8 +333,7 @@ ssize_t write_to_fd(int sockfd, const char *__src)
 	/* OVERFLOW PROTECTION */
 	if(strlen(__src)+1 > MAX_LENGHT_SEND) {
 		if((rcval=send(sockfd,"TooLargeString",15,0)) == -1) {
-			//snprintf(errlog,MAX_LOG_CHARS,"Sending to client failure: %s",strerror(errno));
-			//wlogev(EV_ERROR, errlog);
+			wlogev(EV_ERROR, "Sending to client failure: %s",strerror(errno));
 		} else if (rcval == 0) {
 			shutdown(sockfd,2);
 		}
@@ -349,8 +343,7 @@ ssize_t write_to_fd(int sockfd, const char *__src)
 	memset(__final_src,'\0',strlen(__final_src));
 	strncpy(__final_src,__src,strlen(__src)+1);
 	if((rcval=send(sockfd,__final_src,strlen(__final_src)+1,0)) == -1) {
-		//snprintf(errlog,MAX_LOG_CHARS,"Sending to client failure: %s",strerror(errno));
-		//wlogev(EV_ERROR, errlog);
+		wlogev(EV_ERROR, "Sending to client failure: %s",strerror(errno));
 		return -1;
 	} else if (rcval == 0) {
 		shutdown(sockfd,2);
