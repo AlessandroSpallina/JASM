@@ -21,21 +21,19 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <errno.h>
 
 #ifdef __unix__
 #include <sys/socket.h>
 #include <pthread.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
-#include <errno.h>
 #include <syslog.h>
 #endif
 
 #include "ipc.h"
 #include "miscellaneous.h"
-//#include "getter.h"
-//#include "modules.h"
-//#include "modules_list.h"
 #include "logger.h"
 #include "macros.h"
 
@@ -47,7 +45,7 @@ static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, cons
 //static struct ip_node *client_list = NULL;
 //static char errlog[MAX_LOG_CHARS];
 
-static void excecute_command (int fd, char *command)
+static void execute_command (int fd, char *command)
 {
 	// write on fd a list of commands
 	if (!strncmp (command,"help",4)) {
@@ -64,7 +62,6 @@ static void excecute_command (int fd, char *command)
 		exit (_EXIT_SUCCESS);
 	}
 	jasm_write(fd,"NotFound",DATA_TEXT);
-
 	/*
 	   // ************************** getter ***************************************
 	   if (!strncmp ("get", command, 3)) { //if recv get command
@@ -270,18 +267,38 @@ void start_server()
 						close(fd);
 						FD_CLR (fd, &readfds);
 					} else {
-						rcval = jasm_read(fd, received);
-						if (rcval != -1) {
-							excecute_command(fd, received);
-						}
-					}
+                        if((rcval = jasm_read(fd, received)) > 0)
+                            execute_command(fd,received);
+                        else
+                            jasm_write(fd,"CannotExecuteOperation",DATA_TEXT);
+                    }
 				}
 			}
 		}
 	}
 }
 
-ssize_t read_from_fd(int sockfd, char *__dest)
+static inline ssize_t get_data_size(const char* data)
+{
+    char datacpy[MAX_LENGHT_RECV];
+    strncpy(datacpy,data,MAX_LENGHT_RECV);
+    
+    char* dta = strtok(datacpy,"\n");
+    if(dta) {
+        char* ftok = strtok(dta," ");
+        if(ftok) {
+            ftok = strtok(NULL," ");
+            if(ftok) 
+                return atol(ftok);
+        } else 
+            return -1;
+    } else 
+        return -2;
+    
+    return -3;
+}
+
+static ssize_t read_from_fd(int sockfd, char *__dest)
 {
 	if(sockfd < 0) {
 		wlogev(EV_ERROR, "Invalid file descriptor");
@@ -312,7 +329,7 @@ ssize_t read_from_fd(int sockfd, char *__dest)
 	}
 }
 
-ssize_t write_to_fd(int sockfd, const char *__src)
+static ssize_t write_to_fd(int sockfd, const char *__src)
 {
 	if (sockfd < 0) {
 		wlogev(EV_ERROR, "Invalid file descriptor");
@@ -352,9 +369,31 @@ static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data
 	return write_to_fd(sockfd, final);
 }
 
-static inline ssize_t jasm_read(int sockfd, char* body) //alias for read_from_fd
+static inline ssize_t jasm_read(int sockfd, char* body)
 {
-    return read_from_fd(sockfd,body);
+    ssize_t rv = read_from_fd(sockfd,body);
+    if(rv < 0 || rv == 0)
+        return rv;
+    
+    if(!strstr(body,"Data-Size:"))
+        return -4;
+    
+    ssize_t data_size = get_data_size(body);
+    
+    char* pseparator = strstr(body,"\n\n");
+    if(!pseparator)
+        return -6;
+    
+    size_t i;
+    for(i=0;i<strlen(pseparator);i++) 
+        pseparator[i] = pseparator[i+2];
+    
+    if((ssize_t) strlen(pseparator) == data_size) 
+        strncpy(body,pseparator,MAX_LENGHT_RECV);
+    else
+        return -7;
+    
+    return rv;
 }
 
 static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header)
