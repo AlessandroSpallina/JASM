@@ -280,8 +280,8 @@ void start_server()
 
 static inline ssize_t get_data_size(const char* data)
 {
-    char datacpy[MAX_LENGHT_RECV];
-    strncpy(datacpy,data,MAX_LENGHT_RECV);
+    char datacpy[MAX_HEADER_SIZE];
+    strncpy(datacpy,data,MAX_HEADER_SIZE);
     
     char* current = strtok(datacpy,"\n");
     if(!current)
@@ -289,7 +289,7 @@ static inline ssize_t get_data_size(const char* data)
     
     while(current) {
         if(strstr(current,"Data-Size:")) {
-            char* tok = strtok(current," "); 
+            strtok(current," "); 
             return atol(strtok(NULL," "));
         }
         
@@ -307,7 +307,7 @@ static ssize_t read_from_fd(int sockfd, char *__dest)
 	}
 
 	ssize_t rcval;
-	char __pre_dest[BUFSIZ];
+	char __pre_dest[MAX_LENGHT_RECV];
 
 	memset(__pre_dest,'\0',strlen(__pre_dest));
 	if((rcval=recv(sockfd,__pre_dest,sizeof(__pre_dest),0)) == -1) {
@@ -386,7 +386,7 @@ static inline ssize_t jasm_read(int sockfd, char* body)
     
     const size_t loc = strlen(body) - strlen(pseparator);
     
-    char header[100];
+    char header[MAX_HEADER_SIZE];
     for(i=0;i<loc;i++) 
         header[i] = body[i];
     header[loc] = '\n';
@@ -400,7 +400,7 @@ static inline ssize_t jasm_read(int sockfd, char* body)
         pseparator[i] = pseparator[i+2];
 
     if((ssize_t) strlen(pseparator) == data_size) 
-        strncpy(body,pseparator,MAX_LENGHT_RECV);
+        strncpy(body,pseparator,MAX_DATA_SIZE);
     else
         return -7;
     
