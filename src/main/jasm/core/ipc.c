@@ -43,7 +43,6 @@ static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header
 static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, const char* data_type, const char* header);
 
 //static struct ip_node *client_list = NULL;
-//static char errlog[MAX_LOG_CHARS];
 
 static void execute_command (int fd, char *command)
 {
@@ -62,6 +61,7 @@ static void execute_command (int fd, char *command)
 		exit (_EXIT_SUCCESS);
 	}
 	jasm_write(fd,"NotFound",DATA_TEXT);
+    
 	/*
 	   // ************************** getter ***************************************
 	   if (!strncmp ("get", command, 3)) { //if recv get command
@@ -269,7 +269,7 @@ void start_server()
 					} else {
                         if((rcval = jasm_read(fd, received)) > 0)
                             execute_command(fd,received);
-                        else
+                        else 
                             jasm_write(fd,"CannotExecuteOperation",DATA_TEXT);
                     }
 				}
@@ -283,17 +283,18 @@ static inline ssize_t get_data_size(const char* data)
     char datacpy[MAX_LENGHT_RECV];
     strncpy(datacpy,data,MAX_LENGHT_RECV);
     
-    char* dta = strtok(datacpy,"\n");
-    if(dta) {
-        char* ftok = strtok(dta," ");
-        if(ftok) {
-            ftok = strtok(NULL," ");
-            if(ftok) 
-                return atol(ftok);
-        } else 
-            return -1;
-    } else 
+    char* current = strtok(datacpy,"\n");
+    if(!current)
         return -2;
+    
+    while(current) {
+        if(strstr(current,"Data-Size:")) {
+            char* tok = strtok(current," "); 
+            return atol(strtok(NULL," "));
+        }
+        
+        current = strtok(NULL,"\n");
+    }
     
     return -3;
 }
@@ -364,6 +365,9 @@ static ssize_t write_to_fd(int sockfd, const char *__src)
 
 static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data_type)
 {
+    if(!__src || !strcmp(data_type,DATA_NODATA))
+        return -6;
+    
     char final[MAX_LENGHT_SEND];
     snprintf(final,MAX_LENGHT_SEND,"Data-Type: %s\nData-Size: %ld\n\n%s",data_type,strlen(__src),__src);
 	return write_to_fd(sockfd, final);
@@ -371,37 +375,58 @@ static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data
 
 static inline ssize_t jasm_read(int sockfd, char* body)
 {
-    ssize_t rv = read_from_fd(sockfd,body);
+    size_t i;
+    const ssize_t rv = read_from_fd(sockfd,body);
     if(rv < 0 || rv == 0)
         return rv;
     
-    if(!strstr(body,"Data-Size:"))
-        return -4;
-    
-    ssize_t data_size = get_data_size(body);
-    
-    char* pseparator = strstr(body,"\n\n");
+    char *pseparator = strstr(body, "\n\n");
     if(!pseparator)
-        return -6;
+        return -9;
     
-    size_t i;
-    for(i=0;i<strlen(pseparator);i++) 
+    const size_t loc = strlen(body) - strlen(pseparator);
+    
+    char header[100];
+    for(i=0;i<loc;i++) 
+        header[i] = body[i];
+    header[loc] = '\n';
+
+    const ssize_t data_size = get_data_size(header);
+    
+    if (data_size <= 0)
+        return -8;
+    
+    for(i=0;i<strlen(pseparator);i++)
         pseparator[i] = pseparator[i+2];
-    
+
     if((ssize_t) strlen(pseparator) == data_size) 
         strncpy(body,pseparator,MAX_LENGHT_RECV);
     else
         return -7;
     
-    return rv;
+    return data_size;
 }
 
 static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header)
 {
-	return -1;
+    
 }
 
 static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, const char* data_type, const char* header)
 {
-    return -1;
+    if(!header)
+        return -9;
+    
+    char final[MAX_LENGHT_SEND];
+    size_t last_hdr = strlen(header)-1;
+    
+    if(header[last_hdr] != '\n')
+        return -8;
+        
+    if(!strcmp(data_type,DATA_NODATA)) 
+        snprintf(final,MAX_LENGHT_SEND,"Data-Type: %s\nData-Size: 0\n%s\n%s",DATA_NODATA,header,__src);
+    else
+        snprintf(final,MAX_LENGHT_SEND,"Data-Type: %s\nData-Size: %ld\n%s\n%s",data_type,strlen(__src),header,__src);
+    
+    return write_to_fd(sockfd, final);
 }

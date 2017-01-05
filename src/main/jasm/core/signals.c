@@ -25,10 +25,7 @@
 
 static void generic_signal_log (int sig)
 {
-	char errlog[MAX_LOG_CHARS];
-
-	snprintf(errlog,MAX_LOG_CHARS,"Received signal number %d", sig);
-	wlogev(EV_WARN,errlog);
+	wlogev(EV_WARN,"Received signal number %d", sig);
 }
 
 void set_signals_feel()

@@ -22,9 +22,8 @@
 
 int main ()
 {
-	start_daemon();                                                         //starts background daemon
-	set_signals_feel();                                                         //logs a set of signals
-	//starts server after the daemon (ready to get commands)
+    set_signals_feel();
+	start_daemon();
 	start_server();
 
 	return 0;
