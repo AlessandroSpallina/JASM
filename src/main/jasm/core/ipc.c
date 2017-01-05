@@ -263,13 +263,12 @@ void start_server()
 
 				} else {
 					ioctl(fd, FIONREAD, &nread);
-                    char hdr[MAX_HEADER_SIZE];
                     
 					if (nread == 0) {
 						close(fd);
 						FD_CLR (fd, &readfds);
 					} else {
-                        if((rcval = jasm_read_with_header(fd, received,hdr)) > 0)
+                        if((rcval = jasm_read(fd, received)) > 0)
                             execute_command(fd,received);
                         else 
                             jasm_write(fd,"CannotExecuteOperation",DATA_TEXT);
