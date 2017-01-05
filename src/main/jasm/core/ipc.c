@@ -39,7 +39,7 @@
 
 static inline ssize_t jasm_write(int sockfd, const char* __src, const char* data_type);
 static inline ssize_t jasm_read(int sockfd, char* body);
-static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header);
+static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* _header);
 static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, const char* data_type, const char* header);
 
 //static struct ip_node *client_list = NULL;
@@ -259,15 +259,17 @@ void start_server()
 
 					wlogev(EV_INFO, "Incoming connection - IP Address: %s",client_ipaddr);
 					//handshake here
+                    //if(!handshake(fd))
 
 				} else {
 					ioctl(fd, FIONREAD, &nread);
-
+                    char hdr[MAX_HEADER_SIZE];
+                    
 					if (nread == 0) {
 						close(fd);
 						FD_CLR (fd, &readfds);
 					} else {
-                        if((rcval = jasm_read(fd, received)) > 0)
+                        if((rcval = jasm_read_with_header(fd, received,hdr)) > 0)
                             execute_command(fd,received);
                         else 
                             jasm_write(fd,"CannotExecuteOperation",DATA_TEXT);
@@ -407,15 +409,46 @@ static inline ssize_t jasm_read(int sockfd, char* body)
     return data_size;
 }
 
-static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* header)
+static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* _header)
 {
+    size_t i;
+    const ssize_t rv = read_from_fd(sockfd,body);
+    if(rv < 0 || rv == 0)
+        return rv;
     
+    char *pseparator = strstr(body, "\n\n");
+    if(!pseparator)
+        return -9;
+    
+    const size_t loc = strlen(body) - strlen(pseparator);
+    
+    char header[MAX_HEADER_SIZE];
+    for(i=0;i<loc;i++) 
+        header[i] = body[i];
+    header[loc] = '\n';
+
+    const ssize_t data_size = get_data_size(header);
+    
+    if (data_size <= 0)
+        return -8;
+    
+    strncpy(_header,header,MAX_HEADER_SIZE);
+    
+    for(i=0;i<strlen(pseparator);i++)
+        pseparator[i] = pseparator[i+2];
+
+    if((ssize_t) strlen(pseparator) == data_size) 
+        strncpy(body,pseparator,MAX_DATA_SIZE);
+    else
+        return -7;
+    
+    return rv; // header + body
 }
 
 static inline ssize_t jasm_write_with_header(int sockfd, const char* __src, const char* data_type, const char* header)
 {
-    if(!header)
-        return -9;
+    if(!header) 
+        return -10;
     
     char final[MAX_LENGHT_SEND];
     size_t last_hdr = strlen(header)-1;
