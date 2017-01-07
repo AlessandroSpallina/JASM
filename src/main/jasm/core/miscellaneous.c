@@ -128,3 +128,32 @@ int read_line(const int file, char *buffer, const int length)
 	buffer[count-1] = '\0';
 	return count;
 }
+
+
+//taken from: http://stackoverflow.com/questions/29847915/implementing-strtok-whose-delimiter-has-more-than-one-character
+// thanks to the Stack Overflow user M Oehm (http://stackoverflow.com/users/2979617/m-oehm)
+char* strmctok(char* origstr, const char* mc_delim)
+{
+	static char *tok;
+ 	static char *next;
+    char *m;
+
+    if (mc_delim == NULL) 
+		return NULL;
+
+    tok = (origstr) ? origstr : next;
+
+    if (tok == NULL) 
+		return NULL;
+
+    m = strstr(tok, mc_delim);
+
+    if (m) {
+        next = m + strlen(mc_delim);
+        *m = '\0';
+    } else 
+        next = NULL;
+
+    return tok;
+}
+

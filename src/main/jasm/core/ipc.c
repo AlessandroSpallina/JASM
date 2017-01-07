@@ -380,7 +380,8 @@ static inline ssize_t jasm_read(int sockfd, char* body)
     const ssize_t rv = read_from_fd(sockfd,body);
     if(rv < 0 || rv == 0)
         return rv;
-    
+
+	 /*
     char *pseparator = strstr(body, "\n\n");
     if(!pseparator)
         return -9;
@@ -391,7 +392,7 @@ static inline ssize_t jasm_read(int sockfd, char* body)
     for(i=0;i<loc;i++) 
         header[i] = body[i];
     header[loc] = '\n';
-
+	*/ 
     const ssize_t data_size = get_data_size(header);
     
     if (data_size <= 0)
@@ -414,7 +415,8 @@ static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* _heade
     const ssize_t rv = read_from_fd(sockfd,body);
     if(rv < 0 || rv == 0)
         return rv;
-    
+
+	 /*  
     char *pseparator = strstr(body, "\n\n");
     if(!pseparator)
         return -9;
@@ -425,7 +427,7 @@ static inline ssize_t jasm_read_with_header(int sockfd, char* body, char* _heade
     for(i=0;i<loc;i++) 
         header[i] = body[i];
     header[loc] = '\n';
-
+	 */
     const ssize_t data_size = get_data_size(header);
     
     if (data_size <= 0)
